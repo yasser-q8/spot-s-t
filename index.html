@@ -1,0 +1,2397 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>نظام جرد أصناف المطاعم - شركة نايف للأغذية</title>
+    <link rel="icon" href="https://i.postimg.cc/NM2zJWZD/NAIF-LOGO.jpg" type="image/jpeg">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        :root {
+            --primary: #FF6600;
+            --secondary: #39FF14;
+            --background: #87CEEB;
+            --text: #333;
+            --card-bg: #FFFFFF;
+            --shadow: rgba(0, 0, 0, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--background);
+            color: var(--text);
+            line-height: 1.6;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 15px 0;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 12px var(--shadow);
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+        }
+
+        .logo img {
+            height: 60px;
+            margin-left: 15px;
+        }
+
+        .logo h1 {
+            font-size: 24px;
+        }
+
+        .company-name h2 {
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        .nav-tabs {
+            display: flex;
+            background-color: white;
+            border-radius: 8px;
+            overflow: hidden;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px var(--shadow);
+        }
+
+        .nav-tab {
+            flex: 1;
+            text-align: center;
+            padding: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: bold;
+        }
+
+        .nav-tab.active {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .nav-tab:hover:not(.active) {
+            background-color: rgba(255, 102, 0, 0.1);
+        }
+
+        .section {
+            display: none;
+            background-color: var(--card-bg);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 12px var(--shadow);
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        .file-upload {
+            border: 2px dashed var(--primary);
+            border-radius: 8px;
+            padding: 30px;
+            text-align: center;
+            margin-bottom: 20px;
+            background-color: rgba(255, 102, 0, 0.05);
+        }
+
+        .file-upload input {
+            display: none;
+        }
+
+        .file-upload label {
+            background-color: var(--primary);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 6px;
+            cursor: pointer;
+            display: inline-block;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+
+        .file-upload label:hover {
+            background-color: #e55a00;
+        }
+
+        .stats-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            box-shadow: 0 4px 8px var(--shadow);
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .stat-card h3 {
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+
+        .stat-card .value {
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .inventory-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+            font-size: 12px;
+        }
+
+        .inventory-table th, .inventory-table td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: center;
+        }
+
+        .inventory-table th {
+            background-color: var(--primary);
+            color: white;
+            font-size: 11px;
+            font-weight: bold;
+        }
+
+        .inventory-table tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        .inventory-table tr:hover {
+            background-color: #f1f1f1;
+        }
+
+        .inventory-table td:nth-child(2) {
+            font-size: 16px !important;
+            font-weight: 600;
+        }
+
+        .actual-count-input {
+            width: 70px;
+            padding: 4px;
+            font-size: 14px;
+            text-align: center;
+            border: 2px solid var(--primary);
+            border-radius: 4px;
+        }
+
+        .action-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-size: 14px;
+        }
+
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: #e55a00;
+        }
+
+        .btn-secondary {
+            background-color: var(--secondary);
+            color: #333;
+        }
+
+        .btn-secondary:hover {
+            background-color: #2de000;
+        }
+
+        .btn-small {
+            padding: 5px 10px;
+            font-size: 12px;
+        }
+
+        .inventory-category {
+            margin-bottom: 20px;
+        }
+
+        .category-title {
+            background-color: var(--primary);
+            color: white;
+            padding: 10px;
+            border-radius: 6px;
+            margin-bottom: 10px;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .search-filter {
+            margin-bottom: 20px;
+        }
+
+        .search-box {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid var(--primary);
+            border-radius: 6px;
+            font-size: 16px;
+        }
+
+        .restaurant-info {
+            background-color: white;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 6px var(--shadow);
+        }
+
+        .info-row {
+            display: flex;
+            margin-bottom: 10px;
+            align-items: center;
+        }
+
+        .info-label {
+            font-weight: bold;
+            width: 120px;
+            font-size: 14px;
+        }
+
+        .info-value {
+            flex: 1;
+        }
+
+        .info-value input, .info-value select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        .restaurant-autocomplete {
+            position: relative;
+            width: 100%;
+        }
+
+        .restaurant-search-input {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid var(--primary);
+            border-radius: 6px;
+            font-size: 16px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .restaurant-suggestions {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background-color: yellow;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            max-height: 200px;
+            overflow-y: auto;
+            z-index: 1000;
+            display: none;
+            box-shadow: 0 4px 12px var(--shadow);
+        }
+
+        .restaurant-suggestion {
+            padding: 10px;
+            cursor: pointer;
+            border-bottom: 1px solid #eee;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .restaurant-suggestion:hover {
+            background-color: #ffeb3b;
+        }
+
+        .restaurant-suggestion:last-child {
+            border-bottom: none;
+        }
+
+        .manager-info {
+            display: flex;
+            gap: 15px;
+            margin-top: 10px;
+        }
+
+        .manager-box {
+            flex: 1;
+            background-color: #f5f5f5;
+            padding: 8px;
+            border-radius: 4px;
+            text-align: center;
+        }
+
+        .manager-label {
+            font-size: 11px;
+            color: #666;
+        }
+
+        .manager-name {
+            font-weight: bold;
+            margin-top: 3px;
+            font-size: 13px;
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 20px;
+            background-color: var(--primary);
+            color: white;
+            border-radius: 6px;
+            box-shadow: 0 4px 12px var(--shadow);
+            z-index: 1000;
+            display: none;
+        }
+
+        .group-total {
+            background-color: #f0f0f0;
+            font-weight: bold;
+        }
+
+        .movement-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 800px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 10px;
+        }
+
+        .modal-title {
+            font-weight: bold;
+            font-size: 18px;
+        }
+
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #666;
+        }
+
+        .whatsapp-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .restaurant-search-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .current-stock {
+            font-weight: bold;
+            font-size: 18px;
+            text-align: center;
+            margin-top: 15px;
+            padding: 10px;
+            background-color: #f5f5f5;
+            border-radius: 4px;
+        }
+
+        .item-select {
+            transform: scale(1.5);
+            cursor: pointer;
+        }
+
+        /* قالب PDF المخفي */
+        .pdf-template {
+            position: fixed;
+            left: -10000px;
+            top: -10000px;
+            width: 794px;
+            height: 1123px;
+            background: white;
+            padding: 10px;
+            box-sizing: border-box;
+            z-index: -1000;
+            font-size: 12px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            direction: rtl;
+        }
+
+        /* توقيع المطور */
+        .signature-card {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            background: linear-gradient(135deg, #FF6E00, #2196F3);
+            color: white;
+            padding: 10.5px 17.5px;
+            border-radius: 8.5px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-size: 0.8rem;
+            font-weight: 600;
+            z-index: 1000;
+            animation: float 6s ease-in-out infinite;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: 2px solid rgba(255,255,255,0.2);
+        }
+
+        .signature-card:hover { 
+            transform: scale(1.05); 
+            box-shadow: 0 12px 35px rgba(0,0,0,0.4); 
+        }
+
+        @keyframes float { 
+            0% { transform: translateY(0px); } 
+            50% { transform: translateY(-15px); } 
+            100% { transform: translateY(0px); } 
+        }
+
+        .signature-card::before {
+            content: '';
+            position: absolute;
+            top: -2px; left: -2px; right: -2px; bottom: -2px;
+            background: linear-gradient(135deg, #80EF80, #2196F3);
+            border-radius: 14px;
+            z-index: -1;
+            animation: borderGlow 3s linear infinite;
+            background-size: 400%;
+        }
+
+        @keyframes borderGlow { 
+            0% { background-position: 0% 50%; } 
+            50% { background-position: 100% 50%; } 
+            100% { background-position: 0% 50%; } 
+        }
+
+        .signature-card .name { 
+            font-size: 0.95rem; 
+            font-weight: 700; 
+            margin-bottom: 5px; 
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.3); 
+        }
+
+        .signature-card .title { 
+            font-size: 0.7rem; 
+            opacity: 0.9; 
+            font-weight: 500; 
+        }
+
+        @media (max-width: 768px) { 
+            .signature-card { 
+                position: relative; 
+                bottom: auto; 
+                left: auto; 
+                margin: 20px auto 0; 
+                width: fit-content; 
+                animation: none; 
+            } 
+            .signature-card:hover { 
+                transform: none; 
+            } 
+        }
+
+        @media print {
+            .signature-card {
+                display: none;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .logo {
+                margin-bottom: 15px;
+            }
+            
+            .nav-tabs {
+                flex-direction: column;
+            }
+            
+            .stats-cards {
+                grid-template-columns: 1fr;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+            }
+            
+            .inventory-table {
+                font-size: 10px;
+            }
+            
+            .inventory-table th, .inventory-table td {
+                padding: 4px;
+            }
+            
+            .actual-count-input {
+                width: 50px;
+                font-size: 12px;
+            }
+            
+            .inventory-table td:nth-child(2) {
+                font-size: 14px !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="header-content">
+                <div class="logo">
+                    <img src="https://i.postimg.cc/NM2zJWZD/NAIF-LOGO.jpg" alt="شعار شركة نايف للأغذية">
+                    <div>
+                        <h1>نظام جرد أصناف المطاعم</h1>
+                        <div class="company-name">
+                            <h2>شركة نايف للأغذية</h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <div class="nav-tabs">
+            <div class="nav-tab active" data-target="upload-section">تحميل البيانات</div>
+            <div class="nav-tab" data-target="meat-section">جرد اللحوم</div>
+            <div class="nav-tab" data-target="veg-section">جرد الخضروات</div>
+            <div class="nav-tab" data-target="settings-section">الإعدادات</div>
+        </div>
+
+        <!-- قسم تحميل البيانات -->
+        <section id="upload-section" class="section active">
+            <h2>تحميل بيانات الأصناف من ملف Excel</h2>
+            <div class="file-upload">
+                <input type="file" id="excel-file" accept=".xlsx, .xls">
+                <label for="excel-file">اختر ملف Excel</label>
+                <p>سيتم استخراج الأعمدة: RM Code, RMName, VendorUOM, StockQty, UUom, Start Qty, Received Qty, Transfer In Qty, Transfer Out Qty, Wastage Qty, Usage Qty, Not Con. Orders</p>
+                <button class="btn btn-primary" id="load-default-items" style="margin-top: 15px;">
+                    تحميل الأصناف الأساسية
+                </button>
+            </div>
+
+            <div class="stats-cards">
+                <div class="stat-card">
+                    <h3>إجمالي الأصناف</h3>
+                    <div class="value" id="total-items">0</div>
+                </div>
+                <div class="stat-card">
+                    <h3>الأصناف التي تحتاج طلب</h3>
+                    <div class="value" id="low-stock-items">0</div>
+                </div>
+                <div class="stat-card">
+                    <h3>الأصناف المختارة للجرد</h3>
+                    <div class="value" id="selected-items">0</div>
+                </div>
+            </div>
+
+            <div class="search-filter">
+                <input type="text" class="search-box" id="search-items" placeholder="ابحث عن صنف...">
+            </div>
+
+            <div class="inventory-table-container">
+                <table class="inventory-table" id="items-table">
+                    <thead>
+                        <tr>
+                            <th>RM Code</th>
+                            <th>اسم الصنف</th>
+                            <th>الوحدة</th>
+                            <th>الرصيد الحالي</th>
+                            <th>الوحدة الصغرى</th>
+                            <th>الرصيد بالوحدة الصغرى</th>
+                            <th>اختيار للجرد</th>
+                            <th>الحركة</th>
+                        </tr>
+                    </thead>
+                    <tbody id="items-table-body">
+                        <!-- سيتم ملؤها بالبيانات -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- قسم جرد اللحوم -->
+        <section id="meat-section" class="section">
+            <h2>جرد أصناف اللحوم</h2>
+            <div class="restaurant-info">
+                <div class="info-row">
+                    <div class="info-label">اسم المطعم:</div>
+                    <div class="info-value">
+                        <div class="restaurant-autocomplete">
+                            <input type="text" class="restaurant-search-input" id="meat-restaurant-search" placeholder="اكتب اسم المطعم...">
+                            <div class="restaurant-suggestions" id="meat-restaurant-suggestions"></div>
+                        </div>
+                        <input type="hidden" id="meat-restaurant-name">
+                    </div>
+                </div>
+                <div class="info-row">
+                    <div class="info-label">مسئول المطعم:</div>
+                    <div class="info-value">
+                        <input type="text" id="meat-responsible" placeholder="اسم المسئول">
+                    </div>
+                </div>
+                <div class="manager-info">
+                    <div class="manager-box">
+                        <div class="manager-label">مدير المنطقة</div>
+                        <div class="manager-name" id="meat-area-manager">-</div>
+                    </div>
+                    <div class="manager-box">
+                        <div class="manager-label">مدير التشغيل</div>
+                        <div class="manager-name" id="meat-operations-manager">-</div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="meat-inventory-container">
+                <!-- سيتم ملؤها بالأصناف المختارة للجرد -->
+            </div>
+
+            <div class="action-buttons">
+                <button class="btn btn-primary" id="generate-meat-pdf">
+                    تصدير إلى PDF
+                </button>
+                <button class="btn btn-primary" id="generate-meat-excel">
+                    تصدير إلى Excel
+                </button>
+                <button class="btn btn-secondary" id="send-meat-whatsapp">
+                    إرسال إلى واتساب
+                </button>
+            </div>
+        </section>
+
+        <!-- قسم جرد الخضروات -->
+        <section id="veg-section" class="section">
+            <h2>جرد أصناف الخضروات</h2>
+            <div class="restaurant-info">
+                <div class="info-row">
+                    <div class="info-label">اسم المطعم:</div>
+                    <div class="info-value">
+                        <div class="restaurant-autocomplete">
+                            <input type="text" class="restaurant-search-input" id="veg-restaurant-search" placeholder="اكتب اسم المطعم...">
+                            <div class="restaurant-suggestions" id="veg-restaurant-suggestions"></div>
+                        </div>
+                        <input type="hidden" id="veg-restaurant-name">
+                    </div>
+                </div>
+                <div class="info-row">
+                    <div class="info-label">مسئول المطعم:</div>
+                    <div class="info-value">
+                        <input type="text" id="veg-responsible" placeholder="اسم المسئول">
+                    </div>
+                </div>
+                <div class="manager-info">
+                    <div class="manager-box">
+                        <div class="manager-label">مدير المنطقة</div>
+                        <div class="manager-name" id="veg-area-manager">-</div>
+                    </div>
+                    <div class="manager-box">
+                        <div class="manager-label">مدير التشغيل</div>
+                        <div class="manager-name" id="veg-operations-manager">-</div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="veg-inventory-container">
+                <!-- سيتم ملؤها بالأصناف المختارة للجرد -->
+            </div>
+
+            <div class="action-buttons">
+                <button class="btn btn-primary" id="generate-veg-pdf">
+                    تصدير إلى PDF
+                </button>
+                <button class="btn btn-primary" id="generate-veg-excel">
+                    تصدير إلى Excel
+                </button>
+                <button class="btn btn-secondary" id="send-veg-whatsapp">
+                    إرسال إلى واتساب
+                </button>
+            </div>
+        </section>
+
+        <!-- قسم الإعدادات -->
+        <section id="settings-section" class="section">
+            <h2>إعدادات النظام</h2>
+            
+            <div class="restaurant-info">
+                <h3>إدارة المطاعم والمدراء</h3>
+                
+                <div class="info-row">
+                    <div class="info-label">المطاعم:</div>
+                    <div class="info-value">
+                        <button class="btn btn-primary" id="add-restaurant">إضافة مطعم</button>
+                        <button class="btn btn-secondary" id="edit-restaurant">تعديل مطعم</button>
+                        <button class="btn btn-secondary" id="delete-restaurant">حذف مطعم</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="inventory-table-container">
+                <table class="inventory-table">
+                    <thead>
+                        <tr>
+                            <th>المطعم</th>
+                            <th>مدير المنطقة</th>
+                            <th>مدير التشغيل</th>
+                        </tr>
+                    </thead>
+                    <tbody id="restaurants-table-body">
+                        <!-- سيتم ملؤها بالبيانات -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- نافذة عرض الحركة -->
+        <div class="movement-modal" id="movement-modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <div class="modal-title" id="movement-modal-title">حركة الصنف</div>
+                    <button class="close-modal" id="close-movement-modal">&times;</button>
+                </div>
+                <div id="movement-modal-content">
+                    <!-- سيتم ملؤها بالبيانات -->
+                </div>
+            </div>
+        </div>
+
+        <!-- نافذة إدخال رقم الواتساب -->
+        <div class="whatsapp-modal" id="whatsapp-modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <div class="modal-title">إرسال إلى واتساب</div>
+                    <button class="close-modal" id="close-whatsapp-modal">&times;</button>
+                </div>
+                <div>
+                    <div class="info-row">
+                        <div class="info-label">رقم الهاتف:</div>
+                        <div class="info-value">
+                            <input type="text" id="whatsapp-number" placeholder="أدخل رقم الهاتف (965XXXXXXXX)">
+                        </div>
+                    </div>
+                    <div class="action-buttons" style="margin-top: 15px;">
+                        <button class="btn btn-primary" id="confirm-whatsapp-send">إرسال</button>
+                        <button class="btn btn-secondary" id="cancel-whatsapp-send">إلغاء</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- نافذة البحث عن المطعم -->
+        <div class="restaurant-search-modal" id="restaurant-search-modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <div class="modal-title">البحث عن المطعم</div>
+                    <button class="close-modal" id="close-restaurant-search-modal">&times;</button>
+                </div>
+                <div>
+                    <div class="search-filter">
+                        <input type="text" class="search-box" id="restaurant-search-box" placeholder="ابحث عن مطعم...">
+                    </div>
+                    <div id="restaurant-search-results" style="max-height: 300px; overflow-y: auto; margin-top: 15px;">
+                        <!-- سيتم ملؤها بنتائج البحث -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="notification" id="notification">
+            تم حفظ البيانات بنجاح!
+        </div>
+    </div>
+
+    <!-- قالب PDF المخفي -->
+    <div id="pdf-template" class="pdf-template">
+        <div class="pdf-header" style="text-align: center; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 2px solid #FF6600;">
+            <div style="display: flex; align-items: center; justify-content: center; margin-bottom: 10px;">
+                <img src="https://i.postimg.cc/NM2zJWZD/NAIF-LOGO.jpg" alt="شعار شركة نايف للأغذية" 
+                     style="width: 60px; height: 60px; margin-left: 15px;">
+                <div>
+                    <h1 style="color: #FF6600; margin: 0; font-size: 22px; font-weight: bold;">
+                        شركة نايف للأغذية
+                    </h1>
+                    <h2 style="color: #333; margin: 5px 0 0 0; font-size: 18px;">
+                        نظام جرد أصناف المطاعم
+                    </h2>
+                </div>
+            </div>
+        </div>
+        
+        <div id="pdf-restaurant-info" style="margin-bottom: 15px; padding: 10px; background: #f8f9fa; border-radius: 4px; font-size: 12px;">
+            <!-- سيتم ملؤه بالبيانات -->
+        </div>
+        
+        <div id="pdf-content" style="font-size: 11px;">
+            <!-- سيتم ملؤه بمحتوى الجرد -->
+        </div>
+        
+        <div id="pdf-footer" style="margin-top: 20px; padding-top: 10px; border-top: 1px solid #ddd; text-align: center; font-size: 10px; color: #666;">
+            <div style="margin-bottom: 5px;">تم إنشاء هذا التقرير بواسطة نظام جرد أصناف المطاعم</div>
+            <div>تاريخ الطباعة: <span id="pdf-print-date"></span></div>
+        </div>
+    </div>
+
+    <!-- HTML لاستخدامه في أي مكان -->
+    <div class="signature-card">
+        <div class="name">Yasser Elkhateeb</div>
+        <div class="title">مطور البرنامج 67011143</div>
+    </div>
+
+    <script>
+        // بيانات التطبيق
+        let inventoryData = [];
+        let selectedItems = [];
+        let currentWhatsappType = ''; // 'meat' أو 'veg'
+        
+        // بيانات المطاعم والمدراء
+        const restaurants = [
+            { name: "الفيحاء", areaManager: "حجازي", operationsManager: "طارق بيومي" },
+            { name: "شارع البحرين", areaManager: "مختار", operationsManager: "هاني عبدالله" },
+            { name: "جمعية العدان والقصور", areaManager: "انور", operationsManager: "طارق بيومي" },
+            { name: "الجابرية تكا و فرايد", areaManager: "مختار", operationsManager: "هاني عبدالله" },
+            { name: "الفحاحيل", areaManager: "وليد", operationsManager: "هاني عبدالله" },
+            { name: "أبو حليفة", areaManager: "ثروت", operationsManager: "هاني عبدالله" },
+            { name: "الرقعي", areaManager: "عماد", operationsManager: "طارق بيومي" },
+            { name: "مشرف", areaManager: "مختار", operationsManager: "هاني عبدالله" },
+            { name: "النافورة", areaManager: "مختار", operationsManager: "هاني عبدالله" },
+            { name: "القادسية", areaManager: "حجازي", operationsManager: "طارق بيومي" },
+            { name: "صباح السالم", areaManager: "ثروت", operationsManager: "هاني عبدالله" },
+            { name: "الضباعية", areaManager: "وليد", operationsManager: "هاني عبدالله" },
+            { name: "الشرق", areaManager: "وليد", operationsManager: "هاني عبدالله" },
+            { name: "الجابرية بنت الديك", areaManager: "مختار", operationsManager: "هاني عبدالله" },
+            { name: "الجهراء الزويخ", areaManager: "طارق", operationsManager: "طارق بيومي" },
+            { name: "الشويخ واره", areaManager: "حجازي", operationsManager: "طارق بيومي" },
+            { name: "السيد ياسين", areaManager: "مختار", operationsManager: "هاني عبدالله" },
+            { name: "الفنطاس", areaManager: "وليد", operationsManager: "هاني عبدالله" },
+            { name: "السندباد", areaManager: "مختار", operationsManager: "هاني عبدالله" },
+            { name: "المطار", areaManager: "حجازي", operationsManager: "طارق بيومي" },
+            { name: "المنقف", areaManager: "وليد", operationsManager: "هاني عبدالله" },
+            { name: "حولي بارك", areaManager: "حجازي", operationsManager: "طارق بيومي" },
+            { name: "الرقة", areaManager: "ثروت", operationsManager: "هاني عبدالله" },
+            { name: "الرحاب", areaManager: "عماد", operationsManager: "طارق بيومي" },
+            { name: "هدية", areaManager: "ثروت", operationsManager: "هاني عبدالله" },
+            { name: "نادي الصليبخات", areaManager: "عماد", operationsManager: "طارق بيومي" },
+            { name: "الجهراء الصناعية", areaManager: "حجازي", operationsManager: "طارق بيومي" },
+            { name: "الفروانية", areaManager: "عماد", operationsManager: "طارق بيومي" },
+            { name: "أسواق القرين", areaManager: "انور", operationsManager: "طارق بيومي" },
+            { name: "سلوى", areaManager: "ثروت", operationsManager: "هاني عبدالله" },
+            { name: "سوق الجليب", areaManager: "طارق", operationsManager: "طارق بيومي" },
+            { name: "الشهداء", areaManager: "انور", operationsManager: "طارق بيومي" },
+            { name: "الدسمة وبنيد القار", areaManager: "وليد", operationsManager: "هاني عبدالله" },
+            { name: "جمعية صباح الاحمد", areaManager: "ثروت", operationsManager: "هاني عبدالله" },
+            { name: "الافينيوز", areaManager: "طارق", operationsManager: "طارق بيومي" },
+            { name: "الصليبية الصناعية", areaManager: "طارق", operationsManager: "طارق بيومي" },
+            { name: "جمعية أبوفطيرة", areaManager: "وليد", operationsManager: "هاني عبدالله" },
+            { name: "غرب أبو فطيرة", areaManager: "انور", operationsManager: "طارق بيومي" },
+            { name: "خيطان العصيمي", areaManager: "انور", operationsManager: "طارق بيومي" },
+            { name: "الوفرة", areaManager: "ثروت", operationsManager: "هاني عبدالله" },
+            { name: "جمعية القيروان", areaManager: "طارق", operationsManager: "طارق بيومي" },
+            { name: "شرق الاحمدي", areaManager: "ثروت", operationsManager: "هاني عبدالله" },
+            { name: "الفروانية فرع 2", areaManager: "عماد", operationsManager: "طارق بيومي" },
+            { name: "جمعية الصليبية", areaManager: "طارق", operationsManager: "طارق بيومي" },
+            { name: "جمعية الزهراء", areaManager: "انور", operationsManager: "طارق بيومي" },
+            { name: "جمعية مدينة جابر الأحمد", areaManager: "عماد", operationsManager: "طارق بيومi" },
+            { name: "الخيران أوتليت مول", areaManager: "وليد", operationsManager: "هاني عبدالله" },
+            { name: "الخيران أويا مول", areaManager: "وليد", operationsManager: "هاني عبدالله" },
+            { name: "الجهراء ليالي الشرق", areaManager: "حجازي", operationsManager: "طارق بيومي" },
+            { name: "الجهراء مجمع مكة", areaManager: "طارق", operationsManager: "طارق بيومي" },
+            { name: "العارضية الجديد", areaManager: "عماد", operationsManager: "طارق بيومي" },
+            { name: "الري", areaManager: "مختار", operationsManager: "هاني عبدالله" },
+            { name: "مارينا مول", areaManager: "مختار", operationsManager: "هاني عبدالله" },
+            { name: "صباح السالم (العرين)", areaManager: "ثروت", operationsManager: "هاني عبدالله" },
+            { name: "مول 360", areaManager: "انور", operationsManager: "طارق بيومي" },
+            { name: "الخيول", areaManager: "ثروت", operationsManager: "هاني عبدالله" },
+            { name: "مجمع الكوت", areaManager: "وليد", operationsManager: "هاني عبدالله" }
+        ];
+        
+        // جدول تحويل الوحدات من Excel
+        const unitConversionMap = {
+            // الكيلوغرامات
+            "KILO": 1000,
+            "KILO GRAM": 1000,
+            "KG": 1000,
+            "كجم": 1000,
+            "كيلو": 1000,
+            
+            // النصف كيلو
+            "1/2 KILO": 500,
+            "500 GM": 500,
+            "500 G": 500,
+            "500 جرام": 500,
+            "نصف كيلو": 500,
+            
+            // الجرامات
+            "GRM": 1,
+            "GM": 1,
+            "G": 1,
+            "جرام": 1,
+            
+            // المليلترات
+            "ML": 1,
+            "مليلتر": 1,
+            
+            // اللترات
+            "LTR": 1000,
+            "L": 1000,
+            "لتر": 1000,
+            
+            // الجالونات
+            "GALLON": 3785.41,
+            "GAL": 3785.41,
+            "جالون": 3785.41,
+            
+            // القطع
+            "PCS": 1,
+            "PC": 1,
+            "قطعة": 1,
+            "حبة": 1,
+            
+            // الرولات
+            "ROLL": 1,
+            "رول": 1,
+            
+            // الأكياس
+            "BAG": 1,
+            "كيس": 1,
+            
+            // العلب
+            "TIN": 1,
+            "علبة": 1,
+            
+            // الزجاجات
+            "BOTTLE": 1,
+            "زجاجة": 1,
+            
+            // الكراتين
+            "CARTON": 1,
+            "كرتون": 1,
+            
+            // الرزم
+            "PACKET": 1,
+            "رزمة": 1,
+            
+            // الدزنة
+            "DOZEN": 12,
+            "دزنة": 12,
+            
+            // الرطل
+            "LBS": 453.592,
+            "رطل": 453.592
+        };
+        
+        // تحديد المجموعات بناءً على Group من ملف Excel
+        function getItemGroup(item) {
+            if (item.group && item.group.includes('MEAT')) {
+                return 'meat';
+            } else if (item.group && (item.group.includes('VEG') || item.group.includes('APPETIZERS') || item.group.includes('SALAD'))) {
+                return 'vegetables';
+            } else if (item.name && (item.name.includes('لحم') || item.name.includes('دجاج') || item.name.includes('برجر') || item.name.includes('فيليه') || item.name.includes('شاورما'))) {
+                return 'meat';
+            } else if (item.name && (item.name.includes('خض') || item.name.includes('سلطة') || item.name.includes('خيار') || item.name.includes('طماطم') || item.name.includes('بصل'))) {
+                return 'vegetables';
+            }
+            return 'other';
+        }
+
+        // دالة محسنة لتحويل الوحدات باستخدام جدول Excel
+        function convertToSmallestUnit(quantity, vendorUOM, uuom) {
+            if (!vendorUOM || !quantity) return Math.round(quantity);
+            
+            const vendorUOMUpper = vendorUOM.toUpperCase();
+            let multiplier = 1;
+            let isGram = false;
+            
+            // تحقق مما إذا كانت الوحدة الصغرى هي الجرام
+            if (uuom && (uuom.toUpperCase().includes('GR') || uuom.toUpperCase().includes('GRAM') || uuom.includes('جرام'))) {
+                isGram = true;
+            }
+            
+            // البحث في أنماط الوحدات في جدول Excel
+            const complexPatterns = [
+                /\((\d+(\.\d+)?)\s*(KGS|KG|KILO|كجم|كيلو)/i,
+                /\((\d+(\.\d+)?)\s*(G|GM|GRM|GRAM|جرام)/i,
+                /\((\d+(\.\d+)?)\s*(LTR|L|LITRE|لتر)/i,
+                /\((\d+(\.\d+)?)\s*(ML|مليلتر)/i,
+                /\((\d+(\.\d+)?)\s*(PCS|PC|PIECES|قطعة|حبة)/i
+            ];
+            
+            for (const pattern of complexPatterns) {
+                const match = vendorUOM.match(pattern);
+                if (match) {
+                    const value = parseFloat(match[1]);
+                    const unit = match[3].toUpperCase();
+                    
+                    if (unit.includes('KGS') || unit.includes('KG') || unit.includes('KILO') || unit.includes('كجم') || unit.includes('كيلو')) {
+                        multiplier = value * 1000;
+                        break;
+                    } else if (unit.includes('G') || unit.includes('GM') || unit.includes('GRAM') || unit.includes('جرام')) {
+                        multiplier = value;
+                        break;
+                    } else if (unit.includes('LTR') || unit.includes('L') || unit.includes('LITRE') || unit.includes('لتر')) {
+                        multiplier = value * 1000;
+                        break;
+                    } else if (unit.includes('ML') || unit.includes('مليلتر')) {
+                        multiplier = value;
+                        break;
+                    } else if (unit.includes('PCS') || unit.includes('PC') || unit.includes('PIECES') || unit.includes('قطعة') || unit.includes('حبة')) {
+                        multiplier = value;
+                        break;
+                    }
+                }
+            }
+            
+            // إذا لم نجد نمطاً معقداً، ابحث في الوحدة مباشرة
+            if (multiplier === 1) {
+                // تحقق من أنماط الضرب
+                if (vendorUOM.includes('×') || vendorUOM.includes('*')) {
+                    const parts = vendorUOM.split(/[×*]/);
+                    let totalMultiplier = 1;
+                    
+                    for (const part of parts) {
+                        const numMatch = part.match(/(\d+(\.\d+)?)/);
+                        if (numMatch) {
+                            totalMultiplier *= parseFloat(numMatch[1]);
+                        }
+                    }
+                    
+                    multiplier = totalMultiplier;
+                    
+                    // إذا كانت تحتوي على KG أو كجم، حول إلى جرام
+                    if (vendorUOMUpper.includes('KG') || vendorUOMUpper.includes('كجم')) {
+                        multiplier *= 1000;
+                    }
+                    // إذا كانت تحتوي على LTR أو لتر، حول إلى مليلتر
+                    else if (vendorUOMUpper.includes('LTR') || vendorUOMUpper.includes('لتر')) {
+                        multiplier *= 1000;
+                    }
+                }
+                // البحث عن وحدات بسيطة
+                else {
+                    for (const [unit, conv] of Object.entries(unitConversionMap)) {
+                        if (vendorUOMUpper.includes(unit)) {
+                            multiplier = conv;
+                            
+                            // إذا كانت الوحدة تحتوي على قيمة رقمية
+                            const numMatch = vendorUOM.match(/(\d+(\.\d+)?)/);
+                            if (numMatch) {
+                                multiplier *= parseFloat(numMatch[1]);
+                            }
+                            break;
+                        }
+                    }
+                }
+            }
+            
+            // إذا كان المضاعف لا يزال 1، حاول استخراج أي رقم
+            if (multiplier === 1) {
+                const numMatch = vendorUOM.match(/(\d+(\.\d+)?)/);
+                if (numMatch) {
+                    multiplier = parseFloat(numMatch[1]);
+                    
+                    // إذا كانت تحتوي على كيلو أو كجم، حول إلى جرام
+                    if (vendorUOMUpper.includes('KILO') || vendorUOMUpper.includes('KG') || vendorUOMUpper.includes('كجم') || vendorUOMUpper.includes('كيلو')) {
+                        multiplier *= 1000;
+                    }
+                    // إذا كانت تحتوي على لتر، حول إلى مليلتر
+                    else if (vendorUOMUpper.includes('LTR') || vendorUOMUpper.includes('لتر')) {
+                        multiplier *= 1000;
+                    }
+                }
+            }
+            
+            let result = quantity * multiplier;
+            
+            // تقريب النتيجة إلى أقرب رقم صحيح
+            result = Math.round(result);
+            
+            return result;
+        }
+
+        // تحميل ملف Excel
+        document.getElementById('excel-file').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const data = new Uint8Array(e.target.result);
+                const workbook = XLSX.read(data, { type: 'array' });
+                
+                // افتراض أن الاسم الأول هو الاسم الصحيح
+                const sheetName = workbook.SheetNames[0];
+                const worksheet = workbook.Sheets[sheetName];
+                
+                // تحويل إلى JSON
+                const jsonData = XLSX.utils.sheet_to_json(worksheet);
+                
+                // معالجة البيانات
+                inventoryData = jsonData.map(item => {
+                    const stockQty = item.StockQty || 0;
+                    const vendorUOM = item.VendorUOM || '';
+                    const uuom = item.UUom || '';
+                    
+                    // حساب الكمية بالوحدة الصغرى باستخدام الدالة المحسنة
+                    const smallestUnitQty = convertToSmallestUnit(stockQty, vendorUOM, uuom);
+                    
+                    // تحويل حركات الصنف إلى الوحدة الصغرى
+                    const startQty = convertToSmallestUnit(item['Start Qty'] || 0, vendorUOM, uuom);
+                    const receivedQty = convertToSmallestUnit(item['Received Qty'] || 0, vendorUOM, uuom);
+                    const transferInQty = convertToSmallestUnit(item['Transfer In Qty'] || 0, vendorUOM, uuom);
+                    const transferOutQty = convertToSmallestUnit(item['Transfer Out Qty'] || 0, vendorUOM, uuom);
+                    const wastageQty = convertToSmallestUnit(item['Wastage Qty'] || 0, vendorUOM, uuom);
+                    const usageQty = convertToSmallestUnit(item['Usage Qty'] || 0, vendorUOM, uuom);
+                    const notConOrders = convertToSmallestUnit(item['Not Con. Orders'] || 0, vendorUOM, uuom);
+                    
+                    // تحديد المجموعة بناءً على Group واسم الصنف
+                    const group = getItemGroup({
+                        group: item.Group,
+                        name: item.RMName
+                    });
+                    
+                    return {
+                        code: item['RM Code'] || '',
+                        name: item.RMName || '',
+                        vendorUOM: vendorUOM,
+                        stockQty: stockQty,
+                        uuom: uuom,
+                        smallestUnitQty: smallestUnitQty,
+                        startQty: startQty,
+                        receivedQty: receivedQty,
+                        transferInQty: transferInQty,
+                        transferOutQty: transferOutQty,
+                        wastageQty: wastageQty,
+                        usageQty: usageQty,
+                        notConOrders: notConOrders,
+                        group: group,
+                        selected: false,
+                        actualCount: 0,
+                        difference: 0
+                    };
+                });
+                
+                // تحديث الواجهة
+                updateInventoryTable();
+                updateStats();
+                
+                // إظهار إشعار
+                showNotification('تم تحميل البيانات بنجاح!');
+            };
+            reader.readAsArrayBuffer(file);
+        });
+
+        // تحديث جدول الأصناف
+        function updateInventoryTable() {
+            const tableBody = document.getElementById('items-table-body');
+            tableBody.innerHTML = '';
+            
+            const searchTerm = document.getElementById('search-items').value.toLowerCase();
+            
+            let filteredData = inventoryData;
+            if (searchTerm) {
+                filteredData = inventoryData.filter(item => 
+                    (item.name && item.name.toLowerCase().includes(searchTerm)) || 
+                    (item.code && item.code.toLowerCase().includes(searchTerm))
+                );
+            }
+            
+            filteredData.forEach((item, index) => {
+                const row = document.createElement('tr');
+                
+                row.innerHTML = `
+                    <td>${item.code || ''}</td>
+                    <td>${item.name || ''}</td>
+                    <td>${item.vendorUOM || ''}</td>
+                    <td>${item.stockQty || 0}</td>
+                    <td>${item.uuom || ''}</td>
+                    <td>${item.smallestUnitQty || 0}</td>
+                    <td>
+                        <input type="checkbox" class="item-select" data-code="${item.code}" ${item.selected ? 'checked' : ''}>
+                    </td>
+                    <td>
+                        <button class="btn btn-small btn-secondary show-movement" data-code="${item.code}">
+                            عرض الحركة
+                        </button>
+                    </td>
+                `;
+                
+                tableBody.appendChild(row);
+            });
+            
+            // إضافة مستمعات الأحداث لخانات الاختيار
+            document.querySelectorAll('.item-select').forEach(checkbox => {
+                checkbox.addEventListener('change', function() {
+                    const code = this.getAttribute('data-code');
+                    const item = inventoryData.find(i => i.code === code);
+                    if (item) {
+                        item.selected = this.checked;
+                        
+                        if (this.checked && !selectedItems.find(i => i.code === code)) {
+                            selectedItems.push(item);
+                        } else if (!this.checked) {
+                            selectedItems = selectedItems.filter(i => i.code !== code);
+                        }
+                        
+                        updateStats();
+                    }
+                });
+            });
+            
+            // إضافة مستمعات الأحداث لأزرار عرض الحركة
+            document.querySelectorAll('.show-movement').forEach(button => {
+                button.addEventListener('click', function() {
+                    const code = this.getAttribute('data-code');
+                    showMovementModal(code);
+                });
+            });
+        }
+
+        // عرض نافذة الحركة
+        function showMovementModal(code) {
+            const item = inventoryData.find(i => i.code === code);
+            if (!item) return;
+            
+            const modal = document.getElementById('movement-modal');
+            const title = document.getElementById('movement-modal-title');
+            const content = document.getElementById('movement-modal-content');
+            
+            title.textContent = `حركة الصنف: ${item.name}`;
+            
+            // حساب الرصيد الحالي من الحركات
+            const currentStock = item.startQty + item.receivedQty + item.transferInQty - 
+                               item.transferOutQty - item.wastageQty - item.usageQty - item.notConOrders;
+            
+            content.innerHTML = `
+                <table class="inventory-table">
+                    <thead>
+                        <tr>
+                            <th>البداية</th>
+                            <th>المستلم</th>
+                            <th>التحويل الداخل</th>
+                            <th>التحويل الخارج</th>
+                            <th>الهالك</th>
+                            <th>الاستخدام</th>
+                            <th>الطلبات غير المكتملة</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>${item.startQty}</td>
+                            <td>${item.receivedQty}</td>
+                            <td>${item.transferInQty}</td>
+                            <td>${item.transferOutQty}</td>
+                            <td>${item.wastageQty}</td>
+                            <td>${item.usageQty}</td>
+                            <td>${item.notConOrders}</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div class="current-stock">
+                    الرصيد الحالي: ${currentStock} ${item.uuom}
+                </div>
+                <p style="margin-top: 10px; text-align: center; font-size: 12px;">جميع الأرقام بالوحدة الصغرى: ${item.uuom}</p>
+            `;
+            
+            modal.style.display = 'flex';
+        }
+
+        // تحديث الإحصائيات
+        function updateStats() {
+            document.getElementById('total-items').textContent = inventoryData.length;
+            
+            const lowStockItems = inventoryData.filter(item => item.stockQty < 5).length;
+            document.getElementById('low-stock-items').textContent = lowStockItems;
+            
+            document.getElementById('selected-items').textContent = selectedItems.length;
+        }
+
+        // البحث في الأصناف
+        document.getElementById('search-items').addEventListener('input', updateInventoryTable);
+
+        // وظيفة البحث الديناميكي للمطاعم
+        function setupRestaurantAutocomplete(inputId, suggestionsId, managerIds) {
+            const input = document.getElementById(inputId);
+            const suggestions = document.getElementById(suggestionsId);
+            
+            input.addEventListener('input', function() {
+                const query = this.value.trim();
+                suggestions.innerHTML = '';
+                
+                if (query.length === 0) {
+                    suggestions.style.display = 'none';
+                    return;
+                }
+                
+                const filteredRestaurants = restaurants.filter(restaurant => 
+                    restaurant.name.includes(query)
+                );
+                
+                if (filteredRestaurants.length === 0) {
+                    suggestions.style.display = 'none';
+                    return;
+                }
+                
+                filteredRestaurants.forEach(restaurant => {
+                    const div = document.createElement('div');
+                    div.className = 'restaurant-suggestion';
+                    div.textContent = restaurant.name;
+                    
+                    div.addEventListener('click', function() {
+                        input.value = restaurant.name;
+                        document.getElementById(managerIds.restaurantName).value = restaurant.name;
+                        
+                        // تحديث معلومات المديرين
+                        if (managerIds.areaManager) {
+                            document.getElementById(managerIds.areaManager).textContent = restaurant.areaManager;
+                        }
+                        if (managerIds.operationsManager) {
+                            document.getElementById(managerIds.operationsManager).textContent = restaurant.operationsManager;
+                        }
+                        
+                        suggestions.style.display = 'none';
+                    });
+                    
+                    suggestions.appendChild(div);
+                });
+                
+                suggestions.style.display = 'block';
+            });
+            
+            // إخفاء القائمة عند النقر خارجها
+            document.addEventListener('click', function(e) {
+                if (!input.contains(e.target) && !suggestions.contains(e.target)) {
+                    suggestions.style.display = 'none';
+                }
+            });
+        }
+
+        // التنقل بين الأقسام
+        document.querySelectorAll('.nav-tab').forEach(tab => {
+            tab.addEventListener('click', function() {
+                // إزالة النشاط من جميع الأقسام
+                document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+                
+                // إضافة النشاط للقسم المحدد
+                this.classList.add('active');
+                const targetId = this.getAttribute('data-target');
+                document.getElementById(targetId).classList.add('active');
+                
+                // إذا كان القسم هو جرد اللحوم أو الخضروات، قم بتحديث العرض
+                if (targetId === 'meat-section') {
+                    updateMeatInventory();
+                } else if (targetId === 'veg-section') {
+                    updateVegInventory();
+                } else if (targetId === 'settings-section') {
+                    updateRestaurantsTable();
+                }
+            });
+        });
+
+        // تحديث عرض جرد اللحوم
+        function updateMeatInventory() {
+            const container = document.getElementById('meat-inventory-container');
+            container.innerHTML = '';
+            
+            // تصفية الأصناف المختارة التي تنتمي لللحوم
+            const meatItems = selectedItems.filter(item => 
+                item.group === 'meat'
+            );
+            
+            if (meatItems.length === 0) {
+                container.innerHTML = '<p>لم يتم اختيار أي أصناف لحوم للجرد</p>';
+                return;
+            }
+            
+            // تجميع الأصناف حسب المجموعات الفرعية
+            const groupedItems = {};
+            meatItems.forEach(item => {
+                // تحديد المجموعة الفرعية بناءً على اسم الصنف
+                let subGroup = 'أخرى';
+                if (item.name && (item.name.includes('فيليه') || item.name.includes('فيلية'))) {
+                    subGroup = 'فيليه';
+                } else if (item.name && item.name.includes('برجر')) {
+                    subGroup = 'برجر';
+                } else if (item.name && (item.name.includes('دجاج') || item.name.includes('شاورما'))) {
+                    subGroup = 'دجاج';
+                } else if (item.name && item.name.includes('لحم')) {
+                    subGroup = 'لحم';
+                } else if (item.name && item.name.includes('جناح')) {
+                    subGroup = 'جناح';
+                }
+                
+                if (!groupedItems[subGroup]) {
+                    groupedItems[subGroup] = [];
+                }
+                
+                groupedItems[subGroup].push(item);
+            });
+            
+            // عرض الأصناف المجمعة في جدول
+            for (const group in groupedItems) {
+                const categoryDiv = document.createElement('div');
+                categoryDiv.className = 'inventory-category';
+                
+                const titleDiv = document.createElement('div');
+                titleDiv.className = 'category-title';
+                titleDiv.textContent = group;
+                categoryDiv.appendChild(titleDiv);
+                
+                const table = document.createElement('table');
+                table.className = 'inventory-table';
+                
+                // رأس الجدول
+                const thead = document.createElement('thead');
+                thead.innerHTML = `
+                    <tr>
+                        <th>م</th>
+                        <th>اسم الصنف</th>
+                        <th>الشد</th>
+                        <th>الجرد من البرنامج</th>
+                        <th>الجرد بالوحدة الصغرى</th>
+                        <th>الجرد الفعلي</th>
+                        <th>العجز/الزيادة</th>
+                    </tr>
+                `;
+                table.appendChild(thead);
+                
+                const tbody = document.createElement('tbody');
+                let groupTotal = 0;
+                
+                groupedItems[group].forEach((item, index) => {
+                    const row = document.createElement('tr');
+                    
+                    row.innerHTML = `
+                        <td>${index + 1}</td>
+                        <td>${item.name}</td>
+                        <td>${item.vendorUOM}</td>
+                        <td>${item.stockQty}</td>
+                        <td>${item.smallestUnitQty}</td>
+                        <td>
+                            <input type="number" class="actual-count-input" data-code="${item.code}" 
+                                   value="${item.actualCount || ''}" placeholder="0">
+                        </td>
+                        <td class="difference-cell" data-code="${item.code}">${item.difference || 0}</td>
+                    `;
+                    
+                    tbody.appendChild(row);
+                    
+                    // إضافة مستمع حدث لحساب الفرق
+                    const input = row.querySelector('.actual-count-input');
+                    input.addEventListener('input', function() {
+                        const actualCount = parseFloat(this.value) || 0;
+                        const difference = actualCount - item.smallestUnitQty;
+                        
+                        // تحديث الفرق في الخلية
+                        const differenceCell = document.querySelector(`.difference-cell[data-code="${item.code}"]`);
+                        differenceCell.textContent = Math.round(difference);
+                        
+                        // تحديث بيانات العنصر
+                        item.actualCount = actualCount;
+                        item.difference = Math.round(difference);
+                        
+                        // إعادة حساب المجموع
+                        updateGroupTotal(group, groupedItems[group]);
+                    });
+                });
+                
+                table.appendChild(tbody);
+                
+                // صف المجموع
+                const totalRow = document.createElement('tr');
+                totalRow.className = 'group-total';
+                totalRow.innerHTML = `
+                    <td colspan="6">إجمالي ${group}</td>
+                    <td class="group-total-cell" data-group="${group}">${groupedItems[group].reduce((sum, item) => sum + (item.difference || 0), 0)}</td>
+                `;
+                table.appendChild(totalRow);
+                
+                categoryDiv.appendChild(table);
+                container.appendChild(categoryDiv);
+            }
+        }
+
+        // تحديث عرض جرد الخضروات
+        function updateVegInventory() {
+            const container = document.getElementById('veg-inventory-container');
+            container.innerHTML = '';
+            
+            // تصفية الأصناف المختارة التي تنتمي للخضروات
+            const vegItems = selectedItems.filter(item => 
+                item.group === 'vegetables'
+            );
+            
+            if (vegItems.length === 0) {
+                container.innerHTML = '<p>لم يتم اختيار أي أصناف خضروات للجرد</p>';
+                return;
+            }
+            
+            // تجميع الأصناف حسب المجموعات الفرعية
+            const groupedItems = {};
+            vegItems.forEach(item => {
+                // تحديد المجموعة الفرعية بناءً على اسم الصنف
+                let subGroup = 'أخرى';
+                if (item.name && item.name.includes('سلطة')) {
+                    subGroup = 'سلطات';
+                } else if (item.name && (item.name.includes('خض') || item.name.includes('خيار') || item.name.includes('طماطم') || item.name.includes('بصل'))) {
+                    subGroup = 'خضروات';
+                } else if (item.name && (item.name.includes('حمص') || item.name.includes('متبل'))) {
+                    subGroup = 'مقبلات';
+                } else if (item.name && (item.name.includes('صوص') || item.name.includes('صلصة'))) {
+                    subGroup = 'صلصات';
+                }
+                
+                if (!groupedItems[subGroup]) {
+                    groupedItems[subGroup] = [];
+                }
+                
+                groupedItems[subGroup].push(item);
+            });
+            
+            // عرض الأصناف المجمعة في جدول
+            for (const group in groupedItems) {
+                const categoryDiv = document.createElement('div');
+                categoryDiv.className = 'inventory-category';
+                
+                const titleDiv = document.createElement('div');
+                titleDiv.className = 'category-title';
+                titleDiv.textContent = group;
+                categoryDiv.appendChild(titleDiv);
+                
+                const table = document.createElement('table');
+                table.className = 'inventory-table';
+                
+                // رأس الجدول
+                const thead = document.createElement('thead');
+                thead.innerHTML = `
+                    <tr>
+                        <th>م</th>
+                        <th>اسم الصنف</th>
+                        <th>الشد</th>
+                        <th>الجرد من البرنامج</th>
+                        <th>الجرد بالوحدة الصغرى</th>
+                        <th>الجرد الفعلي</th>
+                        <th>العجز/الزيادة</th>
+                    </tr>
+                `;
+                table.appendChild(thead);
+                
+                const tbody = document.createElement('tbody');
+                
+                groupedItems[group].forEach((item, index) => {
+                    const row = document.createElement('tr');
+                    
+                    row.innerHTML = `
+                        <td>${index + 1}</td>
+                        <td>${item.name}</td>
+                        <td>${item.vendorUOM}</td>
+                        <td>${item.stockQty}</td>
+                        <td>${item.smallestUnitQty}</td>
+                        <td>
+                            <input type="number" class="actual-count-input" data-code="${item.code}" 
+                                   value="${item.actualCount || ''}" placeholder="0">
+                        </td>
+                        <td class="difference-cell" data-code="${item.code}">${item.difference || 0}</td>
+                    `;
+                    
+                    tbody.appendChild(row);
+                    
+                    // إضافة مستمع حدث لحساب الفرق
+                    const input = row.querySelector('.actual-count-input');
+                    input.addEventListener('input', function() {
+                        const actualCount = parseFloat(this.value) || 0;
+                        const difference = actualCount - item.smallestUnitQty;
+                        
+                        // تحديث الفرق في الخلية
+                        const differenceCell = document.querySelector(`.difference-cell[data-code="${item.code}"]`);
+                        differenceCell.textContent = Math.round(difference);
+                        
+                        // تحديث بيانات العنصر
+                        item.actualCount = actualCount;
+                        item.difference = Math.round(difference);
+                        
+                        // إعادة حساب المجموع
+                        updateGroupTotal(group, groupedItems[group]);
+                    });
+                });
+                
+                table.appendChild(tbody);
+                
+                // صف المجموع
+                const totalRow = document.createElement('tr');
+                totalRow.className = 'group-total';
+                totalRow.innerHTML = `
+                    <td colspan="6">إجمالي ${group}</td>
+                    <td class="group-total-cell" data-group="${group}">${groupedItems[group].reduce((sum, item) => sum + (item.difference || 0), 0)}</td>
+                `;
+                table.appendChild(totalRow);
+                
+                categoryDiv.appendChild(table);
+                container.appendChild(categoryDiv);
+            }
+        }
+
+        // تحديث المجموع لكل مجموعة
+        function updateGroupTotal(group, items) {
+            const total = items.reduce((sum, item) => sum + (item.difference || 0), 0);
+            const totalCell = document.querySelector(`.group-total-cell[data-group="${group}"]`);
+            if (totalCell) {
+                totalCell.textContent = Math.round(total);
+            }
+        }
+
+        // تحديث جدول المطاعم في قسم الإعدادات
+        function updateRestaurantsTable() {
+            const tableBody = document.getElementById('restaurants-table-body');
+            tableBody.innerHTML = '';
+            
+            restaurants.forEach(restaurant => {
+                const row = document.createElement('tr');
+                
+                row.innerHTML = `
+                    <td>${restaurant.name}</td>
+                    <td>${restaurant.areaManager}</td>
+                    <td>${restaurant.operationsManager}</td>
+                `;
+                
+                tableBody.appendChild(row);
+            });
+        }
+
+        // تحميل الأصناف الأساسية
+        document.getElementById('load-default-items').addEventListener('click', function() {
+            showNotification('يتم استخدام البيانات من ملف Excel مباشرة');
+        });
+
+        // ================= دالة حفظ PDF محسنة =================
+        async function generatePDF(sectionType) {
+            // sectionType: 'meat' أو 'veg'
+            
+            if (!window.jspdf || !window.html2canvas) {
+                showNotification('مكتبات PDF غير محملة. يرجى تحديث الصفحة.');
+                return;
+            }
+            
+            try {
+                // جمع البيانات بناءً على النوع
+                let items = [];
+                let restaurantName = '';
+                let responsibleName = '';
+                let areaManager = '';
+                let operationsManager = '';
+                let title = '';
+                
+                if (sectionType === 'meat') {
+                    items = selectedItems.filter(item => item.group === 'meat');
+                    restaurantName = document.getElementById('meat-restaurant-search').value;
+                    responsibleName = document.getElementById('meat-responsible').value;
+                    areaManager = document.getElementById('meat-area-manager').textContent;
+                    operationsManager = document.getElementById('meat-operations-manager').textContent;
+                    title = 'جرد أصناف اللحوم';
+                } else {
+                    items = selectedItems.filter(item => item.group === 'vegetables');
+                    restaurantName = document.getElementById('veg-restaurant-search').value;
+                    responsibleName = document.getElementById('veg-responsible').value;
+                    areaManager = document.getElementById('veg-area-manager').textContent;
+                    operationsManager = document.getElementById('veg-operations-manager').textContent;
+                    title = 'جرد أصناف الخضروات';
+                }
+                
+                if (items.length === 0) {
+                    showNotification('لا توجد بيانات للتصدير');
+                    return;
+                }
+                
+                // تحضير قالب PDF
+                const pdfTemplate = document.getElementById('pdf-template');
+                
+                // تحديث معلومات المطعم في القالب
+                const restaurantInfoDiv = pdfTemplate.querySelector('#pdf-restaurant-info');
+                restaurantInfoDiv.innerHTML = `
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                        <div>
+                            <strong>المطعم:</strong> ${restaurantName || 'غير محدد'}
+                        </div>
+                        <div>
+                            <strong>مسئول المطعم:</strong> ${responsibleName || 'غير محدد'}
+                        </div>
+                    </div>
+                    <div style="display: flex; justify-content: space-between;">
+                        <div>
+                            <strong>مدير المنطقة:</strong> ${areaManager}
+                        </div>
+                        <div>
+                            <strong>مدير التشغيل:</strong> ${operationsManager}
+                        </div>
+                    </div>
+                `;
+                
+                // تحديث عنوان التقرير
+                const pdfHeader = pdfTemplate.querySelector('.pdf-header');
+                const existingTitle = pdfHeader.querySelector('h2');
+                if (existingTitle) {
+                    existingTitle.textContent = title;
+                }
+                
+                // إنشاء محتوى الجرد
+                const pdfContent = pdfTemplate.querySelector('#pdf-content');
+                
+                // تجميع الأصناف حسب المجموعات الفرعية
+                const groupedItems = {};
+                items.forEach(item => {
+                    let subGroup = 'أخرى';
+                    
+                    if (sectionType === 'meat') {
+                        if (item.name && (item.name.includes('فيليه') || item.name.includes('فيلية'))) {
+                            subGroup = 'فيليه';
+                        } else if (item.name && item.name.includes('برجر')) {
+                            subGroup = 'برجر';
+                        } else if (item.name && (item.name.includes('دجاج') || item.name.includes('شاورما'))) {
+                            subGroup = 'دجاج';
+                        } else if (item.name && item.name.includes('لحم')) {
+                            subGroup = 'لحم';
+                        } else if (item.name && item.name.includes('جناح')) {
+                            subGroup = 'جناح';
+                        }
+                    } else {
+                        if (item.name && item.name.includes('سلطة')) {
+                            subGroup = 'سلطات';
+                        } else if (item.name && (item.name.includes('خض') || item.name.includes('خيار') || item.name.includes('طماطم') || item.name.includes('بصل'))) {
+                            subGroup = 'خضروات';
+                        } else if (item.name && (item.name.includes('حمص') || item.name.includes('متبل'))) {
+                            subGroup = 'مقبلات';
+                        } else if (item.name && (item.name.includes('صوص') || item.name.includes('صلصة'))) {
+                            subGroup = 'صلصات';
+                        }
+                    }
+                    
+                    if (!groupedItems[subGroup]) {
+                        groupedItems[subGroup] = [];
+                    }
+                    
+                    groupedItems[subGroup].push(item);
+                });
+                
+                // بناء محتوى PDF
+                let contentHTML = '';
+                let totalDifference = 0;
+                
+                for (const group in groupedItems) {
+                    contentHTML += `
+                        <div style="margin-bottom: 15px;">
+                            <div style="background: #FF6600; color: white; padding: 8px; border-radius: 4px; margin-bottom: 8px; font-weight: bold;">
+                                ${group}
+                            </div>
+                            <table style="width: 100%; border-collapse: collapse; font-size: 10px; margin-bottom: 10px;">
+                                <thead>
+                                    <tr style="background: #f0f0f0;">
+                                        <th style="border: 1px solid #ddd; padding: 6px; text-align: center; width: 5%;">م</th>
+                                        <th style="border: 1px solid #ddd; padding: 6px; text-align: center; width: 35%;">اسم الصنف</th>
+                                        <th style="border: 1px solid #ddd; padding: 6px; text-align: center; width: 10%;">الشد</th>
+                                        <th style="border: 1px solid #ddd; padding: 6px; text-align: center; width: 12%;">جرد البرنامج</th>
+                                        <th style="border: 1px solid #ddd; padding: 6px; text-align: center; width: 12%;">جرد الوحدة الصغرى</th>
+                                        <th style="border: 1px solid #ddd; padding: 6px; text-align: center; width: 12%;">الجرد الفعلي</th>
+                                        <th style="border: 1px solid #ddd; padding: 6px; text-align: center; width: 14%;">العجز/الزيادة</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                    `;
+                    
+                    let groupDifference = 0;
+                    
+                    groupedItems[group].forEach((item, index) => {
+                        const difference = item.difference || 0;
+                        groupDifference += difference;
+                        
+                        contentHTML += `
+                            <tr>
+                                <td style="border: 1px solid #ddd; padding: 5px; text-align: center;">${index + 1}</td>
+                                <td style="border: 1px solid #ddd; padding: 5px;">${item.name}</td>
+                                <td style="border: 1px solid #ddd; padding: 5px; text-align: center;">${item.vendorUOM}</td>
+                                <td style="border: 1px solid #ddd; padding: 5px; text-align: center;">${item.stockQty}</td>
+                                <td style="border: 1px solid #ddd; padding: 5px; text-align: center;">${item.smallestUnitQty}</td>
+                                <td style="border: 1px solid #ddd; padding: 5px; text-align: center;">${item.actualCount || 0}</td>
+                                <td style="border: 1px solid #ddd; padding: 5px; text-align: center; color: ${difference < 0 ? 'red' : difference > 0 ? 'green' : 'black'};">
+                                    ${difference}
+                                </td>
+                            </tr>
+                        `;
+                    });
+                    
+                    totalDifference += groupDifference;
+                    
+                    contentHTML += `
+                                </tbody>
+                                <tfoot>
+                                    <tr style="background: #f9f9f9; font-weight: bold;">
+                                        <td colspan="6" style="border: 1px solid #ddd; padding: 6px; text-align: right;">إجمالي ${group}</td>
+                                        <td style="border: 1px solid #ddd; padding: 6px; text-align: center; color: ${groupDifference < 0 ? 'red' : groupDifference > 0 ? 'green' : 'black'};">${groupDifference}</td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                    `;
+                }
+                
+                // إضافة الإجمالي الكلي
+                contentHTML += `
+                    <div style="margin-top: 20px; padding: 10px; background: #f0f0f0; border-radius: 4px; text-align: center; font-weight: bold;">
+                        <div style="font-size: 14px;">الإجمالي الكلي: 
+                            <span style="color: ${totalDifference < 0 ? 'red' : totalDifference > 0 ? 'green' : 'black'}; font-size: 16px;">
+                                ${totalDifference}
+                            </span>
+                        </div>
+                        <div style="font-size: 12px; margin-top: 5px; color: #666;">
+                            (عدد الأصناف: ${items.length} صنف)
+                        </div>
+                    </div>
+                `;
+                
+                pdfContent.innerHTML = contentHTML;
+                
+                // تحديث تاريخ الطباعة
+                const now = new Date();
+                const printDate = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+                document.getElementById('pdf-print-date').textContent = printDate;
+                
+                // إظهار العنصر مؤقتاً لالتقاط الصورة
+                const originalDisplay = pdfTemplate.style.display;
+                const originalPosition = pdfTemplate.style.position;
+                const originalLeft = pdfTemplate.style.left;
+                const originalTop = pdfTemplate.style.top;
+                const originalZIndex = pdfTemplate.style.zIndex;
+                
+                pdfTemplate.style.display = 'block';
+                pdfTemplate.style.position = 'fixed';
+                pdfTemplate.style.left = '0';
+                pdfTemplate.style.top = '0';
+                pdfTemplate.style.zIndex = '10000';
+                pdfTemplate.style.background = 'white';
+                
+                // الانتظار قليلاً لتحميل الصورة
+                await new Promise(resolve => setTimeout(resolve, 500));
+                
+                // استخدام html2canvas لالتقاط الصورة
+                const canvas = await html2canvas(pdfTemplate, {
+                    scale: 2,
+                    useCORS: true,
+                    logging: false,
+                    backgroundColor: '#FFFFFF',
+                    width: 794,
+                    height: 1123,
+                    windowWidth: 794,
+                    windowHeight: 1123
+                });
+                
+                // إعادة العنصر إلى وضعه الأصلي
+                pdfTemplate.style.display = originalDisplay;
+                pdfTemplate.style.position = originalPosition;
+                pdfTemplate.style.left = originalLeft;
+                pdfTemplate.style.top = originalTop;
+                pdfTemplate.style.zIndex = originalZIndex;
+                
+                const imgData = canvas.toDataURL('image/jpeg', 0.95);
+                const pdf = new window.jspdf.jsPDF('p', 'pt', 'a4');
+                
+                const imgWidth = pdf.internal.pageSize.getWidth();
+                const imgHeight = (canvas.height * imgWidth) / canvas.width;
+                
+                // إضافة الصورة إلى PDF
+                pdf.addImage(imgData, 'JPEG', 0, 0, imgWidth, imgHeight);
+                
+                // تنظيف اسم الملف
+                const cleanRestaurantName = restaurantName.replace(/[^\w\u0600-\u06FF\s]/g, '') || 'غير-محدد';
+                const cleanType = sectionType === 'meat' ? 'اللحوم' : 'الخضروات';
+                const fileName = `جرد_${cleanType}_${cleanRestaurantName}.pdf`;
+                
+                // حفظ ملف PDF
+                pdf.save(fileName);
+                
+                showNotification('تم إنشاء ملف PDF بنجاح!');
+                
+            } catch (error) {
+                console.error('Error generating PDF:', error);
+                showNotification('حدث خطأ أثناء إنشاء ملف PDF: ' + error.message);
+            }
+        }
+
+        // تصدير إلى PDF (لجرد اللحوم)
+        document.getElementById('generate-meat-pdf').addEventListener('click', function() {
+            generatePDF('meat');
+        });
+
+        // تصدير إلى PDF (لجرد الخضروات)
+        document.getElementById('generate-veg-pdf').addEventListener('click', function() {
+            generatePDF('veg');
+        });
+
+        // تصدير إلى Excel (لجرد اللحوم)
+        document.getElementById('generate-meat-excel').addEventListener('click', function() {
+            // جمع بيانات الجرد
+            const meatItems = selectedItems.filter(item => 
+                item.group === 'meat'
+            );
+            
+            if (meatItems.length === 0) {
+                showNotification('لا توجد بيانات للتصدير');
+                return;
+            }
+            
+            // تحويل البيانات إلى تنسيق Excel
+            const data = [];
+            
+            // إضافة رؤوس الجداول
+            const restaurantInput = document.getElementById('meat-restaurant-search');
+            const restaurant = restaurantInput.value || 'غير محدد';
+            const responsible = document.getElementById('meat-responsible').value || 'غير محدد';
+            
+            data.push(['جرد أصناف اللحوم']);
+            data.push([`المطعم: ${restaurant}`]);
+            data.push([`المسئول: ${responsible}`]);
+            data.push([]);
+            
+            // تجميع البيانات حسب المجموعات
+            const groupedItems = {};
+            meatItems.forEach(item => {
+                let subGroup = 'أخرى';
+                if (item.name && (item.name.includes('فيليه') || item.name.includes('فيلية'))) {
+                    subGroup = 'فيليه';
+                } else if (item.name && item.name.includes('برجر')) {
+                    subGroup = 'برجر';
+                } else if (item.name && (item.name.includes('دجاج') || item.name.includes('شاورما'))) {
+                    subGroup = 'دجاج';
+                } else if (item.name && item.name.includes('لحم')) {
+                    subGroup = 'لحم';
+                } else if (item.name && item.name.includes('جناح')) {
+                    subGroup = 'جناح';
+                }
+                
+                if (!groupedItems[subGroup]) {
+                    groupedItems[subGroup] = [];
+                }
+                
+                groupedItems[subGroup].push(item);
+            });
+            
+            // إضافة البيانات المجمعة
+            for (const group in groupedItems) {
+                data.push([group]);
+                data.push(['م', 'اسم الصنف', 'الشد', 'الجرد من البرنامج', 'الجرد بالوحدة الصغرى', 'الجرد الفعلي', 'العجز/الزيادة']);
+                
+                groupedItems[group].forEach((item, index) => {
+                    data.push([
+                        index + 1,
+                        item.name,
+                        item.vendorUOM,
+                        item.stockQty,
+                        item.smallestUnitQty,
+                        item.actualCount || 0,
+                        item.difference || 0
+                    ]);
+                });
+                
+                // إضافة صف فارغ بين المجموعات
+                data.push([]);
+            }
+            
+            // إنشاء ورقة عمل
+            const ws = XLSX.utils.aoa_to_sheet(data);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, 'جرد اللحوم');
+            
+            // تصدير الملف
+            XLSX.writeFile(wb, 'جرد_اللحوم.xlsx');
+        });
+
+        // تصدير إلى Excel (لجرد الخضروات)
+        document.getElementById('generate-veg-excel').addEventListener('click', function() {
+            // جمع بيانات الجرد
+            const vegItems = selectedItems.filter(item => 
+                item.group === 'vegetables'
+            );
+            
+            if (vegItems.length === 0) {
+                showNotification('لا توجد بيانات للتصدير');
+                return;
+            }
+            
+            // تحويل البيانات إلى تنسيق Excel
+            const data = [];
+            
+            // إضافة رؤوس الجداول
+            const restaurantInput = document.getElementById('veg-restaurant-search');
+            const restaurant = restaurantInput.value || 'غير محدد';
+            const responsible = document.getElementById('veg-responsible').value || 'غير محدد';
+            
+            data.push(['جرد أصناف الخضروات']);
+            data.push([`المطعم: ${restaurant}`]);
+            data.push([`المسئول: ${responsible}`]);
+            data.push([]);
+            
+            // تجميع البيانات حسب المجموعات
+            const groupedItems = {};
+            vegItems.forEach(item => {
+                let subGroup = 'أخرى';
+                if (item.name && item.name.includes('سلطة')) {
+                    subGroup = 'سلطات';
+                } else if (item.name && (item.name.includes('خض') || item.name.includes('خيار') || item.name.includes('طماطم') || item.name.includes('بصل'))) {
+                    subGroup = 'خضروات';
+                } else if (item.name && (item.name.includes('حمص') || item.name.includes('متبل'))) {
+                    subGroup = 'مقبلات';
+                } else if (item.name && (item.name.includes('صوص') || item.name.includes('صلصة'))) {
+                    subGroup = 'صلصات';
+                }
+                
+                if (!groupedItems[subGroup]) {
+                    groupedItems[subGroup] = [];
+                }
+                
+                groupedItems[subGroup].push(item);
+            });
+            
+            // إضافة البيانات المجمعة
+            for (const group in groupedItems) {
+                data.push([group]);
+                data.push(['م', 'اسم الصنف', 'الشد', 'الجرد من البرنامج', 'الجرد بالوحدة الصغرى', 'الجرد الفعلي', 'العجز/الزيادة']);
+                
+                groupedItems[group].forEach((item, index) => {
+                    data.push([
+                        index + 1,
+                        item.name,
+                        item.vendorUOM,
+                        item.stockQty,
+                        item.smallestUnitQty,
+                        item.actualCount || 0,
+                        item.difference || 0
+                    ]);
+                });
+                
+                // إضافة صف فارغ بين المجموعات
+                data.push([]);
+            }
+            
+            // إنشاء ورقة عمل
+            const ws = XLSX.utils.aoa_to_sheet(data);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, 'جرد الخضروات');
+            
+            // تصدير الملف
+            XLSX.writeFile(wb, 'جرد_الخضروات.xlsx');
+        });
+
+        // إرسال إلى واتساب (لجرد اللحوم)
+        document.getElementById('send-meat-whatsapp').addEventListener('click', function() {
+            currentWhatsappType = 'meat';
+            document.getElementById('whatsapp-modal').style.display = 'flex';
+        });
+
+        // إرسال إلى واتساب (لجرد الخضروات)
+        document.getElementById('send-veg-whatsapp').addEventListener('click', function() {
+            currentWhatsappType = 'veg';
+            document.getElementById('whatsapp-modal').style.display = 'flex';
+        });
+
+        // تأكيد إرسال الواتساب
+        document.getElementById('confirm-whatsapp-send').addEventListener('click', function() {
+            const phoneNumber = document.getElementById('whatsapp-number').value;
+            if (!phoneNumber) {
+                showNotification('يرجى إدخال رقم الهاتف');
+                return;
+            }
+            
+            let message = '';
+            let items = [];
+            
+            if (currentWhatsappType === 'meat') {
+                const responsible = document.getElementById('meat-responsible').value || 'غير محدد';
+                const restaurantInput = document.getElementById('meat-restaurant-search');
+                const restaurant = restaurantInput.value || 'غير محدد';
+                
+                message = `جرد أصناف اللحوم\n`;
+                message += `المطعم: ${restaurant}\n`;
+                message += `المسئول: ${responsible}\n\n`;
+                
+                items = selectedItems.filter(item => 
+                    item.group === 'meat'
+                );
+            } else {
+                const responsible = document.getElementById('veg-responsible').value || 'غير محدد';
+                const restaurantInput = document.getElementById('veg-restaurant-search');
+                const restaurant = restaurantInput.value || 'غير محدد';
+                
+                message = `جرد أصناف الخضروات\n`;
+                message += `المطعم: ${restaurant}\n`;
+                message += `المسئول: ${responsible}\n\n`;
+                
+                items = selectedItems.filter(item => 
+                    item.group === 'vegetables'
+                );
+            }
+            
+            if (items.length === 0) {
+                showNotification('لا توجد بيانات للإرسال');
+                return;
+            }
+            
+            // إضافة بيانات الجرد
+            items.forEach(item => {
+                message += `${item.name}: ${item.actualCount || 0}\n`;
+            });
+            
+            const encodedMessage = encodeURIComponent(message);
+            window.open(`https://wa.me/${phoneNumber}?text=${encodedMessage}`, '_blank');
+            
+            // إغلاق النافذة
+            document.getElementById('whatsapp-modal').style.display = 'none';
+            document.getElementById('whatsapp-number').value = '';
+        });
+
+        // إلغاء إرسال الواتساب
+        document.getElementById('cancel-whatsapp-send').addEventListener('click', function() {
+            document.getElementById('whatsapp-modal').style.display = 'none';
+            document.getElementById('whatsapp-number').value = '';
+        });
+
+        // إظهار الإشعارات
+        function showNotification(message) {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.style.display = 'block';
+            
+            setTimeout(() => {
+                notification.style.display = 'none';
+            }, 3000);
+        }
+
+        // البحث عن المطاعم
+        function searchRestaurants(query) {
+            const resultsDiv = document.getElementById('restaurant-search-results');
+            resultsDiv.innerHTML = '';
+            
+            const filteredRestaurants = restaurants.filter(restaurant => 
+                restaurant.name.includes(query)
+            );
+            
+            if (filteredRestaurants.length === 0) {
+                resultsDiv.innerHTML = '<p>لا توجد نتائج</p>';
+                return;
+            }
+            
+            filteredRestaurants.forEach(restaurant => {
+                const div = document.createElement('div');
+                div.style.padding = '10px';
+                div.style.borderBottom = '1px solid #ddd';
+                div.style.cursor = 'pointer';
+                
+                div.innerHTML = `
+                    <div><strong>${restaurant.name}</strong></div>
+                    <div>مدير المنطقة: ${restaurant.areaManager}</div>
+                    <div>مدير التشغيل: ${restaurant.operationsManager}</div>
+                `;
+                
+                div.addEventListener('click', function() {
+                    document.getElementById('restaurant-search-modal').style.display = 'none';
+                    document.getElementById('restaurant-search-box').value = '';
+                    
+                    // تعبئة بيانات المطعم المحدد
+                    if (currentEditRestaurant) {
+                        currentEditRestaurant.name = restaurant.name;
+                        currentEditRestaurant.areaManager = restaurant.areaManager;
+                        currentEditRestaurant.operationsManager = restaurant.operationsManager;
+                        
+                        updateRestaurantsTable();
+                        showNotification('تم تعديل المطعم بنجاح!');
+                    }
+                });
+                
+                resultsDiv.appendChild(div);
+            });
+        }
+
+        let currentEditRestaurant = null;
+
+        // إضافة مطعم جديد
+        document.getElementById('add-restaurant').addEventListener('click', function() {
+            const name = prompt('أدخل اسم المطعم الجديد:');
+            if (name) {
+                const areaManagerOptions = [...new Set(restaurants.map(r => r.areaManager))];
+                const operationsManagerOptions = [...new Set(restaurants.map(r => r.operationsManager))];
+                
+                let areaManager = prompt(`أدخل اسم مدير المنطقة (الخيارات: ${areaManagerOptions.join(', ')}):`);
+                let operationsManager = prompt(`أدخل اسم مدير التشغيل (الخيارات: ${operationsManagerOptions.join(', ')}):`);
+                
+                if (areaManager && operationsManager) {
+                    restaurants.push({
+                        name: name,
+                        areaManager: areaManager,
+                        operationsManager: operationsManager
+                    });
+                    
+                    updateRestaurantsTable();
+                    showNotification('تم إضافة المطعم بنجاح!');
+                }
+            }
+        });
+
+        // تعديل مطعم
+        document.getElementById('edit-restaurant').addEventListener('click', function() {
+            document.getElementById('restaurant-search-modal').style.display = 'flex';
+            document.getElementById('restaurant-search-box').value = '';
+            document.getElementById('restaurant-search-results').innerHTML = '';
+            
+            // إضافة مستمع للبحث
+            document.getElementById('restaurant-search-box').addEventListener('input', function() {
+                searchRestaurants(this.value);
+            });
+            
+            currentEditRestaurant = null;
+        });
+
+        // حذف مطعم
+        document.getElementById('delete-restaurant').addEventListener('click', function() {
+            const name = prompt('أدخل اسم المطعم الذي تريد حذفه:');
+            if (name) {
+                const index = restaurants.findIndex(r => r.name === name);
+                if (index !== -1) {
+                    if (confirm(`هل أنت متأكد من حذف مطعم ${name}؟`)) {
+                        restaurants.splice(index, 1);
+                        updateRestaurantsTable();
+                        showNotification('تم حذف المطعم بنجاح!');
+                    }
+                } else {
+                    showNotification('لم يتم العثور على المطعم');
+                }
+            }
+        });
+
+        // إغلاق نافذة الحركة
+        document.getElementById('close-movement-modal').addEventListener('click', function() {
+            document.getElementById('movement-modal').style.display = 'none';
+        });
+
+        // إغلاق نافذة الواتساب
+        document.getElementById('close-whatsapp-modal').addEventListener('click', function() {
+            document.getElementById('whatsapp-modal').style.display = 'none';
+            document.getElementById('whatsapp-number').value = '';
+        });
+
+        // إغلاق نافذة البحث عن المطعم
+        document.getElementById('close-restaurant-search-modal').addEventListener('click', function() {
+            document.getElementById('restaurant-search-modal').style.display = 'none';
+            document.getElementById('restaurant-search-box').value = '';
+        });
+
+        // تهيئة التطبيق عند التحميل
+        window.addEventListener('DOMContentLoaded', function() {
+            updateStats();
+            updateRestaurantsTable();
+            
+            // إعداد البحث الديناميكي للمطاعم
+            setupRestaurantAutocomplete('meat-restaurant-search', 'meat-restaurant-suggestions', {
+                restaurantName: 'meat-restaurant-name',
+                areaManager: 'meat-area-manager',
+                operationsManager: 'meat-operations-manager'
+            });
+            
+            setupRestaurantAutocomplete('veg-restaurant-search', 'veg-restaurant-suggestions', {
+                restaurantName: 'veg-restaurant-name',
+                areaManager: 'veg-area-manager',
+                operationsManager: 'veg-operations-manager'
+            });
+        });
+    </script>
+</body>
+</html>
