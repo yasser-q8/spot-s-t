@@ -11,12 +11,13 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
         :root {
-            --primary: #FF6600;
-            --secondary: #39FF14;
-            --background: #87CEEB;
-            --text: #333;
+            --primary: #1E3A8A;
+            --secondary: #3B82F6;
+            --background: #EFF6FF;
+            --text: #1F2937;
             --card-bg: #FFFFFF;
-            --shadow: rgba(0, 0, 0, 0.1);
+            --shadow: rgba(30, 58, 138, 0.1);
+            --accent-red: #DC2626;
         }
 
         * {
@@ -98,7 +99,7 @@
         }
 
         .nav-tab:hover:not(.active) {
-            background-color: rgba(255, 102, 0, 0.1);
+            background-color: rgba(30, 58, 138, 0.1);
         }
 
         .section {
@@ -120,7 +121,7 @@
             padding: 30px;
             text-align: center;
             margin-bottom: 20px;
-            background-color: rgba(255, 102, 0, 0.05);
+            background-color: rgba(30, 58, 138, 0.05);
         }
 
         .file-upload input {
@@ -139,7 +140,7 @@
         }
 
         .file-upload label:hover {
-            background-color: #e55a00;
+            background-color: #1e40af;
         }
 
         .stats-cards {
@@ -207,6 +208,13 @@
             font-weight: 600;
         }
 
+        /* زيادة حجم الخط وعمل Bold للرصيد بالوحدة الصغرى */
+        .inventory-table td:nth-child(6) {
+            font-size: 18px !important;
+            font-weight: bold !important;
+            color: var(--primary);
+        }
+
         .actual-count-input {
             width: 70px;
             padding: 4px;
@@ -244,16 +252,25 @@
         }
 
         .btn-primary:hover {
-            background-color: #e55a00;
+            background-color: #1e40af;
         }
 
         .btn-secondary {
             background-color: var(--secondary);
-            color: #333;
+            color: white;
         }
 
         .btn-secondary:hover {
-            background-color: #2de000;
+            background-color: #2563eb;
+        }
+
+        .btn-red {
+            background-color: var(--accent-red);
+            color: white;
+        }
+
+        .btn-red:hover {
+            background-color: #b91c1c;
         }
 
         .btn-small {
@@ -267,6 +284,16 @@
 
         .category-title {
             background-color: var(--primary);
+            color: white;
+            padding: 10px;
+            border-radius: 6px;
+            margin-bottom: 10px;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .category-title-red {
+            background-color: var(--accent-red);
             color: white;
             padding: 10px;
             border-radius: 6px;
@@ -305,6 +332,7 @@
             font-weight: bold;
             width: 120px;
             font-size: 14px;
+            color: var(--primary);
         }
 
         .info-value {
@@ -338,8 +366,8 @@
             top: 100%;
             left: 0;
             right: 0;
-            background-color: yellow;
-            border: 1px solid #ddd;
+            background-color: #EFF6FF;
+            border: 2px solid var(--primary);
             border-radius: 4px;
             max-height: 200px;
             overflow-y: auto;
@@ -351,12 +379,13 @@
         .restaurant-suggestion {
             padding: 10px;
             cursor: pointer;
-            border-bottom: 1px solid #eee;
+            border-bottom: 1px solid #ddd;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            transition: background-color 0.2s;
         }
 
         .restaurant-suggestion:hover {
-            background-color: #ffeb3b;
+            background-color: #DBEAFE;
         }
 
         .restaurant-suggestion:last-child {
@@ -375,6 +404,7 @@
             padding: 8px;
             border-radius: 4px;
             text-align: center;
+            border: 1px solid var(--primary);
         }
 
         .manager-label {
@@ -386,6 +416,7 @@
             font-weight: bold;
             margin-top: 3px;
             font-size: 13px;
+            color: var(--primary);
         }
 
         .notification {
@@ -402,7 +433,7 @@
         }
 
         .group-total {
-            background-color: #f0f0f0;
+            background-color: #DBEAFE;
             font-weight: bold;
         }
 
@@ -427,6 +458,7 @@
             max-width: 800px;
             max-height: 80vh;
             overflow-y: auto;
+            border: 2px solid var(--primary);
         }
 
         .modal-header {
@@ -434,13 +466,14 @@
             justify-content: space-between;
             align-items: center;
             margin-bottom: 15px;
-            border-bottom: 1px solid #ddd;
+            border-bottom: 2px solid var(--primary);
             padding-bottom: 10px;
         }
 
         .modal-title {
             font-weight: bold;
             font-size: 18px;
+            color: var(--primary);
         }
 
         .close-modal {
@@ -448,7 +481,7 @@
             border: none;
             font-size: 24px;
             cursor: pointer;
-            color: #666;
+            color: var(--primary);
         }
 
         .whatsapp-modal {
@@ -483,8 +516,9 @@
             text-align: center;
             margin-top: 15px;
             padding: 10px;
-            background-color: #f5f5f5;
+            background-color: #EFF6FF;
             border-radius: 4px;
+            border: 1px solid var(--primary);
         }
 
         .item-select {
@@ -513,7 +547,7 @@
             position: fixed;
             bottom: 20px;
             left: 20px;
-            background: linear-gradient(135deg, #FF6E00, #2196F3);
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
             color: white;
             padding: 10.5px 17.5px;
             border-radius: 8.5px;
@@ -543,7 +577,7 @@
             content: '';
             position: absolute;
             top: -2px; left: -2px; right: -2px; bottom: -2px;
-            background: linear-gradient(135deg, #80EF80, #2196F3);
+            background: linear-gradient(135deg, #60A5FA, var(--primary));
             border-radius: 14px;
             z-index: -1;
             animation: borderGlow 3s linear infinite;
@@ -627,6 +661,10 @@
             .inventory-table td:nth-child(2) {
                 font-size: 14px !important;
             }
+            
+            .inventory-table td:nth-child(6) {
+                font-size: 16px !important;
+            }
         }
     </style>
 </head>
@@ -655,11 +693,11 @@
 
         <!-- قسم تحميل البيانات -->
         <section id="upload-section" class="section active">
-            <h2>تحميل بيانات الأصناف من ملف Excel</h2>
+            <h2 style="color: var(--primary); margin-bottom: 20px;">تحميل بيانات الأصناف من ملف Excel</h2>
             <div class="file-upload">
                 <input type="file" id="excel-file" accept=".xlsx, .xls">
                 <label for="excel-file">اختر ملف Excel</label>
-                <p>سيتم استخراج الأعمدة: RM Code, RMName, VendorUOM, StockQty, UUom, Start Qty, Received Qty, Transfer In Qty, Transfer Out Qty, Wastage Qty, Usage Qty, Not Con. Orders</p>
+                <p style="margin-top: 10px; color: var(--primary); font-weight: 500;">سيتم استخراج الأعمدة: RM Code, RMName, VendorUOM, StockQty, UUom, Start Qty, Received Qty, Transfer In Qty, Transfer Out Qty, Wastage Qty, Usage Qty, Not Con. Orders</p>
                 <button class="btn btn-primary" id="load-default-items" style="margin-top: 15px;">
                     تحميل الأصناف الأساسية
                 </button>
@@ -707,7 +745,7 @@
 
         <!-- قسم جرد اللحوم -->
         <section id="meat-section" class="section">
-            <h2>جرد أصناف اللحوم</h2>
+            <h2 style="color: var(--primary); margin-bottom: 20px;">جرد أصناف اللحوم</h2>
             <div class="restaurant-info">
                 <div class="info-row">
                     <div class="info-label">اسم المطعم:</div>
@@ -756,7 +794,7 @@
 
         <!-- قسم جرد الخضروات -->
         <section id="veg-section" class="section">
-            <h2>جرد أصناف الخضروات</h2>
+            <h2 style="color: var(--primary); margin-bottom: 20px;">جرد أصناف الخضروات</h2>
             <div class="restaurant-info">
                 <div class="info-row">
                     <div class="info-label">اسم المطعم:</div>
@@ -805,17 +843,17 @@
 
         <!-- قسم الإعدادات -->
         <section id="settings-section" class="section">
-            <h2>إعدادات النظام</h2>
+            <h2 style="color: var(--primary); margin-bottom: 20px;">إعدادات النظام</h2>
             
             <div class="restaurant-info">
-                <h3>إدارة المطاعم والمدراء</h3>
+                <h3 style="color: var(--primary); margin-bottom: 15px;">إدارة المطاعم والمدراء</h3>
                 
                 <div class="info-row">
                     <div class="info-label">المطاعم:</div>
                     <div class="info-value">
                         <button class="btn btn-primary" id="add-restaurant">إضافة مطعم</button>
                         <button class="btn btn-secondary" id="edit-restaurant">تعديل مطعم</button>
-                        <button class="btn btn-secondary" id="delete-restaurant">حذف مطعم</button>
+                        <button class="btn btn-red" id="delete-restaurant">حذف مطعم</button>
                     </div>
                 </div>
             </div>
@@ -896,12 +934,12 @@
 
     <!-- قالب PDF المخفي -->
     <div id="pdf-template" class="pdf-template">
-        <div class="pdf-header" style="text-align: center; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 2px solid #FF6600;">
+        <div class="pdf-header" style="text-align: center; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 2px solid var(--primary);">
             <div style="display: flex; align-items: center; justify-content: center; margin-bottom: 10px;">
                 <img src="https://i.postimg.cc/NM2zJWZD/NAIF-LOGO.jpg" alt="شعار شركة نايف للأغذية" 
                      style="width: 60px; height: 60px; margin-left: 15px;">
                 <div>
-                    <h1 style="color: #FF6600; margin: 0; font-size: 22px; font-weight: bold;">
+                    <h1 style="color: var(--primary); margin: 0; font-size: 22px; font-weight: bold;">
                         شركة نايف للأغذية
                     </h1>
                     <h2 style="color: #333; margin: 5px 0 0 0; font-size: 18px;">
@@ -911,7 +949,7 @@
             </div>
         </div>
         
-        <div id="pdf-restaurant-info" style="margin-bottom: 15px; padding: 10px; background: #f8f9fa; border-radius: 4px; font-size: 12px;">
+        <div id="pdf-restaurant-info" style="margin-bottom: 15px; padding: 10px; background: #EFF6FF; border-radius: 4px; font-size: 12px; border: 1px solid var(--primary);">
             <!-- سيتم ملؤه بالبيانات -->
         </div>
         
@@ -1872,12 +1910,12 @@
                 for (const group in groupedItems) {
                     contentHTML += `
                         <div style="margin-bottom: 15px;">
-                            <div style="background: #FF6600; color: white; padding: 8px; border-radius: 4px; margin-bottom: 8px; font-weight: bold;">
+                            <div style="background: var(--primary); color: white; padding: 8px; border-radius: 4px; margin-bottom: 8px; font-weight: bold;">
                                 ${group}
                             </div>
                             <table style="width: 100%; border-collapse: collapse; font-size: 10px; margin-bottom: 10px;">
                                 <thead>
-                                    <tr style="background: #f0f0f0;">
+                                    <tr style="background: #EFF6FF;">
                                         <th style="border: 1px solid #ddd; padding: 6px; text-align: center; width: 5%;">م</th>
                                         <th style="border: 1px solid #ddd; padding: 6px; text-align: center; width: 35%;">اسم الصنف</th>
                                         <th style="border: 1px solid #ddd; padding: 6px; text-align: center; width: 10%;">الشد</th>
@@ -1902,9 +1940,9 @@
                                 <td style="border: 1px solid #ddd; padding: 5px;">${item.name}</td>
                                 <td style="border: 1px solid #ddd; padding: 5px; text-align: center;">${item.vendorUOM}</td>
                                 <td style="border: 1px solid #ddd; padding: 5px; text-align: center;">${item.stockQty}</td>
-                                <td style="border: 1px solid #ddd; padding: 5px; text-align: center;">${item.smallestUnitQty}</td>
+                                <td style="border: 1px solid #ddd; padding: 5px; text-align: center; font-weight: bold; font-size: 12px;">${item.smallestUnitQty}</td>
                                 <td style="border: 1px solid #ddd; padding: 5px; text-align: center;">${item.actualCount || 0}</td>
-                                <td style="border: 1px solid #ddd; padding: 5px; text-align: center; color: ${difference < 0 ? 'red' : difference > 0 ? 'green' : 'black'};">
+                                <td style="border: 1px solid #ddd; padding: 5px; text-align: center; color: ${difference < 0 ? 'red' : difference > 0 ? 'green' : 'var(--primary)'};">
                                     ${difference}
                                 </td>
                             </tr>
@@ -1918,7 +1956,7 @@
                                 <tfoot>
                                     <tr style="background: #f9f9f9; font-weight: bold;">
                                         <td colspan="6" style="border: 1px solid #ddd; padding: 6px; text-align: right;">إجمالي ${group}</td>
-                                        <td style="border: 1px solid #ddd; padding: 6px; text-align: center; color: ${groupDifference < 0 ? 'red' : groupDifference > 0 ? 'green' : 'black'};">${groupDifference}</td>
+                                        <td style="border: 1px solid #ddd; padding: 6px; text-align: center; color: ${groupDifference < 0 ? 'red' : groupDifference > 0 ? 'green' : 'var(--primary)'};">${groupDifference}</td>
                                     </tr>
                                 </tfoot>
                             </table>
@@ -1928,9 +1966,9 @@
                 
                 // إضافة الإجمالي الكلي
                 contentHTML += `
-                    <div style="margin-top: 20px; padding: 10px; background: #f0f0f0; border-radius: 4px; text-align: center; font-weight: bold;">
+                    <div style="margin-top: 20px; padding: 10px; background: #EFF6FF; border-radius: 4px; text-align: center; font-weight: bold; border: 1px solid var(--primary);">
                         <div style="font-size: 14px;">الإجمالي الكلي: 
-                            <span style="color: ${totalDifference < 0 ? 'red' : totalDifference > 0 ? 'green' : 'black'}; font-size: 16px;">
+                            <span style="color: ${totalDifference < 0 ? 'red' : totalDifference > 0 ? 'green' : 'var(--primary)'}; font-size: 16px;">
                                 ${totalDifference}
                             </span>
                         </div>
@@ -2275,11 +2313,15 @@
                 div.style.padding = '10px';
                 div.style.borderBottom = '1px solid #ddd';
                 div.style.cursor = 'pointer';
+                div.style.backgroundColor = '#EFF6FF';
+                div.style.marginBottom = '5px';
+                div.style.borderRadius = '4px';
+                div.style.border = '1px solid var(--primary)';
                 
                 div.innerHTML = `
-                    <div><strong>${restaurant.name}</strong></div>
-                    <div>مدير المنطقة: ${restaurant.areaManager}</div>
-                    <div>مدير التشغيل: ${restaurant.operationsManager}</div>
+                    <div style="font-weight: bold; color: var(--primary);">${restaurant.name}</div>
+                    <div style="font-size: 12px; color: #666;">مدير المنطقة: ${restaurant.areaManager}</div>
+                    <div style="font-size: 12px; color: #666;">مدير التشغيل: ${restaurant.operationsManager}</div>
                 `;
                 
                 div.addEventListener('click', function() {
