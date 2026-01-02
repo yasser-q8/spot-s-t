@@ -1249,7 +1249,7 @@
             { name: "الجهراء مجمع مكة", areaManager: "طارق", operationsManager: "طارق بيومي" },
             { name: "العارضية الجديد", areaManager: "عماد", operationsManager: "طارق بيومي" },
             { name: "الري", areaManager: "مختار", operationsManager: "هاني عبدالله" },
-            { name: "مارينا مول", areaManager: "مختار", operationsManager: "هاني عبدالله" },
+            { name: "مارينا مول", areaManager: "مختار", operationsManager: "هاني عبدallah" },
             { name: "صباح السالم (العرين)", areaManager: "ثروت", operationsManager: "هاني عبدالله" },
             { name: "مول 360", areaManager: "انور", operationsManager: "طارق بيومي" },
             { name: "الخيول", areaManager: "ثروت", operationsManager: "هاني عبدالله" },
@@ -2433,62 +2433,74 @@
                 // بناء محتوى PDF
                 let contentHTML = '';
                 let totalDifference = 0;
+                let isFirstGroup = true;
                 
                 for (const group in groupedItems) {
                     const groupColor = sectionType === 'meat' ? 'var(--primary)' : 
                                      sectionType === 'veg' ? 'var(--accent-green)' : 'var(--accent-orange)';
                     
                     contentHTML += `
-                        <div style="margin-bottom: 15px;">
-                            <div style="background: ${groupColor}; color: white; padding: 8px; border-radius: 4px; margin-bottom: 8px; font-weight: bold;">
+                        <div style="margin-bottom: 10px;">
+                            <div style="background: ${groupColor}; color: white; padding: 6px; border-radius: 4px; margin-bottom: 6px; font-weight: bold; font-size: 10px;">
                                 ${group}
                             </div>
-                            <table style="width: 100%; border-collapse: collapse; font-size: 11px; margin-bottom: 10px;">
+                    `;
+                    
+                    // إضافة رأس الجدول فقط للمجموعة الأولى
+                    if (isFirstGroup) {
+                        contentHTML += `
+                            <table style="width: 100%; border-collapse: collapse; font-size: 9px; margin-bottom: 5px;">
                                 <thead>
                                     <tr style="background: #EFF6FF;">
-                                        <th style="border: 1px solid #ddd; padding: 4px; text-align: center; width: 5%;">م</th>
-                                        <th style="border: 1px solid #ddd; padding: 4px; text-align: center; width: 35%;">اسم الصنف</th>
-                                        <th style="border: 1px solid #ddd; padding: 4px; text-align: center; width: 10%;">الشد</th>
-                                        <th style="border: 1px solid #ddd; padding: 4px; text-align: center; width: 12%;">جرد البرنامج</th>
-                                        <th style="border: 1px solid #ddd; padding: 4px; text-align: center; width: 12%; font-weight: bold; font-size: 12px;">جرد الوحدة الصغرى</th>
-                                        <th style="border: 1px solid #ddd; padding: 4px; text-align: center; width: 12%; font-weight: bold; font-size: 12px;">الجرد الفعلي</th>
-                                        <th style="border: 1px solid #ddd; padding: 4px; text-align: center; width: 14%; font-weight: bold; font-size: 12px;">العجز/الزيادة</th>
+                                        <th style="border: 1px solid #ddd; padding: 3px; text-align: center; width: 4%; font-size: 9px; font-weight: bold;">م</th>
+                                        <th style="border: 1px solid #ddd; padding: 3px; text-align: right; width: 30%; font-size: 9px; font-weight: bold;">اسم الصنف</th>
+                                        <th style="border: 1px solid #ddd; padding: 3px; text-align: center; width: 8%; font-size: 9px; font-weight: bold;">الشد</th>
+                                        <th style="border: 1px solid #ddd; padding: 3px; text-align: center; width: 10%; font-size: 9px; font-weight: bold;">جرد البرنامج</th>
+                                        <th style="border: 1px solid #ddd; padding: 3px; text-align: center; width: 10%; font-size: 9px; font-weight: bold;">جرد الوحدة الصغرى</th>
+                                        <th style="border: 1px solid #ddd; padding: 3px; text-align: center; width: 10%; font-size: 9px; font-weight: bold;">الجرد الفعلي</th>
+                                        <th style="border: 1px solid #ddd; padding: 3px; text-align: center; width: 12%; font-size: 9px; font-weight: bold;">العجز/الزيادة</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                    `;
+                        `;
+                        isFirstGroup = false;
+                    } else {
+                        contentHTML += `
+                            <table style="width: 100%; border-collapse: collapse; font-size: 9px; margin-bottom: 5px;">
+                                <tbody>
+                        `;
+                    }
                     
                     let groupDifference = 0;
                     
                     groupedItems[group].forEach((item, index) => {
                         const difference = item.difference || 0;
                         groupDifference += difference;
+                        totalDifference += difference;
                         const differenceText = difference < 0 ? 'عجز' : 
                                               difference > 0 ? 'زيادة' : '';
                         
                         contentHTML += `
                             <tr>
-                                <td style="border: 1px solid #ddd; padding: 5px; text-align: center;">${index + 1}</td>
-                                <td style="border: 1px solid #ddd; padding: 5px;">${item.name}</td>
-                                <td style="border: 1px solid #ddd; padding: 5px; text-align: center;">${item.vendorUOM}</td>
-                                <td style="border: 1px solid #ddd; padding: 5px; text-align: center;">${item.stockQty}</td>
-                                <td style="border: 1px solid #ddd; padding: 5px; text-align: center; font-weight: bold; font-size: 13px;">${item.smallestUnitQty}</td>
-                                <td style="border: 1px solid #ddd; padding: 5px; text-align: center; font-weight: bold; font-size: 13px;">${item.actualCount || 0}</td>
-                                <td style="border: 1px solid #ddd; padding: 5px; text-align: center; font-weight: bold; font-size: 13px; color: ${difference < 0 ? 'red' : difference > 0 ? 'green' : 'var(--primary)'};">
+                                <td style="border: 1px solid #ddd; padding: 3px; text-align: center; font-size: 9px;">${index + 1}</td>
+                                <td style="border: 1px solid #ddd; padding: 3px; text-align: right; font-size: 9px;">${item.name}</td>
+                                <td style="border: 1px solid #ddd; padding: 3px; text-align: center; font-size: 9px;">${item.vendorUOM}</td>
+                                <td style="border: 1px solid #ddd; padding: 3px; text-align: center; font-size: 9px;">${item.stockQty}</td>
+                                <td style="border: 1px solid #ddd; padding: 3px; text-align: center; font-size: 9px; font-weight: bold;">${item.smallestUnitQty}</td>
+                                <td style="border: 1px solid #ddd; padding: 3px; text-align: center; font-size: 9px; font-weight: bold;">${item.actualCount || 0}</td>
+                                <td style="border: 1px solid #ddd; padding: 3px; text-align: center; font-size: 9px; font-weight: bold; color: ${difference < 0 ? 'red' : difference > 0 ? 'green' : '#333'};">
                                     ${difference} ${differenceText ? `(${differenceText})` : ''}
                                 </td>
                             </tr>
                         `;
                     });
                     
-                    totalDifference += groupDifference;
-                    
                     contentHTML += `
                                 </tbody>
                                 <tfoot>
                                     <tr style="background: #f9f9f9; font-weight: bold;">
-                                        <td colspan="6" style="border: 1px solid #ddd; padding: 6px; text-align: right;">إجمالي ${group}</td>
-                                        <td style="border: 1px solid #ddd; padding: 6px; text-align: center; font-weight: bold; font-size: 13px; color: ${groupDifference < 0 ? 'red' : groupDifference > 0 ? 'green' : 'var(--primary)'};">${groupDifference} ${groupDifference < 0 ? '(عجز)' : groupDifference > 0 ? '(زيادة)' : ''}</td>
+                                        <td colspan="6" style="border: 1px solid #ddd; padding: 4px; text-align: right; font-size: 9px;">إجمالي ${group}</td>
+                                        <td style="border: 1px solid #ddd; padding: 4px; text-align: center; font-size: 9px; font-weight: bold; color: ${groupDifference < 0 ? 'red' : groupDifference > 0 ? 'green' : '#333'};">${groupDifference} ${groupDifference < 0 ? '(عجز)' : groupDifference > 0 ? '(زيادة)' : ''}</td>
                                     </tr>
                                 </tfoot>
                             </table>
@@ -2498,13 +2510,13 @@
                 
                 // إضافة الإجمالي الكلي
                 contentHTML += `
-                    <div style="margin-top: 20px; padding: 10px; background: #EFF6FF; border-radius: 4px; text-align: center; font-weight: bold; border: 1px solid var(--primary);">
-                        <div style="font-size: 14px;">الإجمالي الكلي: 
-                            <span style="color: ${totalDifference < 0 ? 'red' : totalDifference > 0 ? 'green' : 'var(--primary)'}; font-size: 16px; font-weight: bold;">
+                    <div style="margin-top: 10px; padding: 8px; background: #EFF6FF; border-radius: 4px; text-align: center; font-weight: bold; border: 1px solid var(--primary);">
+                        <div style="font-size: 10px;">الإجمالي الكلي: 
+                            <span style="color: ${totalDifference < 0 ? 'red' : totalDifference > 0 ? 'green' : 'var(--primary)'}; font-size: 12px; font-weight: bold;">
                                 ${totalDifference} ${totalDifference < 0 ? '(عجز)' : totalDifference > 0 ? '(زيادة)' : ''}
                             </span>
                         </div>
-                        <div style="font-size: 12px; margin-top: 5px; color: #666;">
+                        <div style="font-size: 9px; margin-top: 3px; color: #666;">
                             (عدد الأصناف: ${items.length} صنف)
                         </div>
                     </div>
