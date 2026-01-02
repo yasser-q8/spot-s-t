@@ -18,6 +18,8 @@
             --card-bg: #FFFFFF;
             --shadow: rgba(30, 58, 138, 0.1);
             --accent-red: #DC2626;
+            --accent-green: #10B981;
+            --accent-orange: #F59E0B;
         }
 
         * {
@@ -215,13 +217,35 @@
             color: var(--primary);
         }
 
+        /* تكبير الخط في الجداول المخصصة للجرد */
         .actual-count-input {
-            width: 70px;
-            padding: 4px;
-            font-size: 14px;
+            width: 90px;
+            padding: 6px;
+            font-size: 18px !important;
+            font-weight: bold !important;
             text-align: center;
             border: 2px solid var(--primary);
             border-radius: 4px;
+        }
+
+        /* تكبير الخط في أعمدة الجرد */
+        .count-cell {
+            font-size: 18px !important;
+            font-weight: bold !important;
+        }
+
+        .difference-cell {
+            font-size: 18px !important;
+            font-weight: bold !important;
+        }
+
+        /* تلوين العجز باللون الأحمر */
+        .difference-negative {
+            color: var(--accent-red) !important;
+        }
+
+        .difference-positive {
+            color: var(--accent-green) !important;
         }
 
         .action-buttons {
@@ -264,6 +288,24 @@
             background-color: #2563eb;
         }
 
+        .btn-green {
+            background-color: var(--accent-green);
+            color: white;
+        }
+
+        .btn-green:hover {
+            background-color: #059669;
+        }
+
+        .btn-orange {
+            background-color: var(--accent-orange);
+            color: white;
+        }
+
+        .btn-orange:hover {
+            background-color: #D97706;
+        }
+
         .btn-red {
             background-color: var(--accent-red);
             color: white;
@@ -294,6 +336,26 @@
 
         .category-title-red {
             background-color: var(--accent-red);
+            color: white;
+            padding: 10px;
+            border-radius: 6px;
+            margin-bottom: 10px;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .category-title-green {
+            background-color: var(--accent-green);
+            color: white;
+            padding: 10px;
+            border-radius: 6px;
+            margin-bottom: 10px;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .category-title-orange {
+            background-color: var(--accent-orange);
             color: white;
             padding: 10px;
             border-radius: 6px;
@@ -603,6 +665,16 @@
             font-weight: 500; 
         }
 
+        /* إضافة إرفاق ملف للواتساب */
+        .file-attachment {
+            margin-top: 15px;
+            padding: 10px;
+            border: 2px dashed var(--secondary);
+            border-radius: 6px;
+            text-align: center;
+            background-color: rgba(59, 130, 246, 0.05);
+        }
+
         @media (max-width: 768px) { 
             .signature-card { 
                 position: relative; 
@@ -654,8 +726,8 @@
             }
             
             .actual-count-input {
-                width: 50px;
-                font-size: 12px;
+                width: 60px;
+                font-size: 14px !important;
             }
             
             .inventory-table td:nth-child(2) {
@@ -688,6 +760,7 @@
             <div class="nav-tab active" data-target="upload-section">تحميل البيانات</div>
             <div class="nav-tab" data-target="meat-section">جرد اللحوم</div>
             <div class="nav-tab" data-target="veg-section">جرد الخضروات</div>
+            <div class="nav-tab" data-target="appetizers-section">جرد المقبلات</div>
             <div class="nav-tab" data-target="settings-section">الإعدادات</div>
         </div>
 
@@ -841,6 +914,55 @@
             </div>
         </section>
 
+        <!-- قسم جرد المقبلات -->
+        <section id="appetizers-section" class="section">
+            <h2 style="color: var(--primary); margin-bottom: 20px;">جرد أصناف المقبلات</h2>
+            <div class="restaurant-info">
+                <div class="info-row">
+                    <div class="info-label">اسم المطعم:</div>
+                    <div class="info-value">
+                        <div class="restaurant-autocomplete">
+                            <input type="text" class="restaurant-search-input" id="appetizers-restaurant-search" placeholder="اكتب اسم المطعم...">
+                            <div class="restaurant-suggestions" id="appetizers-restaurant-suggestions"></div>
+                        </div>
+                        <input type="hidden" id="appetizers-restaurant-name">
+                    </div>
+                </div>
+                <div class="info-row">
+                    <div class="info-label">مسئول المطعم:</div>
+                    <div class="info-value">
+                        <input type="text" id="appetizers-responsible" placeholder="اسم المسئول">
+                    </div>
+                </div>
+                <div class="manager-info">
+                    <div class="manager-box">
+                        <div class="manager-label">مدير المنطقة</div>
+                        <div class="manager-name" id="appetizers-area-manager">-</div>
+                    </div>
+                    <div class="manager-box">
+                        <div class="manager-label">مدير التشغيل</div>
+                        <div class="manager-name" id="appetizers-operations-manager">-</div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="appetizers-inventory-container">
+                <!-- سيتم ملؤها بالأصناف المختارة للجرد -->
+            </div>
+
+            <div class="action-buttons">
+                <button class="btn btn-primary" id="generate-appetizers-pdf">
+                    تصدير إلى PDF
+                </button>
+                <button class="btn btn-primary" id="generate-appetizers-excel">
+                    تصدير إلى Excel
+                </button>
+                <button class="btn btn-secondary" id="send-appetizers-whatsapp">
+                    إرسال إلى واتساب
+                </button>
+            </div>
+        </section>
+
         <!-- قسم الإعدادات -->
         <section id="settings-section" class="section">
             <h2 style="color: var(--primary); margin-bottom: 20px;">إعدادات النظام</h2>
@@ -898,9 +1020,24 @@
                     <div class="info-row">
                         <div class="info-label">رقم الهاتف:</div>
                         <div class="info-value">
-                            <input type="text" id="whatsapp-number" placeholder="أدخل رقم الهاتف (965XXXXXXXX)">
+                            <input type="text" id="whatsapp-number" placeholder="+965 67011143" value="+96567011143">
                         </div>
                     </div>
+                    
+                    <!-- إضافة خيار إرفاق ملف -->
+                    <div class="file-attachment">
+                        <div style="margin-bottom: 8px; font-weight: bold; color: var(--primary);">
+                            إرفاق ملف (اختياري)
+                        </div>
+                        <input type="file" id="whatsapp-attachment" style="display: none;" accept=".pdf,.xlsx,.xls,.jpg,.jpeg,.png">
+                        <label for="whatsapp-attachment" class="btn btn-small btn-secondary" style="display: inline-block; margin-bottom: 8px;">
+                            اختر ملف
+                        </label>
+                        <div id="attachment-name" style="font-size: 12px; color: #666;">
+                            لم يتم اختيار ملف
+                        </div>
+                    </div>
+                    
                     <div class="action-buttons" style="margin-top: 15px;">
                         <button class="btn btn-primary" id="confirm-whatsapp-send">إرسال</button>
                         <button class="btn btn-secondary" id="cancel-whatsapp-send">إلغاء</button>
@@ -973,7 +1110,56 @@
         // بيانات التطبيق
         let inventoryData = [];
         let selectedItems = [];
-        let currentWhatsappType = ''; // 'meat' أو 'veg'
+        let currentWhatsappType = ''; // 'meat' أو 'veg' أو 'appetizers'
+        let whatsappAttachmentFile = null;
+        
+        // بيانات الأصناف الأساسية من ملف الاصناف الاساسية.xlsx
+        const defaultItems = [
+            // لحوم
+            { code: "K1035", name: "Chicken Big Fillet  ( بيج فيلية)", group: "meat" },
+            { code: "K1036", name: "Chicken Big Fillet Spicy  ( بيج فيلية فلفل)", group: "meat" },
+            { code: "K1008", name: "Chicken Fillet  ( فيليه عادي)", group: "meat" },
+            { code: "K1009", name: "Chicken Fillet Spicy  ( فيليه فلفل)", group: "meat" },
+            { code: "K1016", name: "Ch.Finger Fillet Spicy  ( اصابع فيليه فلفل)", group: "meat" },
+            { code: "K1015", name: "Chicken Finger Fillet  ( اصابع فيليه)", group: "meat" },
+            { code: "K1049", name: "Grilled Chicken Fillet  فيليه مشوي", group: "meat" },
+            { code: "K1020", name: "Royal Grilled Chicken (دجاج شواية ملكي)", group: "meat" },
+            { code: "K1006", name: "Chicken Tikka ( دجاج تكا عادي)", group: "meat" },
+            { code: "K1004", name: "Chicken Tikka Brest ( تكا صدور)", group: "meat" },
+            { code: "K1005", name: "Chicken Tikka Thigh  (تكا فخذ)", group: "meat" },
+            { code: "K1017", name: "Grilled Quils (فري مشوي)", group: "meat" },
+            { code: "K1011", name: "Rooster Junior  ( فروج نايف)", group: "meat" },
+            { code: "K1014", name: "Bint Al-Deek  ( بنت الديك)", group: "meat" },
+            { code: "K1012", name: "Chicken Fried  ( دجاج فرايد عادي)", group: "meat" },
+            { code: "K1013", name: "Chicken Fried Spicy  (دجاج فرايد فلفل)", group: "meat" },
+            { code: "A1007", name: "Beef Burger Big(برجر لحم كبير)", group: "meat" },
+            { code: "A1008", name: "Beef Burger Small(برجر لحم صغير)", group: "meat" },
+            { code: "A1004", name: "Chicken Burger Small  ( برجر دجاج صغير)", group: "meat" },
+            { code: "K1070", name: "Fresh Burger Chickens برجر دجاج طازج", group: "meat" },
+            { code: "K1071", name: "Chicken Small Wings Nor  جناح صغير عادي", group: "meat" },
+            { code: "K1072", name: "Chicken Small Wings Spicy  جناح صغير فلفل", group: "meat" },
+            { code: "K1010", name: "Chicken Wings  جناح متبل", group: "meat" },
+            { code: "K1075", name: "Fillet Pizza Grill / فيلية بيتزا مشوي", group: "meat" },
+            { code: "K1007", name: "Chicken Drum Stick ( درام ستيك)", group: "meat" },
+            { code: "K1039", name: "Drumstic whole Fried  ( وصلة دجاج عادي)", group: "meat" },
+            { code: "K1040", name: "Drumstick whole Fried spicy  ( وصلة دجاج فلفل)", group: "meat" },
+            
+            // مقبلات
+            { code: "K2035", name: "Fattoush Salad Big  ( سلطة فتوش كبيرة)", group: "appetizers" },
+            { code: "K2014", name: "Fattoush Salad Small  (سلطة فتوش صغيرة)", group: "appetizers" },
+            { code: "K2005", name: "Cole Slaw Big  (كول سلو كبير)", group: "appetizers" },
+            { code: "K2006", name: "Cole Slaw Small  ( كول سلو صغير)", group: "appetizers" },
+            { code: "K2001", name: "Hummus  ( حمص)", group: "appetizers" },
+            { code: "K2020", name: "Hummus large ( ماعون حمص كبير)", group: "appetizers" },
+            { code: "K2009", name: "Laban Naif Small (لبن نايف صغير )", group: "appetizers" },
+            { code: "K2008", name: "Rice&Milk Pudding ( أرز بالحليب)", group: "appetizers" },
+            { code: "K2033", name: "Rocca Salad Big  ( سلطة جرجيركبيرة)", group: "appetizers" },
+            { code: "K2016", name: "Rocca Salad Small  ( سلطة الجرجيرصغيرة)", group: "appetizers" },
+            { code: "K2034", name: "Taboulla Salad Big  ( سلطة تبولة كبيرة)", group: "appetizers" },
+            { code: "K2015", name: "Taboulla Salad Small  ( سلطة تبوله صغيرة)", group: "appetizers" },
+            { code: "K2036", name: "Vegitable Salad Big  ( سلطة خضراء كبيرة)", group: "appetizers" },
+            { code: "K2012", name: "Vegitable Salad Small  ( سلطة خضراء صغيرة)", group: "appetizers" }
+        ];
         
         // بيانات المطاعم والمدراء
         const restaurants = [
@@ -1112,16 +1298,20 @@
             "رطل": 453.592
         };
         
-        // تحديد المجموعات بناءً على Group من ملف Excel
+        // تحديد المجموعات بناءً على Group من ملف Excel (محدث لفصل المقبلات)
         function getItemGroup(item) {
             if (item.group && item.group.includes('MEAT')) {
                 return 'meat';
-            } else if (item.group && (item.group.includes('VEG') || item.group.includes('APPETIZERS') || item.group.includes('SALAD'))) {
+            } else if (item.group && (item.group.includes('VEG') || item.group.includes('SALAD'))) {
                 return 'vegetables';
-            } else if (item.name && (item.name.includes('لحم') || item.name.includes('دجاج') || item.name.includes('برجر') || item.name.includes('فيليه') || item.name.includes('شاورما'))) {
+            } else if (item.group && item.group.includes('APPETIZERS')) {
+                return 'appetizers';
+            } else if (item.name && (item.name.includes('لحم') || item.name.includes('دجاج') || item.name.includes('برجر') || item.name.includes('فيليه') || item.name.includes('شاورما') || item.name.includes('كباب') || item.name.includes('تيكا') || item.name.includes('فرايد'))) {
                 return 'meat';
-            } else if (item.name && (item.name.includes('خض') || item.name.includes('سلطة') || item.name.includes('خيار') || item.name.includes('طماطم') || item.name.includes('بصل'))) {
+            } else if (item.name && (item.name.includes('خض') || item.name.includes('خيار') || item.name.includes('طماطم') || item.name.includes('بصل') || item.name.includes('جزر') || item.name.includes('فلفل') || item.name.includes('بقدونس') || item.name.includes('ليمون') || item.name.includes('برتقال') || item.name.includes('خس'))) {
                 return 'vegetables';
+            } else if (item.name && (item.name.includes('حمص') || item.name.includes('متبل') || item.name.includes('فتوش') || item.name.includes('تبولة') || item.name.includes('سلطة') || item.name.includes('جرجير') || item.name.includes('كول سلو') || item.name.includes('لبن') || item.name.includes('لبنة') || item.name.includes('بيض') || item.name.includes('أرز') || item.name.includes('بوري') || item.name.includes('صوص') || item.name.includes('صلصة') || item.name.includes('مايونيز') || item.name.includes('كاتشب') || item.name.includes('بهارات') || item.name.includes('ملح') || item.name.includes('سكر') || item.name.includes('زيت'))) {
+                return 'appetizers';
             }
             return 'other';
         }
@@ -1222,7 +1412,7 @@
                     multiplier = parseFloat(numMatch[1]);
                     
                     // إذا كانت تحتوي على كيلو أو كجم، حول إلى جرام
-                    if (vendorUOMUpper.includes('KILO') || vendorUOMUpper.includes('KG') || vendorUOMUpper.includes('كجم') || vendorUOMUpper.includes('كيلو')) {
+                    if (vendorUOMUpper.includes('KILO') || vendorUOMUpper.includes('KG') || vendorUOMUpper.includes('كجم') || vendorUOMUpper.includes('كيلo')) {
                         multiplier *= 1000;
                     }
                     // إذا كانت تحتوي على لتر، حول إلى مليلتر
@@ -1275,7 +1465,7 @@
                     const usageQty = convertToSmallestUnit(item['Usage Qty'] || 0, vendorUOM, uuom);
                     const notConOrders = convertToSmallestUnit(item['Not Con. Orders'] || 0, vendorUOM, uuom);
                     
-                    // تحديد المجموعة بناءً على Group واسم الصنف
+                    // تحديد المجموعة بناءً على Group واسم الصنف (محدث لفصل المقبلات)
                     const group = getItemGroup({
                         group: item.Group,
                         name: item.RMName
@@ -1310,6 +1500,38 @@
                 showNotification('تم تحميل البيانات بنجاح!');
             };
             reader.readAsArrayBuffer(file);
+        });
+
+        // تحميل الأصناف الأساسية
+        document.getElementById('load-default-items').addEventListener('click', function() {
+            // إضافة الأصناف الأساسية إلى inventoryData
+            defaultItems.forEach(defaultItem => {
+                // تجنب التكرار
+                if (!inventoryData.find(item => item.code === defaultItem.code)) {
+                    inventoryData.push({
+                        code: defaultItem.code,
+                        name: defaultItem.name,
+                        vendorUOM: "KG",
+                        stockQty: 0,
+                        uuom: "جرام",
+                        smallestUnitQty: 0,
+                        group: defaultItem.group,
+                        selected: true,
+                        actualCount: 0,
+                        difference: 0
+                    });
+                }
+            });
+            
+            // تحديث الأصناف المختارة
+            selectedItems = inventoryData.filter(item => item.selected);
+            
+            // تحديث الواجهة
+            updateInventoryTable();
+            updateStats();
+            
+            // إظهار إشعار
+            showNotification('تم تحميل الأصناف الأساسية بنجاح! تم اختيار ' + defaultItems.length + ' صنف للجرد.');
         });
 
         // تحديث جدول الأصناف
@@ -1509,11 +1731,13 @@
                 const targetId = this.getAttribute('data-target');
                 document.getElementById(targetId).classList.add('active');
                 
-                // إذا كان القسم هو جرد اللحوم أو الخضروات، قم بتحديث العرض
+                // إذا كان القسم هو جرد اللحوم أو الخضروات أو المقبلات، قم بتحديث العرض
                 if (targetId === 'meat-section') {
                     updateMeatInventory();
                 } else if (targetId === 'veg-section') {
                     updateVegInventory();
+                } else if (targetId === 'appetizers-section') {
+                    updateAppetizersInventory();
                 } else if (targetId === 'settings-section') {
                     updateRestaurantsTable();
                 }
@@ -1580,9 +1804,9 @@
                         <th>اسم الصنف</th>
                         <th>الشد</th>
                         <th>الجرد من البرنامج</th>
-                        <th>الجرد بالوحدة الصغرى</th>
+                        <th class="count-cell">الجرد بالوحدة الصغرى</th>
                         <th>الجرد الفعلي</th>
-                        <th>العجز/الزيادة</th>
+                        <th class="difference-cell">العجز/الزيادة</th>
                     </tr>
                 `;
                 table.appendChild(thead);
@@ -1593,17 +1817,22 @@
                 groupedItems[group].forEach((item, index) => {
                     const row = document.createElement('tr');
                     
+                    // تحديد لون الفرق
+                    const difference = item.difference || 0;
+                    const differenceClass = difference < 0 ? 'difference-negative' : 
+                                           difference > 0 ? 'difference-positive' : '';
+                    
                     row.innerHTML = `
                         <td>${index + 1}</td>
                         <td>${item.name}</td>
                         <td>${item.vendorUOM}</td>
                         <td>${item.stockQty}</td>
-                        <td>${item.smallestUnitQty}</td>
+                        <td class="count-cell">${item.smallestUnitQty}</td>
                         <td>
                             <input type="number" class="actual-count-input" data-code="${item.code}" 
                                    value="${item.actualCount || ''}" placeholder="0">
                         </td>
-                        <td class="difference-cell" data-code="${item.code}">${item.difference || 0}</td>
+                        <td class="difference-cell ${differenceClass}" data-code="${item.code}" style="font-size: 18px; font-weight: bold;">${difference}</td>
                     `;
                     
                     tbody.appendChild(row);
@@ -1614,9 +1843,20 @@
                         const actualCount = parseFloat(this.value) || 0;
                         const difference = actualCount - item.smallestUnitQty;
                         
-                        // تحديث الفرق في الخلية
+                        // تحديث الفرق في الخلية مع التلوين
                         const differenceCell = document.querySelector(`.difference-cell[data-code="${item.code}"]`);
                         differenceCell.textContent = Math.round(difference);
+                        
+                        // تحديث اللون بناءً على القيمة
+                        if (difference < 0) {
+                            differenceCell.classList.remove('difference-positive');
+                            differenceCell.classList.add('difference-negative');
+                        } else if (difference > 0) {
+                            differenceCell.classList.remove('difference-negative');
+                            differenceCell.classList.add('difference-positive');
+                        } else {
+                            differenceCell.classList.remove('difference-negative', 'difference-positive');
+                        }
                         
                         // تحديث بيانات العنصر
                         item.actualCount = actualCount;
@@ -1632,9 +1872,12 @@
                 // صف المجموع
                 const totalRow = document.createElement('tr');
                 totalRow.className = 'group-total';
+                const groupTotalValue = groupedItems[group].reduce((sum, item) => sum + (item.difference || 0), 0);
+                const groupTotalClass = groupTotalValue < 0 ? 'difference-negative' : 
+                                       groupTotalValue > 0 ? 'difference-positive' : '';
                 totalRow.innerHTML = `
                     <td colspan="6">إجمالي ${group}</td>
-                    <td class="group-total-cell" data-group="${group}">${groupedItems[group].reduce((sum, item) => sum + (item.difference || 0), 0)}</td>
+                    <td class="group-total-cell ${groupTotalClass}" data-group="${group}" style="font-size: 18px; font-weight: bold;">${groupTotalValue}</td>
                 `;
                 table.appendChild(totalRow);
                 
@@ -1663,14 +1906,14 @@
             vegItems.forEach(item => {
                 // تحديد المجموعة الفرعية بناءً على اسم الصنف
                 let subGroup = 'أخرى';
-                if (item.name && item.name.includes('سلطة')) {
-                    subGroup = 'سلطات';
-                } else if (item.name && (item.name.includes('خض') || item.name.includes('خيار') || item.name.includes('طماطم') || item.name.includes('بصل'))) {
-                    subGroup = 'خضروات';
-                } else if (item.name && (item.name.includes('حمص') || item.name.includes('متبل'))) {
-                    subGroup = 'مقبلات';
-                } else if (item.name && (item.name.includes('صوص') || item.name.includes('صلصة'))) {
-                    subGroup = 'صلصات';
+                if (item.name && (item.name.includes('خيار') || item.name.includes('طماطم') || item.name.includes('بصل'))) {
+                    subGroup = 'خضروات أساسية';
+                } else if (item.name && (item.name.includes('فلفل') || item.name.includes('جزر') || item.name.includes('بقدونس'))) {
+                    subGroup = 'خضروات متنوعة';
+                } else if (item.name && (item.name.includes('ليمون') || item.name.includes('برتقال'))) {
+                    subGroup = 'حمضيات';
+                } else if (item.name && item.name.includes('خس')) {
+                    subGroup = 'أوراق خضراء';
                 }
                 
                 if (!groupedItems[subGroup]) {
@@ -1686,7 +1929,7 @@
                 categoryDiv.className = 'inventory-category';
                 
                 const titleDiv = document.createElement('div');
-                titleDiv.className = 'category-title';
+                titleDiv.className = 'category-title-green';
                 titleDiv.textContent = group;
                 categoryDiv.appendChild(titleDiv);
                 
@@ -1701,9 +1944,9 @@
                         <th>اسم الصنف</th>
                         <th>الشد</th>
                         <th>الجرد من البرنامج</th>
-                        <th>الجرد بالوحدة الصغرى</th>
+                        <th class="count-cell">الجرد بالوحدة الصغرى</th>
                         <th>الجرد الفعلي</th>
-                        <th>العجز/الزيادة</th>
+                        <th class="difference-cell">العجز/الزيادة</th>
                     </tr>
                 `;
                 table.appendChild(thead);
@@ -1713,17 +1956,22 @@
                 groupedItems[group].forEach((item, index) => {
                     const row = document.createElement('tr');
                     
+                    // تحديد لون الفرق
+                    const difference = item.difference || 0;
+                    const differenceClass = difference < 0 ? 'difference-negative' : 
+                                           difference > 0 ? 'difference-positive' : '';
+                    
                     row.innerHTML = `
                         <td>${index + 1}</td>
                         <td>${item.name}</td>
                         <td>${item.vendorUOM}</td>
                         <td>${item.stockQty}</td>
-                        <td>${item.smallestUnitQty}</td>
+                        <td class="count-cell">${item.smallestUnitQty}</td>
                         <td>
                             <input type="number" class="actual-count-input" data-code="${item.code}" 
                                    value="${item.actualCount || ''}" placeholder="0">
                         </td>
-                        <td class="difference-cell" data-code="${item.code}">${item.difference || 0}</td>
+                        <td class="difference-cell ${differenceClass}" data-code="${item.code}" style="font-size: 18px; font-weight: bold;">${difference}</td>
                     `;
                     
                     tbody.appendChild(row);
@@ -1734,9 +1982,20 @@
                         const actualCount = parseFloat(this.value) || 0;
                         const difference = actualCount - item.smallestUnitQty;
                         
-                        // تحديث الفرق في الخلية
+                        // تحديث الفرق في الخلية مع التلوين
                         const differenceCell = document.querySelector(`.difference-cell[data-code="${item.code}"]`);
                         differenceCell.textContent = Math.round(difference);
+                        
+                        // تحديث اللون بناءً على القيمة
+                        if (difference < 0) {
+                            differenceCell.classList.remove('difference-positive');
+                            differenceCell.classList.add('difference-negative');
+                        } else if (difference > 0) {
+                            differenceCell.classList.remove('difference-negative');
+                            differenceCell.classList.add('difference-positive');
+                        } else {
+                            differenceCell.classList.remove('difference-negative', 'difference-positive');
+                        }
                         
                         // تحديث بيانات العنصر
                         item.actualCount = actualCount;
@@ -1752,9 +2011,159 @@
                 // صف المجموع
                 const totalRow = document.createElement('tr');
                 totalRow.className = 'group-total';
+                const groupTotalValue = groupedItems[group].reduce((sum, item) => sum + (item.difference || 0), 0);
+                const groupTotalClass = groupTotalValue < 0 ? 'difference-negative' : 
+                                       groupTotalValue > 0 ? 'difference-positive' : '';
                 totalRow.innerHTML = `
                     <td colspan="6">إجمالي ${group}</td>
-                    <td class="group-total-cell" data-group="${group}">${groupedItems[group].reduce((sum, item) => sum + (item.difference || 0), 0)}</td>
+                    <td class="group-total-cell ${groupTotalClass}" data-group="${group}" style="font-size: 18px; font-weight: bold;">${groupTotalValue}</td>
+                `;
+                table.appendChild(totalRow);
+                
+                categoryDiv.appendChild(table);
+                container.appendChild(categoryDiv);
+            }
+        }
+
+        // تحديث عرض جرد المقبلات
+        function updateAppetizersInventory() {
+            const container = document.getElementById('appetizers-inventory-container');
+            container.innerHTML = '';
+            
+            // تصفية الأصناف المختارة التي تنتمي للمقبلات
+            const appetizersItems = selectedItems.filter(item => 
+                item.group === 'appetizers'
+            );
+            
+            if (appetizersItems.length === 0) {
+                container.innerHTML = '<p>لم يتم اختيار أي أصناف مقبلات للجرد</p>';
+                return;
+            }
+            
+            // تجميع الأصناف حسب المجموعات الفرعية
+            const groupedItems = {};
+            appetizersItems.forEach(item => {
+                // تحديد المجموعة الفرعية بناءً على اسم الصنف
+                let subGroup = 'أخرى';
+                if (item.name && (item.name.includes('حمص') || item.name.includes('متبل'))) {
+                    subGroup = 'مقبلات أساسية';
+                } else if (item.name && item.name.includes('سلطة')) {
+                    subGroup = 'سلطات';
+                } else if (item.name && (item.name.includes('فتوش') || item.name.includes('تبولة'))) {
+                    subGroup = 'سلطات عربية';
+                } else if (item.name && (item.name.includes('كول سلو') || item.name.includes('جرجير'))) {
+                    subGroup = 'سلطات متنوعة';
+                } else if (item.name && (item.name.includes('أرز') || item.name.includes('بوري'))) {
+                    subGroup = 'أرز وبوري';
+                } else if (item.name && (item.name.includes('صوص') || item.name.includes('صلصة') || item.name.includes('مايونيز') || item.name.includes('كاتشب'))) {
+                    subGroup = 'صلصات وبهارات';
+                } else if (item.name && (item.name.includes('لبن') || item.name.includes('لبنة'))) {
+                    subGroup = 'مشتقات الحليب';
+                } else if (item.name && item.name.includes('بيض')) {
+                    subGroup = 'أصناف متنوعة';
+                }
+                
+                if (!groupedItems[subGroup]) {
+                    groupedItems[subGroup] = [];
+                }
+                
+                groupedItems[subGroup].push(item);
+            });
+            
+            // عرض الأصناف المجمعة في جدول
+            for (const group in groupedItems) {
+                const categoryDiv = document.createElement('div');
+                categoryDiv.className = 'inventory-category';
+                
+                const titleDiv = document.createElement('div');
+                titleDiv.className = 'category-title-orange';
+                titleDiv.textContent = group;
+                categoryDiv.appendChild(titleDiv);
+                
+                const table = document.createElement('table');
+                table.className = 'inventory-table';
+                
+                // رأس الجدول
+                const thead = document.createElement('thead');
+                thead.innerHTML = `
+                    <tr>
+                        <th>م</th>
+                        <th>اسم الصنف</th>
+                        <th>الشد</th>
+                        <th>الجرد من البرنامج</th>
+                        <th class="count-cell">الجرد بالوحدة الصغرى</th>
+                        <th>الجرد الفعلي</th>
+                        <th class="difference-cell">العجز/الزيادة</th>
+                    </tr>
+                `;
+                table.appendChild(thead);
+                
+                const tbody = document.createElement('tbody');
+                
+                groupedItems[group].forEach((item, index) => {
+                    const row = document.createElement('tr');
+                    
+                    // تحديد لون الفرق
+                    const difference = item.difference || 0;
+                    const differenceClass = difference < 0 ? 'difference-negative' : 
+                                           difference > 0 ? 'difference-positive' : '';
+                    
+                    row.innerHTML = `
+                        <td>${index + 1}</td>
+                        <td>${item.name}</td>
+                        <td>${item.vendorUOM}</td>
+                        <td>${item.stockQty}</td>
+                        <td class="count-cell">${item.smallestUnitQty}</td>
+                        <td>
+                            <input type="number" class="actual-count-input" data-code="${item.code}" 
+                                   value="${item.actualCount || ''}" placeholder="0">
+                        </td>
+                        <td class="difference-cell ${differenceClass}" data-code="${item.code}" style="font-size: 18px; font-weight: bold;">${difference}</td>
+                    `;
+                    
+                    tbody.appendChild(row);
+                    
+                    // إضافة مستمع حدث لحساب الفرق
+                    const input = row.querySelector('.actual-count-input');
+                    input.addEventListener('input', function() {
+                        const actualCount = parseFloat(this.value) || 0;
+                        const difference = actualCount - item.smallestUnitQty;
+                        
+                        // تحديث الفرق في الخلية مع التلوين
+                        const differenceCell = document.querySelector(`.difference-cell[data-code="${item.code}"]`);
+                        differenceCell.textContent = Math.round(difference);
+                        
+                        // تحديث اللون بناءً على القيمة
+                        if (difference < 0) {
+                            differenceCell.classList.remove('difference-positive');
+                            differenceCell.classList.add('difference-negative');
+                        } else if (difference > 0) {
+                            differenceCell.classList.remove('difference-negative');
+                            differenceCell.classList.add('difference-positive');
+                        } else {
+                            differenceCell.classList.remove('difference-negative', 'difference-positive');
+                        }
+                        
+                        // تحديث بيانات العنصر
+                        item.actualCount = actualCount;
+                        item.difference = Math.round(difference);
+                        
+                        // إعادة حساب المجموع
+                        updateGroupTotal(group, groupedItems[group]);
+                    });
+                });
+                
+                table.appendChild(tbody);
+                
+                // صف المجموع
+                const totalRow = document.createElement('tr');
+                totalRow.className = 'group-total';
+                const groupTotalValue = groupedItems[group].reduce((sum, item) => sum + (item.difference || 0), 0);
+                const groupTotalClass = groupTotalValue < 0 ? 'difference-negative' : 
+                                       groupTotalValue > 0 ? 'difference-positive' : '';
+                totalRow.innerHTML = `
+                    <td colspan="6">إجمالي ${group}</td>
+                    <td class="group-total-cell ${groupTotalClass}" data-group="${group}" style="font-size: 18px; font-weight: bold;">${groupTotalValue}</td>
                 `;
                 table.appendChild(totalRow);
                 
@@ -1769,6 +2178,17 @@
             const totalCell = document.querySelector(`.group-total-cell[data-group="${group}"]`);
             if (totalCell) {
                 totalCell.textContent = Math.round(total);
+                
+                // تحديث اللون بناءً على القيمة
+                if (total < 0) {
+                    totalCell.classList.remove('difference-positive');
+                    totalCell.classList.add('difference-negative');
+                } else if (total > 0) {
+                    totalCell.classList.remove('difference-negative');
+                    totalCell.classList.add('difference-positive');
+                } else {
+                    totalCell.classList.remove('difference-negative', 'difference-positive');
+                }
             }
         }
 
@@ -1790,14 +2210,9 @@
             });
         }
 
-        // تحميل الأصناف الأساسية
-        document.getElementById('load-default-items').addEventListener('click', function() {
-            showNotification('يتم استخدام البيانات من ملف Excel مباشرة');
-        });
-
         // ================= دالة حفظ PDF محسنة =================
         async function generatePDF(sectionType) {
-            // sectionType: 'meat' أو 'veg'
+            // sectionType: 'meat' أو 'veg' أو 'appetizers'
             
             if (!window.jspdf || !window.html2canvas) {
                 showNotification('مكتبات PDF غير محملة. يرجى تحديث الصفحة.');
@@ -1820,13 +2235,20 @@
                     areaManager = document.getElementById('meat-area-manager').textContent;
                     operationsManager = document.getElementById('meat-operations-manager').textContent;
                     title = 'جرد أصناف اللحوم';
-                } else {
+                } else if (sectionType === 'veg') {
                     items = selectedItems.filter(item => item.group === 'vegetables');
                     restaurantName = document.getElementById('veg-restaurant-search').value;
                     responsibleName = document.getElementById('veg-responsible').value;
                     areaManager = document.getElementById('veg-area-manager').textContent;
                     operationsManager = document.getElementById('veg-operations-manager').textContent;
                     title = 'جرد أصناف الخضروات';
+                } else {
+                    items = selectedItems.filter(item => item.group === 'appetizers');
+                    restaurantName = document.getElementById('appetizers-restaurant-search').value;
+                    responsibleName = document.getElementById('appetizers-responsible').value;
+                    areaManager = document.getElementById('appetizers-area-manager').textContent;
+                    operationsManager = document.getElementById('appetizers-operations-manager').textContent;
+                    title = 'جرد أصناف المقبلات';
                 }
                 
                 if (items.length === 0) {
@@ -1885,15 +2307,33 @@
                         } else if (item.name && item.name.includes('جناح')) {
                             subGroup = 'جناح';
                         }
+                    } else if (sectionType === 'veg') {
+                        if (item.name && (item.name.includes('خيار') || item.name.includes('طماطم') || item.name.includes('بصل'))) {
+                            subGroup = 'خضروات أساسية';
+                        } else if (item.name && (item.name.includes('فلفل') || item.name.includes('جزر') || item.name.includes('بقدونس'))) {
+                            subGroup = 'خضروات متنوعة';
+                        } else if (item.name && (item.name.includes('ليمون') || item.name.includes('برتقال'))) {
+                            subGroup = 'حمضيات';
+                        } else if (item.name && item.name.includes('خس')) {
+                            subGroup = 'أوراق خضراء';
+                        }
                     } else {
-                        if (item.name && item.name.includes('سلطة')) {
+                        if (item.name && (item.name.includes('حمص') || item.name.includes('متبل'))) {
+                            subGroup = 'مقبلات أساسية';
+                        } else if (item.name && item.name.includes('سلطة')) {
                             subGroup = 'سلطات';
-                        } else if (item.name && (item.name.includes('خض') || item.name.includes('خيار') || item.name.includes('طماطم') || item.name.includes('بصل'))) {
-                            subGroup = 'خضروات';
-                        } else if (item.name && (item.name.includes('حمص') || item.name.includes('متبل'))) {
-                            subGroup = 'مقبلات';
-                        } else if (item.name && (item.name.includes('صوص') || item.name.includes('صلصة'))) {
-                            subGroup = 'صلصات';
+                        } else if (item.name && (item.name.includes('فتوش') || item.name.includes('تبولة'))) {
+                            subGroup = 'سلطات عربية';
+                        } else if (item.name && (item.name.includes('كول سلو') || item.name.includes('جرجير'))) {
+                            subGroup = 'سلطات متنوعة';
+                        } else if (item.name && (item.name.includes('أرز') || item.name.includes('بوري'))) {
+                            subGroup = 'أرز وبوري';
+                        } else if (item.name && (item.name.includes('صوص') || item.name.includes('صلصة') || item.name.includes('مايونيز') || item.name.includes('كاتشب'))) {
+                            subGroup = 'صلصات وبهارات';
+                        } else if (item.name && (item.name.includes('لبن') || item.name.includes('لبنة'))) {
+                            subGroup = 'مشتقات الحليب';
+                        } else if (item.name && item.name.includes('بيض')) {
+                            subGroup = 'أصناف متنوعة';
                         }
                     }
                     
@@ -1909,21 +2349,24 @@
                 let totalDifference = 0;
                 
                 for (const group in groupedItems) {
+                    const groupColor = sectionType === 'meat' ? 'var(--primary)' : 
+                                     sectionType === 'veg' ? 'var(--accent-green)' : 'var(--accent-orange)';
+                    
                     contentHTML += `
                         <div style="margin-bottom: 15px;">
-                            <div style="background: var(--primary); color: white; padding: 8px; border-radius: 4px; margin-bottom: 8px; font-weight: bold;">
+                            <div style="background: ${groupColor}; color: white; padding: 8px; border-radius: 4px; margin-bottom: 8px; font-weight: bold;">
                                 ${group}
                             </div>
-                            <table style="width: 100%; border-collapse: collapse; font-size: 10px; margin-bottom: 10px;">
+                            <table style="width: 100%; border-collapse: collapse; font-size: 11px; margin-bottom: 10px;">
                                 <thead>
                                     <tr style="background: #EFF6FF;">
                                         <th style="border: 1px solid #ddd; padding: 6px; text-align: center; width: 5%;">م</th>
                                         <th style="border: 1px solid #ddd; padding: 6px; text-align: center; width: 35%;">اسم الصنف</th>
                                         <th style="border: 1px solid #ddd; padding: 6px; text-align: center; width: 10%;">الشد</th>
                                         <th style="border: 1px solid #ddd; padding: 6px; text-align: center; width: 12%;">جرد البرنامج</th>
-                                        <th style="border: 1px solid #ddd; padding: 6px; text-align: center; width: 12%;">جرد الوحدة الصغرى</th>
-                                        <th style="border: 1px solid #ddd; padding: 6px; text-align: center; width: 12%;">الجرد الفعلي</th>
-                                        <th style="border: 1px solid #ddd; padding: 6px; text-align: center; width: 14%;">العجز/الزيادة</th>
+                                        <th style="border: 1px solid #ddd; padding: 6px; text-align: center; width: 12%; font-weight: bold; font-size: 12px;">جرد الوحدة الصغرى</th>
+                                        <th style="border: 1px solid #ddd; padding: 6px; text-align: center; width: 12%; font-weight: bold; font-size: 12px;">الجرد الفعلي</th>
+                                        <th style="border: 1px solid #ddd; padding: 6px; text-align: center; width: 14%; font-weight: bold; font-size: 12px;">العجز/الزيادة</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -1941,9 +2384,9 @@
                                 <td style="border: 1px solid #ddd; padding: 5px;">${item.name}</td>
                                 <td style="border: 1px solid #ddd; padding: 5px; text-align: center;">${item.vendorUOM}</td>
                                 <td style="border: 1px solid #ddd; padding: 5px; text-align: center;">${item.stockQty}</td>
-                                <td style="border: 1px solid #ddd; padding: 5px; text-align: center; font-weight: bold; font-size: 12px;">${item.smallestUnitQty}</td>
-                                <td style="border: 1px solid #ddd; padding: 5px; text-align: center;">${item.actualCount || 0}</td>
-                                <td style="border: 1px solid #ddd; padding: 5px; text-align: center; color: ${difference < 0 ? 'red' : difference > 0 ? 'green' : 'var(--primary)'};">
+                                <td style="border: 1px solid #ddd; padding: 5px; text-align: center; font-weight: bold; font-size: 13px;">${item.smallestUnitQty}</td>
+                                <td style="border: 1px solid #ddd; padding: 5px; text-align: center; font-weight: bold; font-size: 13px;">${item.actualCount || 0}</td>
+                                <td style="border: 1px solid #ddd; padding: 5px; text-align: center; font-weight: bold; font-size: 13px; color: ${difference < 0 ? 'red' : difference > 0 ? 'green' : 'var(--primary)'};">
                                     ${difference}
                                 </td>
                             </tr>
@@ -1957,7 +2400,7 @@
                                 <tfoot>
                                     <tr style="background: #f9f9f9; font-weight: bold;">
                                         <td colspan="6" style="border: 1px solid #ddd; padding: 6px; text-align: right;">إجمالي ${group}</td>
-                                        <td style="border: 1px solid #ddd; padding: 6px; text-align: center; color: ${groupDifference < 0 ? 'red' : groupDifference > 0 ? 'green' : 'var(--primary)'};">${groupDifference}</td>
+                                        <td style="border: 1px solid #ddd; padding: 6px; text-align: center; font-weight: bold; font-size: 13px; color: ${groupDifference < 0 ? 'red' : groupDifference > 0 ? 'green' : 'var(--primary)'};">${groupDifference}</td>
                                     </tr>
                                 </tfoot>
                             </table>
@@ -1969,7 +2412,7 @@
                 contentHTML += `
                     <div style="margin-top: 20px; padding: 10px; background: #EFF6FF; border-radius: 4px; text-align: center; font-weight: bold; border: 1px solid var(--primary);">
                         <div style="font-size: 14px;">الإجمالي الكلي: 
-                            <span style="color: ${totalDifference < 0 ? 'red' : totalDifference > 0 ? 'green' : 'var(--primary)'}; font-size: 16px;">
+                            <span style="color: ${totalDifference < 0 ? 'red' : totalDifference > 0 ? 'green' : 'var(--primary)'}; font-size: 16px; font-weight: bold;">
                                 ${totalDifference}
                             </span>
                         </div>
@@ -2033,7 +2476,7 @@
                 
                 // تنظيف اسم الملف
                 const cleanRestaurantName = restaurantName.replace(/[^\w\u0600-\u06FF\s]/g, '') || 'غير-محدد';
-                const cleanType = sectionType === 'meat' ? 'اللحوم' : 'الخضروات';
+                const cleanType = sectionType === 'meat' ? 'اللحوم' : sectionType === 'veg' ? 'الخضروات' : 'المقبلات';
                 const fileName = `جرد_${cleanType}_${cleanRestaurantName}.pdf`;
                 
                 // حفظ ملف PDF
@@ -2057,45 +2500,100 @@
             generatePDF('veg');
         });
 
-        // تصدير إلى Excel (لجرد اللحوم)
-        document.getElementById('generate-meat-excel').addEventListener('click', function() {
-            // جمع بيانات الجرد
-            const meatItems = selectedItems.filter(item => 
-                item.group === 'meat'
-            );
+        // تصدير إلى PDF (لجرد المقبلات)
+        document.getElementById('generate-appetizers-pdf').addEventListener('click', function() {
+            generatePDF('appetizers');
+        });
+
+        // تصدير إلى Excel مع تنسيق محسن
+        function generateExcel(sectionType, buttonId) {
+            let items = [];
+            let restaurantName = '';
+            let responsibleName = '';
+            let title = '';
+            let fileName = '';
             
-            if (meatItems.length === 0) {
+            if (sectionType === 'meat') {
+                items = selectedItems.filter(item => item.group === 'meat');
+                restaurantName = document.getElementById('meat-restaurant-search').value;
+                responsibleName = document.getElementById('meat-responsible').value;
+                title = 'جرد أصناف اللحوم';
+                fileName = 'جرد_اللحوم.xlsx';
+            } else if (sectionType === 'veg') {
+                items = selectedItems.filter(item => item.group === 'vegetables');
+                restaurantName = document.getElementById('veg-restaurant-search').value;
+                responsibleName = document.getElementById('veg-responsible').value;
+                title = 'جرد أصناف الخضروات';
+                fileName = 'جرد_الخضروات.xlsx';
+            } else {
+                items = selectedItems.filter(item => item.group === 'appetizers');
+                restaurantName = document.getElementById('appetizers-restaurant-search').value;
+                responsibleName = document.getElementById('appetizers-responsible').value;
+                title = 'جرد أصناف المقبلات';
+                fileName = 'جرد_المقبلات.xlsx';
+            }
+            
+            if (items.length === 0) {
                 showNotification('لا توجد بيانات للتصدير');
                 return;
             }
             
-            // تحويل البيانات إلى تنسيق Excel
+            // تحويل البيانات إلى تنسيق Excel مع تنسيق محسن
             const data = [];
             
-            // إضافة رؤوس الجداول
-            const restaurantInput = document.getElementById('meat-restaurant-search');
-            const restaurant = restaurantInput.value || 'غير محدد';
-            const responsible = document.getElementById('meat-responsible').value || 'غير محدد';
-            
-            data.push(['جرد أصناف اللحوم']);
-            data.push([`المطعم: ${restaurant}`]);
-            data.push([`المسئول: ${responsible}`]);
+            // العنوان الرئيسي
+            data.push([title]);
+            data.push([]);
+            data.push([`المطعم: ${restaurantName || 'غير محدد'}`]);
+            data.push([`المسئول: ${responsibleName || 'غير محدد'}`]);
+            data.push([`تاريخ الإصدار: ${new Date().toLocaleDateString('ar-SA')}`]);
             data.push([]);
             
-            // تجميع البيانات حسب المجموعات
+            // تجميع الأصناف حسب المجموعات
             const groupedItems = {};
-            meatItems.forEach(item => {
+            items.forEach(item => {
                 let subGroup = 'أخرى';
-                if (item.name && (item.name.includes('فيليه') || item.name.includes('فيلية'))) {
-                    subGroup = 'فيليه';
-                } else if (item.name && item.name.includes('برجر')) {
-                    subGroup = 'برجر';
-                } else if (item.name && (item.name.includes('دجاج') || item.name.includes('شاورما'))) {
-                    subGroup = 'دجاج';
-                } else if (item.name && item.name.includes('لحم')) {
-                    subGroup = 'لحم';
-                } else if (item.name && item.name.includes('جناح')) {
-                    subGroup = 'جناح';
+                
+                if (sectionType === 'meat') {
+                    if (item.name && (item.name.includes('فيليه') || item.name.includes('فيلية'))) {
+                        subGroup = 'فيليه';
+                    } else if (item.name && item.name.includes('برجر')) {
+                        subGroup = 'برجر';
+                    } else if (item.name && (item.name.includes('دجاج') || item.name.includes('شاورما'))) {
+                        subGroup = 'دجاج';
+                    } else if (item.name && item.name.includes('لحم')) {
+                        subGroup = 'لحم';
+                    } else if (item.name && item.name.includes('جناح')) {
+                        subGroup = 'جناح';
+                    }
+                } else if (sectionType === 'veg') {
+                    if (item.name && (item.name.includes('خيار') || item.name.includes('طماطم') || item.name.includes('بصل'))) {
+                        subGroup = 'خضروات أساسية';
+                    } else if (item.name && (item.name.includes('فلفل') || item.name.includes('جزر') || item.name.includes('بقدونس'))) {
+                        subGroup = 'خضروات متنوعة';
+                    } else if (item.name && (item.name.includes('ليمون') || item.name.includes('برتقال'))) {
+                        subGroup = 'حمضيات';
+                    } else if (item.name && item.name.includes('خس')) {
+                        subGroup = 'أوراق خضراء';
+                    }
+                } else {
+                    if (item.name && (item.name.includes('حمص') || item.name.includes('متبل'))) {
+                        subGroup = 'مقبلات أساسية';
+                    } else if (item.name && item.name.includes('سلطة')) {
+                        subGroup = 'سلطات';
+                    } else if (item.name && (item.name.includes('فتوش') || item.name.includes('تبولة'))) {
+                        subGroup = 'سلطات عربية';
+                    } else if (item.name && (item.name.includes('كول سلو') || item.name.includes('جرجير'))) {
+                        subGroup = 'سلطات متنوعة';
+                    } else if (item.name && (item.name.includes('أرز') || item.name.includes('بوري'))) {
+                        subGroup = 'أرز وبوري';
+                    } else if (item.name && (item.name.includes('صوص') || item.name.includes('صلصة') || item.name.includes('مايونيز') || item.name.includes('كاتشب'))) {
+                        subGroup = 'صلصات وبهارات';
+                    } else if (item.name && (item.name.includes('لبن') || item.name.includes('لبنة'))) {
+                        subGroup = 'مشتقات الحليب';
+                    } else if (item.name && item.name.includes('بيض')) {
+                        subGroup = 'أصناف متنوعة';
+                    }
                 }
                 
                 if (!groupedItems[subGroup]) {
@@ -2105,8 +2603,9 @@
                 groupedItems[subGroup].push(item);
             });
             
-            // إضافة البيانات المجمعة
+            // إضافة البيانات المجمعة مع تنسيق
             for (const group in groupedItems) {
+                data.push([]);
                 data.push([group]);
                 data.push(['م', 'اسم الصنف', 'الشد', 'الجرد من البرنامج', 'الجرد بالوحدة الصغرى', 'الجرد الفعلي', 'العجز/الزيادة']);
                 
@@ -2122,110 +2621,94 @@
                     ]);
                 });
                 
-                // إضافة صف فارغ بين المجموعات
+                // حساب إجمالي المجموعة
+                const groupTotal = groupedItems[group].reduce((sum, item) => sum + (item.difference || 0), 0);
+                data.push(['', '', '', '', '', 'إجمالي ' + group, groupTotal]);
                 data.push([]);
             }
             
-            // إنشاء ورقة عمل
+            // إنشاء ورقة عمل مع تنسيق
             const ws = XLSX.utils.aoa_to_sheet(data);
+            
+            // تحديد عرض الأعمدة
+            const wscols = [
+                { wch: 5 },   // العمود الأول: م
+                { wch: 35 },  // العمود الثاني: اسم الصنف
+                { wch: 10 },  // العمود الثالث: الشد
+                { wch: 15 },  // العمود الرابع: الجرد من البرنامج
+                { wch: 18 },  // العمود الخامس: الجرد بالوحدة الصغرى
+                { wch: 15 },  // العمود السادس: الجرد الفعلي
+                { wch: 15 }   // العمود السابع: العجز/الزيادة
+            ];
+            ws['!cols'] = wscols;
+            
+            // إنشاء مصنف وإضافة الورقة
             const wb = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(wb, ws, 'جرد اللحوم');
+            XLSX.utils.book_append_sheet(wb, ws, title.substring(0, 31)); // تقليل العنوان ليتناسب مع اسم الورقة
             
             // تصدير الملف
-            XLSX.writeFile(wb, 'جرد_اللحوم.xlsx');
+            XLSX.writeFile(wb, fileName);
+            
+            showNotification('تم تصدير ملف Excel بنجاح!');
+        }
+
+        // تصدير إلى Excel (لجرد اللحوم)
+        document.getElementById('generate-meat-excel').addEventListener('click', function() {
+            generateExcel('meat', 'generate-meat-excel');
         });
 
         // تصدير إلى Excel (لجرد الخضروات)
         document.getElementById('generate-veg-excel').addEventListener('click', function() {
-            // جمع بيانات الجرد
-            const vegItems = selectedItems.filter(item => 
-                item.group === 'vegetables'
-            );
-            
-            if (vegItems.length === 0) {
-                showNotification('لا توجد بيانات للتصدير');
-                return;
-            }
-            
-            // تحويل البيانات إلى تنسيق Excel
-            const data = [];
-            
-            // إضافة رؤوس الجداول
-            const restaurantInput = document.getElementById('veg-restaurant-search');
-            const restaurant = restaurantInput.value || 'غير محدد';
-            const responsible = document.getElementById('veg-responsible').value || 'غير محدد';
-            
-            data.push(['جرد أصناف الخضروات']);
-            data.push([`المطعم: ${restaurant}`]);
-            data.push([`المسئول: ${responsible}`]);
-            data.push([]);
-            
-            // تجميع البيانات حسب المجموعات
-            const groupedItems = {};
-            vegItems.forEach(item => {
-                let subGroup = 'أخرى';
-                if (item.name && item.name.includes('سلطة')) {
-                    subGroup = 'سلطات';
-                } else if (item.name && (item.name.includes('خض') || item.name.includes('خيار') || item.name.includes('طماطم') || item.name.includes('بصل'))) {
-                    subGroup = 'خضروات';
-                } else if (item.name && (item.name.includes('حمص') || item.name.includes('متبل'))) {
-                    subGroup = 'مقبلات';
-                } else if (item.name && (item.name.includes('صوص') || item.name.includes('صلصة'))) {
-                    subGroup = 'صلصات';
-                }
-                
-                if (!groupedItems[subGroup]) {
-                    groupedItems[subGroup] = [];
-                }
-                
-                groupedItems[subGroup].push(item);
-            });
-            
-            // إضافة البيانات المجمعة
-            for (const group in groupedItems) {
-                data.push([group]);
-                data.push(['م', 'اسم الصنف', 'الشد', 'الجرد من البرنامج', 'الجرد بالوحدة الصغرى', 'الجرد الفعلي', 'العجز/الزيادة']);
-                
-                groupedItems[group].forEach((item, index) => {
-                    data.push([
-                        index + 1,
-                        item.name,
-                        item.vendorUOM,
-                        item.stockQty,
-                        item.smallestUnitQty,
-                        item.actualCount || 0,
-                        item.difference || 0
-                    ]);
-                });
-                
-                // إضافة صف فارغ بين المجموعات
-                data.push([]);
-            }
-            
-            // إنشاء ورقة عمل
-            const ws = XLSX.utils.aoa_to_sheet(data);
-            const wb = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(wb, ws, 'جرد الخضروات');
-            
-            // تصدير الملف
-            XLSX.writeFile(wb, 'جرد_الخضروات.xlsx');
+            generateExcel('veg', 'generate-veg-excel');
+        });
+
+        // تصدير إلى Excel (لجرد المقبلات)
+        document.getElementById('generate-appetizers-excel').addEventListener('click', function() {
+            generateExcel('appetizers', 'generate-appetizers-excel');
         });
 
         // إرسال إلى واتساب (لجرد اللحوم)
         document.getElementById('send-meat-whatsapp').addEventListener('click', function() {
             currentWhatsappType = 'meat';
             document.getElementById('whatsapp-modal').style.display = 'flex';
+            // إعادة تعيين ملف الإرفاق
+            whatsappAttachmentFile = null;
+            document.getElementById('attachment-name').textContent = 'لم يتم اختيار ملف';
         });
 
         // إرسال إلى واتساب (لجرد الخضروات)
         document.getElementById('send-veg-whatsapp').addEventListener('click', function() {
             currentWhatsappType = 'veg';
             document.getElementById('whatsapp-modal').style.display = 'flex';
+            // إعادة تعيين ملف الإرفاق
+            whatsappAttachmentFile = null;
+            document.getElementById('attachment-name').textContent = 'لم يتم اختيار ملف';
+        });
+
+        // إرسال إلى واتساب (لجرد المقبلات)
+        document.getElementById('send-appetizers-whatsapp').addEventListener('click', function() {
+            currentWhatsappType = 'appetizers';
+            document.getElementById('whatsapp-modal').style.display = 'flex';
+            // إعادة تعيين ملف الإرفاق
+            whatsappAttachmentFile = null;
+            document.getElementById('attachment-name').textContent = 'لم يتم اختيار ملف';
+        });
+
+        // اختيار ملف للإرفاق
+        document.getElementById('whatsapp-attachment').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                whatsappAttachmentFile = file;
+                document.getElementById('attachment-name').textContent = file.name + ' (' + (file.size / 1024).toFixed(1) + ' KB)';
+            } else {
+                whatsappAttachmentFile = null;
+                document.getElementById('attachment-name').textContent = 'لم يتم اختيار ملف';
+            }
         });
 
         // تأكيد إرسال الواتساب
         document.getElementById('confirm-whatsapp-send').addEventListener('click', function() {
-            const phoneNumber = document.getElementById('whatsapp-number').value;
+            const phoneNumber = document.getElementById('whatsapp-number').value.replace(/\s+/g, '');
             if (!phoneNumber) {
                 showNotification('يرجى إدخال رقم الهاتف');
                 return;
@@ -2246,7 +2729,7 @@
                 items = selectedItems.filter(item => 
                     item.group === 'meat'
                 );
-            } else {
+            } else if (currentWhatsappType === 'veg') {
                 const responsible = document.getElementById('veg-responsible').value || 'غير محدد';
                 const restaurantInput = document.getElementById('veg-restaurant-search');
                 const restaurant = restaurantInput.value || 'غير محدد';
@@ -2258,6 +2741,18 @@
                 items = selectedItems.filter(item => 
                     item.group === 'vegetables'
                 );
+            } else {
+                const responsible = document.getElementById('appetizers-responsible').value || 'غير محدد';
+                const restaurantInput = document.getElementById('appetizers-restaurant-search');
+                const restaurant = restaurantInput.value || 'غير محدد';
+                
+                message = `جرد أصناف المقبلات\n`;
+                message += `المطعم: ${restaurant}\n`;
+                message += `المسئول: ${responsible}\n\n`;
+                
+                items = selectedItems.filter(item => 
+                    item.group === 'appetizers'
+                );
             }
             
             if (items.length === 0) {
@@ -2267,21 +2762,33 @@
             
             // إضافة بيانات الجرد
             items.forEach(item => {
-                message += `${item.name}: ${item.actualCount || 0}\n`;
+                message += `${item.name}: ${item.actualCount || 0} (الفرق: ${item.difference || 0})\n`;
             });
             
+            // إضافة ملخص
+            const totalDifference = items.reduce((sum, item) => sum + (item.difference || 0), 0);
+            message += `\nالإجمالي الكلي: ${totalDifference}`;
+            message += `\nعدد الأصناف: ${items.length}`;
+            
             const encodedMessage = encodeURIComponent(message);
-            window.open(`https://wa.me/${phoneNumber}?text=${encodedMessage}`, '_blank');
+            let whatsappURL = `https://wa.me/${phoneNumber}?text=${encodedMessage}`;
+            
+            // فتح نافذة الواتساب
+            window.open(whatsappURL, '_blank');
             
             // إغلاق النافذة
             document.getElementById('whatsapp-modal').style.display = 'none';
-            document.getElementById('whatsapp-number').value = '';
+            document.getElementById('whatsapp-number').value = '+96567011143';
+            
+            showNotification('تم فتح تطبيق الواتساب لإرسال الرسالة');
         });
 
         // إلغاء إرسال الواتساب
         document.getElementById('cancel-whatsapp-send').addEventListener('click', function() {
             document.getElementById('whatsapp-modal').style.display = 'none';
-            document.getElementById('whatsapp-number').value = '';
+            document.getElementById('whatsapp-number').value = '+96567011143';
+            whatsappAttachmentFile = null;
+            document.getElementById('attachment-name').textContent = 'لم يتم اختيار ملف';
         });
 
         // إظهار الإشعارات
@@ -2408,7 +2915,9 @@
         // إغلاق نافذة الواتساب
         document.getElementById('close-whatsapp-modal').addEventListener('click', function() {
             document.getElementById('whatsapp-modal').style.display = 'none';
-            document.getElementById('whatsapp-number').value = '';
+            document.getElementById('whatsapp-number').value = '+96567011143';
+            whatsappAttachmentFile = null;
+            document.getElementById('attachment-name').textContent = 'لم يتم اختيار ملف';
         });
 
         // إغلاق نافذة البحث عن المطعم
@@ -2433,6 +2942,12 @@
                 restaurantName: 'veg-restaurant-name',
                 areaManager: 'veg-area-manager',
                 operationsManager: 'veg-operations-manager'
+            });
+            
+            setupRestaurantAutocomplete('appetizers-restaurant-search', 'appetizers-restaurant-suggestions', {
+                restaurantName: 'appetizers-restaurant-name',
+                areaManager: 'appetizers-area-manager',
+                operationsManager: 'appetizers-operations-manager'
             });
         });
     </script>
