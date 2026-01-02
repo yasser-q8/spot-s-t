@@ -120,10 +120,18 @@
         .file-upload {
             border: 2px dashed var(--primary);
             border-radius: 8px;
-            padding: 30px;
+            padding: 15px;
             text-align: center;
             margin-bottom: 20px;
             background-color: rgba(30, 58, 138, 0.05);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .file-upload-small {
+            width: 300px;
+            margin: 0 auto;
         }
 
         .file-upload input {
@@ -133,16 +141,24 @@
         .file-upload label {
             background-color: var(--primary);
             color: white;
-            padding: 12px 24px;
+            padding: 10px 20px;
             border-radius: 6px;
             cursor: pointer;
             display: inline-block;
             font-weight: bold;
             transition: all 0.3s;
+            margin-bottom: 10px;
         }
 
         .file-upload label:hover {
             background-color: #1e40af;
+        }
+
+        .upload-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 10px;
         }
 
         .stats-cards {
@@ -246,6 +262,13 @@
 
         .difference-positive {
             color: var(--accent-green) !important;
+        }
+
+        /* إضافة كلمة عجز/زيادة */
+        .difference-text {
+            font-size: 12px !important;
+            font-weight: normal !important;
+            margin-right: 5px;
         }
 
         .action-buttons {
@@ -737,6 +760,15 @@
             .inventory-table td:nth-child(6) {
                 font-size: 16px !important;
             }
+            
+            .file-upload-small {
+                width: 100%;
+            }
+            
+            .upload-buttons {
+                flex-direction: column;
+                gap: 10px;
+            }
         }
     </style>
 </head>
@@ -767,13 +799,15 @@
         <!-- قسم تحميل البيانات -->
         <section id="upload-section" class="section active">
             <h2 style="color: var(--primary); margin-bottom: 20px;">تحميل بيانات الأصناف من ملف Excel</h2>
-            <div class="file-upload">
+            <div class="file-upload file-upload-small">
                 <input type="file" id="excel-file" accept=".xlsx, .xls">
                 <label for="excel-file">اختر ملف Excel</label>
-                <p style="margin-top: 10px; color: var(--primary); font-weight: 200;">Yasser Elkhateeb</p>
-                <button class="btn btn-primary" id="load-default-items" style="margin-top: 15px;">
-                    تحميل الأصناف الأساسية
-                </button>
+                <div class="upload-buttons">
+                    <button class="btn btn-primary" id="load-default-items">
+                        تحميل الأصناف الأساسية
+                    </button>
+                </div>
+                <p style="margin-top: 10px; color: var(--primary); font-weight: 200; font-size: 12px;">Yasser Elkhateeb</p>
             </div>
 
             <div class="stats-cards">
@@ -1116,49 +1150,49 @@
         // بيانات الأصناف الأساسية من ملف الاصناف الاساسية.xlsx
         const defaultItems = [
             // لحوم
-            { code: "K1035", name: "Chicken Big Fillet  ( بيج فيلية)", group: "meat" },
-            { code: "K1036", name: "Chicken Big Fillet Spicy  ( بيج فيلية فلفل)", group: "meat" },
-            { code: "K1008", name: "Chicken Fillet  ( فيليه عادي)", group: "meat" },
-            { code: "K1009", name: "Chicken Fillet Spicy  ( فيليه فلفل)", group: "meat" },
-            { code: "K1016", name: "Ch.Finger Fillet Spicy  ( اصابع فيليه فلفل)", group: "meat" },
-            { code: "K1015", name: "Chicken Finger Fillet  ( اصابع فيليه)", group: "meat" },
-            { code: "K1049", name: "Grilled Chicken Fillet  فيليه مشوي", group: "meat" },
-            { code: "K1020", name: "Royal Grilled Chicken (دجاج شواية ملكي)", group: "meat" },
-            { code: "K1006", name: "Chicken Tikka ( دجاج تكا عادي)", group: "meat" },
-            { code: "K1004", name: "Chicken Tikka Brest ( تكا صدور)", group: "meat" },
-            { code: "K1005", name: "Chicken Tikka Thigh  (تكا فخذ)", group: "meat" },
-            { code: "K1017", name: "Grilled Quils (فري مشوي)", group: "meat" },
-            { code: "K1011", name: "Rooster Junior  ( فروج نايف)", group: "meat" },
-            { code: "K1014", name: "Bint Al-Deek  ( بنت الديك)", group: "meat" },
-            { code: "K1012", name: "Chicken Fried  ( دجاج فرايد عادي)", group: "meat" },
-            { code: "K1013", name: "Chicken Fried Spicy  (دجاج فرايد فلفل)", group: "meat" },
-            { code: "A1007", name: "Beef Burger Big(برجر لحم كبير)", group: "meat" },
-            { code: "A1008", name: "Beef Burger Small(برجر لحم صغير)", group: "meat" },
-            { code: "A1004", name: "Chicken Burger Small  ( برجر دجاج صغير)", group: "meat" },
-            { code: "K1070", name: "Fresh Burger Chickens برجر دجاج طازج", group: "meat" },
-            { code: "K1071", name: "Chicken Small Wings Nor  جناح صغير عادي", group: "meat" },
-            { code: "K1072", name: "Chicken Small Wings Spicy  جناح صغير فلفل", group: "meat" },
-            { code: "K1010", name: "Chicken Wings  جناح متبل", group: "meat" },
-            { code: "K1075", name: "Fillet Pizza Grill / فيلية بيتزا مشوي", group: "meat" },
-            { code: "K1007", name: "Chicken Drum Stick ( درام ستيك)", group: "meat" },
-            { code: "K1039", name: "Drumstic whole Fried  ( وصلة دجاج عادي)", group: "meat" },
-            { code: "K1040", name: "Drumstick whole Fried spicy  ( وصلة دجاج فلفل)", group: "meat" },
+            { code: "K1035", name: "Chicken Big Fillet  ( بيج فيلية)", group: "meat", vendorUOM: "KG", stockQty: 0, uuom: "جرام", smallestUnitQty: 0 },
+            { code: "K1036", name: "Chicken Big Fillet Spicy  ( بيج فيلية فلفل)", group: "meat", vendorUOM: "KG", stockQty: 0, uuom: "جرام", smallestUnitQty: 0 },
+            { code: "K1008", name: "Chicken Fillet  ( فيليه عادي)", group: "meat", vendorUOM: "KG", stockQty: 0, uuom: "جرام", smallestUnitQty: 0 },
+            { code: "K1009", name: "Chicken Fillet Spicy  ( فيليه فلفل)", group: "meat", vendorUOM: "KG", stockQty: 0, uuom: "جرام", smallestUnitQty: 0 },
+            { code: "K1016", name: "Ch.Finger Fillet Spicy  ( اصابع فيليه فلفل)", group: "meat", vendorUOM: "KG", stockQty: 0, uuom: "جرام", smallestUnitQty: 0 },
+            { code: "K1015", name: "Chicken Finger Fillet  ( اصابع فيليه)", group: "meat", vendorUOM: "KG", stockQty: 0, uuom: "جرام", smallestUnitQty: 0 },
+            { code: "K1049", name: "Grilled Chicken Fillet  فيليه مشوي", group: "meat", vendorUOM: "KG", stockQty: 0, uuom: "جرام", smallestUnitQty: 0 },
+            { code: "K1020", name: "Royal Grilled Chicken (دجاج شواية ملكي)", group: "meat", vendorUOM: "KG", stockQty: 0, uuom: "جرام", smallestUnitQty: 0 },
+            { code: "K1006", name: "Chicken Tikka ( دجاج تكا عادي)", group: "meat", vendorUOM: "KG", stockQty: 0, uuom: "جرام", smallestUnitQty: 0 },
+            { code: "K1004", name: "Chicken Tikka Brest ( تكا صدور)", group: "meat", vendorUOM: "KG", stockQty: 0, uuom: "جرام", smallestUnitQty: 0 },
+            { code: "K1005", name: "Chicken Tikka Thigh  (تكا فخذ)", group: "meat", vendorUOM: "KG", stockQty: 0, uuom: "جرام", smallestUnitQty: 0 },
+            { code: "K1017", name: "Grilled Quils (فري مشوي)", group: "meat", vendorUOM: "KG", stockQty: 0, uuom: "جرام", smallestUnitQty: 0 },
+            { code: "K1011", name: "Rooster Junior  ( فروج نايف)", group: "meat", vendorUOM: "KG", stockQty: 0, uuom: "جرام", smallestUnitQty: 0 },
+            { code: "K1014", name: "Bint Al-Deek  ( بنت الديك)", group: "meat", vendorUOM: "KG", stockQty: 0, uuom: "جرام", smallestUnitQty: 0 },
+            { code: "K1012", name: "Chicken Fried  ( دجاج فرايد عادي)", group: "meat", vendorUOM: "KG", stockQty: 0, uuom: "جرام", smallestUnitQty: 0 },
+            { code: "K1013", name: "Chicken Fried Spicy  (دجاج فرايد فلفل)", group: "meat", vendorUOM: "KG", stockQty: 0, uuom: "جرام", smallestUnitQty: 0 },
+            { code: "A1007", name: "Beef Burger Big(برجر لحم كبير)", group: "meat", vendorUOM: "KG", stockQty: 0, uuom: "جرام", smallestUnitQty: 0 },
+            { code: "A1008", name: "Beef Burger Small(برجر لحم صغير)", group: "meat", vendorUOM: "KG", stockQty: 0, uuom: "جرام", smallestUnitQty: 0 },
+            { code: "A1004", name: "Chicken Burger Small  ( برجر دجاج صغير)", group: "meat", vendorUOM: "KG", stockQty: 0, uuom: "جرام", smallestUnitQty: 0 },
+            { code: "K1070", name: "Fresh Burger Chickens برجر دجاج طازج", group: "meat", vendorUOM: "KG", stockQty: 0, uuom: "جرام", smallestUnitQty: 0 },
+            { code: "K1071", name: "Chicken Small Wings Nor  جناح صغير عادي", group: "meat", vendorUOM: "KG", stockQty: 0, uuom: "جرام", smallestUnitQty: 0 },
+            { code: "K1072", name: "Chicken Small Wings Spicy  جناح صغير فلفل", group: "meat", vendorUOM: "KG", stockQty: 0, uuom: "جرام", smallestUnitQty: 0 },
+            { code: "K1010", name: "Chicken Wings  جناح متبل", group: "meat", vendorUOM: "KG", stockQty: 0, uuom: "جرام", smallestUnitQty: 0 },
+            { code: "K1075", name: "Fillet Pizza Grill / فيلية بيتزا مشوي", group: "meat", vendorUOM: "KG", stockQty: 0, uuom: "جرام", smallestUnitQty: 0 },
+            { code: "K1007", name: "Chicken Drum Stick ( درام ستيك)", group: "meat", vendorUOM: "KG", stockQty: 0, uuom: "جرام", smallestUnitQty: 0 },
+            { code: "K1039", name: "Drumstic whole Fried  ( وصلة دجاج عادي)", group: "meat", vendorUOM: "KG", stockQty: 0, uuom: "جرام", smallestUnitQty: 0 },
+            { code: "K1040", name: "Drumstick whole Fried spicy  ( وصلة دجاج فلفل)", group: "meat", vendorUOM: "KG", stockQty: 0, uuom: "جرام", smallestUnitQty: 0 },
             
             // مقبلات
-            { code: "K2035", name: "Fattoush Salad Big  ( سلطة فتوش كبيرة)", group: "appetizers" },
-            { code: "K2014", name: "Fattoush Salad Small  (سلطة فتوش صغيرة)", group: "appetizers" },
-            { code: "K2005", name: "Cole Slaw Big  (كول سلو كبير)", group: "appetizers" },
-            { code: "K2006", name: "Cole Slaw Small  ( كول سلو صغير)", group: "appetizers" },
-            { code: "K2001", name: "Hummus  ( حمص)", group: "appetizers" },
-            { code: "K2020", name: "Hummus large ( ماعون حمص كبير)", group: "appetizers" },
-            { code: "K2009", name: "Laban Naif Small (لبن نايف صغير )", group: "appetizers" },
-            { code: "K2008", name: "Rice&Milk Pudding ( أرز بالحليب)", group: "appetizers" },
-            { code: "K2033", name: "Rocca Salad Big  ( سلطة جرجيركبيرة)", group: "appetizers" },
-            { code: "K2016", name: "Rocca Salad Small  ( سلطة الجرجيرصغيرة)", group: "appetizers" },
-            { code: "K2034", name: "Taboulla Salad Big  ( سلطة تبولة كبيرة)", group: "appetizers" },
-            { code: "K2015", name: "Taboulla Salad Small  ( سلطة تبوله صغيرة)", group: "appetizers" },
-            { code: "K2036", name: "Vegitable Salad Big  ( سلطة خضراء كبيرة)", group: "appetizers" },
-            { code: "K2012", name: "Vegitable Salad Small  ( سلطة خضراء صغيرة)", group: "appetizers" }
+            { code: "K2035", name: "Fattoush Salad Big  ( سلطة فتوش كبيرة)", group: "appetizers", vendorUOM: "علبة", stockQty: 0, uuom: "علبة", smallestUnitQty: 0 },
+            { code: "K2014", name: "Fattoush Salad Small  (سلطة فتوش صغيرة)", group: "appetizers", vendorUOM: "علبة", stockQty: 0, uuom: "علبة", smallestUnitQty: 0 },
+            { code: "K2005", name: "Cole Slaw Big  (كول سلو كبير)", group: "appetizers", vendorUOM: "علبة", stockQty: 0, uuom: "علبة", smallestUnitQty: 0 },
+            { code: "K2006", name: "Cole Slaw Small  ( كول سلو صغير)", group: "appetizers", vendorUOM: "علبة", stockQty: 0, uuom: "علبة", smallestUnitQty: 0 },
+            { code: "K2001", name: "Hummus  ( حمص)", group: "appetizers", vendorUOM: "كيلو", stockQty: 0, uuom: "جرام", smallestUnitQty: 0 },
+            { code: "K2020", name: "Hummus large ( ماعون حمص كبير)", group: "appetizers", vendorUOM: "كيلو", stockQty: 0, uuom: "جرام", smallestUnitQty: 0 },
+            { code: "K2009", name: "Laban Naif Small (لبن نايف صغير )", group: "appetizers", vendorUOM: "علبة", stockQty: 0, uuom: "علبة", smallestUnitQty: 0 },
+            { code: "K2008", name: "Rice&Milk Pudding ( أرز بالحليب)", group: "appetizers", vendorUOM: "علبة", stockQty: 0, uuom: "علبة", smallestUnitQty: 0 },
+            { code: "K2033", name: "Rocca Salad Big  ( سلطة جرجيركبيرة)", group: "appetizers", vendorUOM: "علبة", stockQty: 0, uuom: "علبة", smallestUnitQty: 0 },
+            { code: "K2016", name: "Rocca Salad Small  ( سلطة الجرجيرصغيرة)", group: "appetizers", vendorUOM: "علبة", stockQty: 0, uuom: "علبة", smallestUnitQty: 0 },
+            { code: "K2034", name: "Taboulla Salad Big  ( سلطة تبولة كبيرة)", group: "appetizers", vendorUOM: "علبة", stockQty: 0, uuom: "علبة", smallestUnitQty: 0 },
+            { code: "K2015", name: "Taboulla Salad Small  ( سلطة تبوله صغيرة)", group: "appetizers", vendorUOM: "علبة", stockQty: 0, uuom: "علبة", smallestUnitQty: 0 },
+            { code: "K2036", name: "Vegitable Salad Big  ( سلطة خضراء كبيرة)", group: "appetizers", vendorUOM: "علبة", stockQty: 0, uuom: "علبة", smallestUnitQty: 0 },
+            { code: "K2012", name: "Vegitable Salad Small  ( سلطة خضراء صغيرة)", group: "appetizers", vendorUOM: "علبة", stockQty: 0, uuom: "علبة", smallestUnitQty: 0 }
         ];
         
         // بيانات المطاعم والمدراء
@@ -1502,24 +1536,38 @@
             reader.readAsArrayBuffer(file);
         });
 
-        // تحميل الأصناف الأساسية
+        // تحميل الأصناف الأساسية - الإصلاح
         document.getElementById('load-default-items').addEventListener('click', function() {
             // إضافة الأصناف الأساسية إلى inventoryData
             defaultItems.forEach(defaultItem => {
                 // تجنب التكرار
-                if (!inventoryData.find(item => item.code === defaultItem.code)) {
+                const existingItemIndex = inventoryData.findIndex(item => item.code === defaultItem.code);
+                
+                if (existingItemIndex === -1) {
+                    // إضافة صنف جديد
                     inventoryData.push({
                         code: defaultItem.code,
                         name: defaultItem.name,
-                        vendorUOM: "KG",
-                        stockQty: 0,
-                        uuom: "جرام",
-                        smallestUnitQty: 0,
+                        vendorUOM: defaultItem.vendorUOM,
+                        stockQty: defaultItem.stockQty,
+                        uuom: defaultItem.uuom,
+                        smallestUnitQty: defaultItem.smallestUnitQty,
+                        startQty: 0,
+                        receivedQty: 0,
+                        transferInQty: 0,
+                        transferOutQty: 0,
+                        wastageQty: 0,
+                        usageQty: 0,
+                        notConOrders: 0,
                         group: defaultItem.group,
                         selected: true,
                         actualCount: 0,
                         difference: 0
                     });
+                } else {
+                    // تحديث الصنف الموجود واختياره للجرد
+                    inventoryData[existingItemIndex].selected = true;
+                    inventoryData[existingItemIndex].group = defaultItem.group;
                 }
             });
             
@@ -1529,6 +1577,15 @@
             // تحديث الواجهة
             updateInventoryTable();
             updateStats();
+            
+            // تحديث صفحات الجرد إذا كانت مفتوحة
+            if (document.getElementById('meat-section').classList.contains('active')) {
+                updateMeatInventory();
+            } else if (document.getElementById('veg-section').classList.contains('active')) {
+                updateVegInventory();
+            } else if (document.getElementById('appetizers-section').classList.contains('active')) {
+                updateAppetizersInventory();
+            }
             
             // إظهار إشعار
             showNotification('تم تحميل الأصناف الأساسية بنجاح! تم اختيار ' + defaultItems.length + ' صنف للجرد.');
@@ -1587,6 +1644,15 @@
                         }
                         
                         updateStats();
+                        
+                        // تحديث صفحات الجرد إذا كانت مفتوحة
+                        if (document.getElementById('meat-section').classList.contains('active')) {
+                            updateMeatInventory();
+                        } else if (document.getElementById('veg-section').classList.contains('active')) {
+                            updateVegInventory();
+                        } else if (document.getElementById('appetizers-section').classList.contains('active')) {
+                            updateAppetizersInventory();
+                        }
                     }
                 });
             });
@@ -1744,7 +1810,7 @@
             });
         });
 
-        // تحديث عرض جرد اللحوم
+        // تحديث عرض جرد اللحوم مع إضافة كلمة عجز/زيادة
         function updateMeatInventory() {
             const container = document.getElementById('meat-inventory-container');
             container.innerHTML = '';
@@ -1755,7 +1821,7 @@
             );
             
             if (meatItems.length === 0) {
-                container.innerHTML = '<p>لم يتم اختيار أي أصناف لحوم للجرد</p>';
+                container.innerHTML = '<p style="text-align: center; padding: 20px; color: var(--primary); font-weight: bold;">لم يتم اختيار أي أصناف لحوم للجرد</p>';
                 return;
             }
             
@@ -1817,10 +1883,12 @@
                 groupedItems[group].forEach((item, index) => {
                     const row = document.createElement('tr');
                     
-                    // تحديد لون الفرق
+                    // تحديد لون الفرق وإضافة كلمة عجز/زيادة
                     const difference = item.difference || 0;
                     const differenceClass = difference < 0 ? 'difference-negative' : 
                                            difference > 0 ? 'difference-positive' : '';
+                    const differenceText = difference < 0 ? 'عجز' : 
+                                          difference > 0 ? 'زيادة' : '';
                     
                     row.innerHTML = `
                         <td>${index + 1}</td>
@@ -1832,7 +1900,9 @@
                             <input type="number" class="actual-count-input" data-code="${item.code}" 
                                    value="${item.actualCount || ''}" placeholder="0">
                         </td>
-                        <td class="difference-cell ${differenceClass}" data-code="${item.code}" style="font-size: 18px; font-weight: bold;">${difference}</td>
+                        <td class="difference-cell ${differenceClass}" data-code="${item.code}" style="font-size: 18px; font-weight: bold;">
+                            ${difference} ${differenceText ? `<span class="difference-text" style="color: ${differenceClass.includes('negative') ? 'var(--accent-red)' : 'var(--accent-green)'};">(${differenceText})</span>` : ''}
+                        </td>
                     `;
                     
                     tbody.appendChild(row);
@@ -1842,20 +1912,19 @@
                     input.addEventListener('input', function() {
                         const actualCount = parseFloat(this.value) || 0;
                         const difference = actualCount - item.smallestUnitQty;
+                        const differenceText = difference < 0 ? 'عجز' : 
+                                              difference > 0 ? 'زيادة' : '';
                         
-                        // تحديث الفرق في الخلية مع التلوين
+                        // تحديث الفرق في الخلية مع التلوين والنص
                         const differenceCell = document.querySelector(`.difference-cell[data-code="${item.code}"]`);
-                        differenceCell.textContent = Math.round(difference);
+                        differenceCell.innerHTML = `${Math.round(difference)} ${differenceText ? `<span class="difference-text" style="color: ${difference < 0 ? 'var(--accent-red)' : difference > 0 ? 'var(--accent-green)' : 'var(--primary)'};">(${differenceText})</span>` : ''}`;
                         
                         // تحديث اللون بناءً على القيمة
+                        differenceCell.classList.remove('difference-negative', 'difference-positive');
                         if (difference < 0) {
-                            differenceCell.classList.remove('difference-positive');
                             differenceCell.classList.add('difference-negative');
                         } else if (difference > 0) {
-                            differenceCell.classList.remove('difference-negative');
                             differenceCell.classList.add('difference-positive');
-                        } else {
-                            differenceCell.classList.remove('difference-negative', 'difference-positive');
                         }
                         
                         // تحديث بيانات العنصر
@@ -1875,9 +1944,13 @@
                 const groupTotalValue = groupedItems[group].reduce((sum, item) => sum + (item.difference || 0), 0);
                 const groupTotalClass = groupTotalValue < 0 ? 'difference-negative' : 
                                        groupTotalValue > 0 ? 'difference-positive' : '';
+                const groupTotalText = groupTotalValue < 0 ? 'عجز' : 
+                                      groupTotalValue > 0 ? 'زيادة' : '';
                 totalRow.innerHTML = `
                     <td colspan="6">إجمالي ${group}</td>
-                    <td class="group-total-cell ${groupTotalClass}" data-group="${group}" style="font-size: 18px; font-weight: bold;">${groupTotalValue}</td>
+                    <td class="group-total-cell ${groupTotalClass}" data-group="${group}" style="font-size: 18px; font-weight: bold;">
+                        ${groupTotalValue} ${groupTotalText ? `<span class="difference-text" style="color: ${groupTotalClass.includes('negative') ? 'var(--accent-red)' : 'var(--accent-green)'};">(${groupTotalText})</span>` : ''}
+                    </td>
                 `;
                 table.appendChild(totalRow);
                 
@@ -1886,7 +1959,7 @@
             }
         }
 
-        // تحديث عرض جرد الخضروات
+        // تحديث عرض جرد الخضروات مع إضافة كلمة عجز/زيادة
         function updateVegInventory() {
             const container = document.getElementById('veg-inventory-container');
             container.innerHTML = '';
@@ -1897,7 +1970,7 @@
             );
             
             if (vegItems.length === 0) {
-                container.innerHTML = '<p>لم يتم اختيار أي أصناف خضروات للجرد</p>';
+                container.innerHTML = '<p style="text-align: center; padding: 20px; color: var(--accent-green); font-weight: bold;">لم يتم اختيار أي أصناف خضروات للجرد</p>';
                 return;
             }
             
@@ -1956,10 +2029,12 @@
                 groupedItems[group].forEach((item, index) => {
                     const row = document.createElement('tr');
                     
-                    // تحديد لون الفرق
+                    // تحديد لون الفرق وإضافة كلمة عجز/زيادة
                     const difference = item.difference || 0;
                     const differenceClass = difference < 0 ? 'difference-negative' : 
                                            difference > 0 ? 'difference-positive' : '';
+                    const differenceText = difference < 0 ? 'عجز' : 
+                                          difference > 0 ? 'زيادة' : '';
                     
                     row.innerHTML = `
                         <td>${index + 1}</td>
@@ -1971,7 +2046,9 @@
                             <input type="number" class="actual-count-input" data-code="${item.code}" 
                                    value="${item.actualCount || ''}" placeholder="0">
                         </td>
-                        <td class="difference-cell ${differenceClass}" data-code="${item.code}" style="font-size: 18px; font-weight: bold;">${difference}</td>
+                        <td class="difference-cell ${differenceClass}" data-code="${item.code}" style="font-size: 18px; font-weight: bold;">
+                            ${difference} ${differenceText ? `<span class="difference-text" style="color: ${differenceClass.includes('negative') ? 'var(--accent-red)' : 'var(--accent-green)'};">(${differenceText})</span>` : ''}
+                        </td>
                     `;
                     
                     tbody.appendChild(row);
@@ -1981,20 +2058,19 @@
                     input.addEventListener('input', function() {
                         const actualCount = parseFloat(this.value) || 0;
                         const difference = actualCount - item.smallestUnitQty;
+                        const differenceText = difference < 0 ? 'عجز' : 
+                                              difference > 0 ? 'زيادة' : '';
                         
-                        // تحديث الفرق في الخلية مع التلوين
+                        // تحديث الفرق في الخلية مع التلوين والنص
                         const differenceCell = document.querySelector(`.difference-cell[data-code="${item.code}"]`);
-                        differenceCell.textContent = Math.round(difference);
+                        differenceCell.innerHTML = `${Math.round(difference)} ${differenceText ? `<span class="difference-text" style="color: ${difference < 0 ? 'var(--accent-red)' : difference > 0 ? 'var(--accent-green)' : 'var(--primary)'};">(${differenceText})</span>` : ''}`;
                         
                         // تحديث اللون بناءً على القيمة
+                        differenceCell.classList.remove('difference-negative', 'difference-positive');
                         if (difference < 0) {
-                            differenceCell.classList.remove('difference-positive');
                             differenceCell.classList.add('difference-negative');
                         } else if (difference > 0) {
-                            differenceCell.classList.remove('difference-negative');
                             differenceCell.classList.add('difference-positive');
-                        } else {
-                            differenceCell.classList.remove('difference-negative', 'difference-positive');
                         }
                         
                         // تحديث بيانات العنصر
@@ -2014,9 +2090,13 @@
                 const groupTotalValue = groupedItems[group].reduce((sum, item) => sum + (item.difference || 0), 0);
                 const groupTotalClass = groupTotalValue < 0 ? 'difference-negative' : 
                                        groupTotalValue > 0 ? 'difference-positive' : '';
+                const groupTotalText = groupTotalValue < 0 ? 'عجز' : 
+                                      groupTotalValue > 0 ? 'زيادة' : '';
                 totalRow.innerHTML = `
                     <td colspan="6">إجمالي ${group}</td>
-                    <td class="group-total-cell ${groupTotalClass}" data-group="${group}" style="font-size: 18px; font-weight: bold;">${groupTotalValue}</td>
+                    <td class="group-total-cell ${groupTotalClass}" data-group="${group}" style="font-size: 18px; font-weight: bold;">
+                        ${groupTotalValue} ${groupTotalText ? `<span class="difference-text" style="color: ${groupTotalClass.includes('negative') ? 'var(--accent-red)' : 'var(--accent-green)'};">(${groupTotalText})</span>` : ''}
+                    </td>
                 `;
                 table.appendChild(totalRow);
                 
@@ -2025,7 +2105,7 @@
             }
         }
 
-        // تحديث عرض جرد المقبلات
+        // تحديث عرض جرد المقبلات مع إضافة كلمة عجز/زيادة
         function updateAppetizersInventory() {
             const container = document.getElementById('appetizers-inventory-container');
             container.innerHTML = '';
@@ -2036,7 +2116,7 @@
             );
             
             if (appetizersItems.length === 0) {
-                container.innerHTML = '<p>لم يتم اختيار أي أصناف مقبلات للجرد</p>';
+                container.innerHTML = '<p style="text-align: center; padding: 20px; color: var(--accent-orange); font-weight: bold;">لم يتم اختيار أي أصناف مقبلات للجرد</p>';
                 return;
             }
             
@@ -2103,10 +2183,12 @@
                 groupedItems[group].forEach((item, index) => {
                     const row = document.createElement('tr');
                     
-                    // تحديد لون الفرق
+                    // تحديد لون الفرق وإضافة كلمة عجز/زيادة
                     const difference = item.difference || 0;
                     const differenceClass = difference < 0 ? 'difference-negative' : 
                                            difference > 0 ? 'difference-positive' : '';
+                    const differenceText = difference < 0 ? 'عجز' : 
+                                          difference > 0 ? 'زيادة' : '';
                     
                     row.innerHTML = `
                         <td>${index + 1}</td>
@@ -2118,7 +2200,9 @@
                             <input type="number" class="actual-count-input" data-code="${item.code}" 
                                    value="${item.actualCount || ''}" placeholder="0">
                         </td>
-                        <td class="difference-cell ${differenceClass}" data-code="${item.code}" style="font-size: 18px; font-weight: bold;">${difference}</td>
+                        <td class="difference-cell ${differenceClass}" data-code="${item.code}" style="font-size: 18px; font-weight: bold;">
+                            ${difference} ${differenceText ? `<span class="difference-text" style="color: ${differenceClass.includes('negative') ? 'var(--accent-red)' : 'var(--accent-green)'};">(${differenceText})</span>` : ''}
+                        </td>
                     `;
                     
                     tbody.appendChild(row);
@@ -2128,20 +2212,19 @@
                     input.addEventListener('input', function() {
                         const actualCount = parseFloat(this.value) || 0;
                         const difference = actualCount - item.smallestUnitQty;
+                        const differenceText = difference < 0 ? 'عجز' : 
+                                              difference > 0 ? 'زيادة' : '';
                         
-                        // تحديث الفرق في الخلية مع التلوين
+                        // تحديث الفرق في الخلية مع التلوين والنص
                         const differenceCell = document.querySelector(`.difference-cell[data-code="${item.code}"]`);
-                        differenceCell.textContent = Math.round(difference);
+                        differenceCell.innerHTML = `${Math.round(difference)} ${differenceText ? `<span class="difference-text" style="color: ${difference < 0 ? 'var(--accent-red)' : difference > 0 ? 'var(--accent-green)' : 'var(--primary)'};">(${differenceText})</span>` : ''}`;
                         
                         // تحديث اللون بناءً على القيمة
+                        differenceCell.classList.remove('difference-negative', 'difference-positive');
                         if (difference < 0) {
-                            differenceCell.classList.remove('difference-positive');
                             differenceCell.classList.add('difference-negative');
                         } else if (difference > 0) {
-                            differenceCell.classList.remove('difference-negative');
                             differenceCell.classList.add('difference-positive');
-                        } else {
-                            differenceCell.classList.remove('difference-negative', 'difference-positive');
                         }
                         
                         // تحديث بيانات العنصر
@@ -2161,9 +2244,13 @@
                 const groupTotalValue = groupedItems[group].reduce((sum, item) => sum + (item.difference || 0), 0);
                 const groupTotalClass = groupTotalValue < 0 ? 'difference-negative' : 
                                        groupTotalValue > 0 ? 'difference-positive' : '';
+                const groupTotalText = groupTotalValue < 0 ? 'عجز' : 
+                                      groupTotalValue > 0 ? 'زيادة' : '';
                 totalRow.innerHTML = `
                     <td colspan="6">إجمالي ${group}</td>
-                    <td class="group-total-cell ${groupTotalClass}" data-group="${group}" style="font-size: 18px; font-weight: bold;">${groupTotalValue}</td>
+                    <td class="group-total-cell ${groupTotalClass}" data-group="${group}" style="font-size: 18px; font-weight: bold;">
+                        ${groupTotalValue} ${groupTotalText ? `<span class="difference-text" style="color: ${groupTotalClass.includes('negative') ? 'var(--accent-red)' : 'var(--accent-green)'};">(${groupTotalText})</span>` : ''}
+                    </td>
                 `;
                 table.appendChild(totalRow);
                 
@@ -2177,17 +2264,16 @@
             const total = items.reduce((sum, item) => sum + (item.difference || 0), 0);
             const totalCell = document.querySelector(`.group-total-cell[data-group="${group}"]`);
             if (totalCell) {
-                totalCell.textContent = Math.round(total);
+                const totalText = total < 0 ? 'عجز' : 
+                                 total > 0 ? 'زيادة' : '';
+                totalCell.innerHTML = `${Math.round(total)} ${totalText ? `<span class="difference-text" style="color: ${total < 0 ? 'var(--accent-red)' : total > 0 ? 'var(--accent-green)' : 'var(--primary)'};">(${totalText})</span>` : ''}`;
                 
                 // تحديث اللون بناءً على القيمة
+                totalCell.classList.remove('difference-negative', 'difference-positive');
                 if (total < 0) {
-                    totalCell.classList.remove('difference-positive');
                     totalCell.classList.add('difference-negative');
                 } else if (total > 0) {
-                    totalCell.classList.remove('difference-negative');
                     totalCell.classList.add('difference-positive');
-                } else {
-                    totalCell.classList.remove('difference-negative', 'difference-positive');
                 }
             }
         }
@@ -2360,13 +2446,13 @@
                             <table style="width: 100%; border-collapse: collapse; font-size: 11px; margin-bottom: 10px;">
                                 <thead>
                                     <tr style="background: #EFF6FF;">
-                                        <th style="border: 1px solid #ddd; padding: 6px; text-align: center; width: 5%;">م</th>
-                                        <th style="border: 1px solid #ddd; padding: 6px; text-align: center; width: 35%;">اسم الصنف</th>
-                                        <th style="border: 1px solid #ddd; padding: 6px; text-align: center; width: 10%;">الشد</th>
-                                        <th style="border: 1px solid #ddd; padding: 6px; text-align: center; width: 12%;">جرد البرنامج</th>
-                                        <th style="border: 1px solid #ddd; padding: 6px; text-align: center; width: 12%; font-weight: bold; font-size: 12px;">جرد الوحدة الصغرى</th>
-                                        <th style="border: 1px solid #ddd; padding: 6px; text-align: center; width: 12%; font-weight: bold; font-size: 12px;">الجرد الفعلي</th>
-                                        <th style="border: 1px solid #ddd; padding: 6px; text-align: center; width: 14%; font-weight: bold; font-size: 12px;">العجز/الزيادة</th>
+                                        <th style="border: 1px solid #ddd; padding: 4px; text-align: center; width: 5%;">م</th>
+                                        <th style="border: 1px solid #ddd; padding: 4px; text-align: center; width: 35%;">اسم الصنف</th>
+                                        <th style="border: 1px solid #ddd; padding: 4px; text-align: center; width: 10%;">الشد</th>
+                                        <th style="border: 1px solid #ddd; padding: 4px; text-align: center; width: 12%;">جرد البرنامج</th>
+                                        <th style="border: 1px solid #ddd; padding: 4px; text-align: center; width: 12%; font-weight: bold; font-size: 12px;">جرد الوحدة الصغرى</th>
+                                        <th style="border: 1px solid #ddd; padding: 4px; text-align: center; width: 12%; font-weight: bold; font-size: 12px;">الجرد الفعلي</th>
+                                        <th style="border: 1px solid #ddd; padding: 4px; text-align: center; width: 14%; font-weight: bold; font-size: 12px;">العجز/الزيادة</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -2377,6 +2463,8 @@
                     groupedItems[group].forEach((item, index) => {
                         const difference = item.difference || 0;
                         groupDifference += difference;
+                        const differenceText = difference < 0 ? 'عجز' : 
+                                              difference > 0 ? 'زيادة' : '';
                         
                         contentHTML += `
                             <tr>
@@ -2387,7 +2475,7 @@
                                 <td style="border: 1px solid #ddd; padding: 5px; text-align: center; font-weight: bold; font-size: 13px;">${item.smallestUnitQty}</td>
                                 <td style="border: 1px solid #ddd; padding: 5px; text-align: center; font-weight: bold; font-size: 13px;">${item.actualCount || 0}</td>
                                 <td style="border: 1px solid #ddd; padding: 5px; text-align: center; font-weight: bold; font-size: 13px; color: ${difference < 0 ? 'red' : difference > 0 ? 'green' : 'var(--primary)'};">
-                                    ${difference}
+                                    ${difference} ${differenceText ? `(${differenceText})` : ''}
                                 </td>
                             </tr>
                         `;
@@ -2400,7 +2488,7 @@
                                 <tfoot>
                                     <tr style="background: #f9f9f9; font-weight: bold;">
                                         <td colspan="6" style="border: 1px solid #ddd; padding: 6px; text-align: right;">إجمالي ${group}</td>
-                                        <td style="border: 1px solid #ddd; padding: 6px; text-align: center; font-weight: bold; font-size: 13px; color: ${groupDifference < 0 ? 'red' : groupDifference > 0 ? 'green' : 'var(--primary)'};">${groupDifference}</td>
+                                        <td style="border: 1px solid #ddd; padding: 6px; text-align: center; font-weight: bold; font-size: 13px; color: ${groupDifference < 0 ? 'red' : groupDifference > 0 ? 'green' : 'var(--primary)'};">${groupDifference} ${groupDifference < 0 ? '(عجز)' : groupDifference > 0 ? '(زيادة)' : ''}</td>
                                     </tr>
                                 </tfoot>
                             </table>
@@ -2413,7 +2501,7 @@
                     <div style="margin-top: 20px; padding: 10px; background: #EFF6FF; border-radius: 4px; text-align: center; font-weight: bold; border: 1px solid var(--primary);">
                         <div style="font-size: 14px;">الإجمالي الكلي: 
                             <span style="color: ${totalDifference < 0 ? 'red' : totalDifference > 0 ? 'green' : 'var(--primary)'}; font-size: 16px; font-weight: bold;">
-                                ${totalDifference}
+                                ${totalDifference} ${totalDifference < 0 ? '(عجز)' : totalDifference > 0 ? '(زيادة)' : ''}
                             </span>
                         </div>
                         <div style="font-size: 12px; margin-top: 5px; color: #666;">
@@ -2610,6 +2698,8 @@
                 data.push(['م', 'اسم الصنف', 'الشد', 'الجرد من البرنامج', 'الجرد بالوحدة الصغرى', 'الجرد الفعلي', 'العجز/الزيادة']);
                 
                 groupedItems[group].forEach((item, index) => {
+                    const differenceText = item.difference < 0 ? 'عجز' : 
+                                          item.difference > 0 ? 'زيادة' : '';
                     data.push([
                         index + 1,
                         item.name,
@@ -2617,13 +2707,15 @@
                         item.stockQty,
                         item.smallestUnitQty,
                         item.actualCount || 0,
-                        item.difference || 0
+                        `${item.difference || 0} ${differenceText ? `(${differenceText})` : ''}`
                     ]);
                 });
                 
                 // حساب إجمالي المجموعة
                 const groupTotal = groupedItems[group].reduce((sum, item) => sum + (item.difference || 0), 0);
-                data.push(['', '', '', '', '', 'إجمالي ' + group, groupTotal]);
+                const groupTotalText = groupTotal < 0 ? 'عجز' : 
+                                      groupTotal > 0 ? 'زيادة' : '';
+                data.push(['', '', '', '', '', 'إجمالي ' + group, `${groupTotal} ${groupTotalText ? `(${groupTotalText})` : ''}`]);
                 data.push([]);
             }
             
@@ -2638,7 +2730,7 @@
                 { wch: 15 },  // العمود الرابع: الجرد من البرنامج
                 { wch: 18 },  // العمود الخامس: الجرد بالوحدة الصغرى
                 { wch: 15 },  // العمود السادس: الجرد الفعلي
-                { wch: 15 }   // العمود السابع: العجز/الزيادة
+                { wch: 18 }   // العمود السابع: العجز/الزيادة
             ];
             ws['!cols'] = wscols;
             
@@ -2762,12 +2854,16 @@
             
             // إضافة بيانات الجرد
             items.forEach(item => {
-                message += `${item.name}: ${item.actualCount || 0} (الفرق: ${item.difference || 0})\n`;
+                const differenceText = item.difference < 0 ? 'عجز' : 
+                                      item.difference > 0 ? 'زيادة' : '';
+                message += `${item.name}: ${item.actualCount || 0} (الفرق: ${item.difference || 0} ${differenceText})\n`;
             });
             
             // إضافة ملخص
             const totalDifference = items.reduce((sum, item) => sum + (item.difference || 0), 0);
-            message += `\nالإجمالي الكلي: ${totalDifference}`;
+            const totalDifferenceText = totalDifference < 0 ? 'عجز' : 
+                                       totalDifference > 0 ? 'زيادة' : '';
+            message += `\nالإجمالي الكلي: ${totalDifference} ${totalDifferenceText}`;
             message += `\nعدد الأصناف: ${items.length}`;
             
             const encodedMessage = encodeURIComponent(message);
