@@ -37,7 +37,7 @@
         }
 
         .container {
-            max-width: 1300px;
+            max-width: 1400px;
             margin: 0 auto;
             padding: 20px;
         }
@@ -799,16 +799,18 @@
         <!-- قسم تحميل البيانات -->
         <section id="upload-section" class="section active">
             <h2 style="color: var(--primary); margin-bottom: 20px;">تحميل بيانات الأصناف من ملف Excel</h2>
-            <div class="file-upload file-upload-small">
-                <input type="file" id="excel-file" accept=".xlsx, .xls">
-                <label for="excel-file">اختر ملف Excel</label>
-                <div class="upload-buttons">
-                    <button class="btn btn-primary" id="load-default-items">
-                        تحميل الأصناف الأساسية
-                    </button>
-                </div>
-                <p style="margin-top: 10px; color: var(--primary); font-weight: 200; font-size: 12px;">Yasser Elkhateeb</p>
-            </div>
+            <div class="file-upload" style="padding: 25px; width: 800px; margin: 0 auto;">
+    <div style="display: flex; gap: 20px; align-items: center; justify-content: center; width: 100%;">
+        <div>
+            <input type="file" id="excel-file" accept=".xlsx, .xls">
+            <label for="excel-file" style="margin: 0; padding: 12px 25px; font-size: 18px;">اختر ملف Excel  (Spot Stock Take)</label>
+        </div>
+        <button class="btn" id="load-default-items" style="background-color: var(--accent-red); padding: 12px 25px; font-size: 18px;">
+            تحميل الأصناف الأساسية
+        </button>
+    </div>
+    <p style="margin-top: 15px; color: var(--primary); font-weight: 200; font-size: 12px;">Yasser Elkhateeb</p>
+</div>
 
             <div class="stats-cards">
                 <div class="stat-card">
