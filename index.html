@@ -271,6 +271,31 @@
             margin-right: 5px;
         }
 
+        /* الخلية المجمعة للأصناف المتشابهة */
+        .combined-difference-cell {
+            font-size: 22px !important;
+            font-weight: bold !important;
+            background-color: #f0f9ff;
+            border: 2px solid var(--secondary) !important;
+            vertical-align: middle;
+            height: 60px;
+            min-width: 100px;
+        }
+
+        .combined-difference-negative {
+            color: var(--accent-red) !important;
+            background-color: #fef2f2;
+        }
+
+        .combined-difference-positive {
+            color: var(--accent-green) !important;
+            background-color: #f0fdf4;
+        }
+
+        .combined-difference-zero {
+            color: var(--primary) !important;
+        }
+
         .action-buttons {
             display: flex;
             justify-content: center;
@@ -769,6 +794,11 @@
                 flex-direction: column;
                 gap: 10px;
             }
+            
+            .combined-difference-cell {
+                font-size: 16px !important;
+                height: 40px;
+            }
         }
     </style>
 </head>
@@ -1171,7 +1201,7 @@
             { code: "A1007", name: "Beef Burger Big(برجر لحم كبير)", group: "meat", vendorUOM: "KG", stockQty: 0, uuom: "جرام", smallestUnitQty: 0 },
             { code: "A1008", name: "Beef Burger Small(برجر لحم صغير)", group: "meat", vendorUOM: "KG", stockQty: 0, uuom: "جرام", smallestUnitQty: 0 },
             { code: "A1004", name: "Chicken Burger Small  ( برجر دجاج صغير)", group: "meat", vendorUOM: "KG", stockQty: 0, uuom: "جرام", smallestUnitQty: 0 },
-            { code: "K1070", name: "Fresh Burger Chickens برجر دجاج طازج", group: "meat", vendorUOM: "KG", stockQty: 0, uuom: "جرام", smallestUnitQty: 0 },
+            { code: "K1070", name: "Fresh Burger Chickens برجر دجاج طازج", group: "meat", vendorUOM: "KG", stockQty: 0, uuom: "كيلو", smallestUnitQty: 0 },
             { code: "K1071", name: "Chicken Small Wings Nor  جناح صغير عادي", group: "meat", vendorUOM: "KG", stockQty: 0, uuom: "جرام", smallestUnitQty: 0 },
             { code: "K1072", name: "Chicken Small Wings Spicy  جناح صغير فلفل", group: "meat", vendorUOM: "KG", stockQty: 0, uuom: "جرام", smallestUnitQty: 0 },
             { code: "K1010", name: "Chicken Wings  جناح متبل", group: "meat", vendorUOM: "KG", stockQty: 0, uuom: "جرام", smallestUnitQty: 0 },
@@ -1230,7 +1260,7 @@
             { name: "أسواق القرين", areaManager: "انور", operationsManager: "طارق بيومي" },
             { name: "سلوى", areaManager: "ثروت", operationsManager: "هاني عبدالله" },
             { name: "سوق الجليب", areaManager: "طارق", operationsManager: "طارق بيومي" },
-            { name: "الشهداء", areaManager: "انور", operationsManager: "طارق بيومي" },
+            { name: "الشهداء", areaManager: "انور", operationsManager: "طارق بيومi" },
             { name: "الدسمة وبنيد القار", areaManager: "وليد", operationsManager: "هاني عبدالله" },
             { name: "جمعية صباح الاحمد", areaManager: "ثروت", operationsManager: "هاني عبدالله" },
             { name: "الافينيوز", areaManager: "طارق", operationsManager: "طارق بيومي" },
@@ -1812,13 +1842,70 @@
             });
         });
 
-        // تحديث عرض جرد اللحوم مع إضافة كلمة عجز/زيادة
+        // تحديد الأصناف المتشابهة في اللحوم مع تحسين الترتيب
+        function findSimilarItems(items) {
+            const similarGroups = {};
+            
+            items.forEach(item => {
+                let baseName = item.name;
+                
+                // إزالة الكلمات الشائعة للعثور على الأصناف المتشابهة
+                baseName = baseName.replace(/\(.*?\)/g, '').trim(); // إزالة ما بين الأقواس
+                
+                // تحسين التعرف على الأصناف المتشابهة
+                if (baseName.includes("Chicken Big Fillet")) {
+                    baseName = "Chicken Big Fillet";
+                } else if (baseName.includes("Chicken Fillet") && !baseName.includes("Finger") && !baseName.includes("Grilled")) {
+                    baseName = "Chicken Fillet";
+                } else if (baseName.includes("Chicken Finger Fillet") || baseName.includes("Ch.Finger Fillet")) {
+                    baseName = "Chicken Finger Fillet";
+                } else if (baseName.includes("Chicken Tikka")) {
+                    baseName = "Chicken Tikka";
+                } else if (baseName.includes("Chicken Fried")) {
+                    baseName = "Chicken Fried";
+                } else if (baseName.includes("Chicken Small Wings")) {
+                    baseName = "Chicken Small Wings";
+                } else if (baseName.includes("Chicken Wings")) {
+                    baseName = "Chicken Wings";
+                } else if (baseName.includes("Drumstick whole Fried")) {
+                    baseName = "Drumstick whole Fried";
+                } else if (baseName.includes("وصلة دجاج")) {
+                    baseName = "وصلة دجاج";
+                } else if (baseName.includes("Chicken Burger") && !baseName.includes("Fresh")) {
+                    baseName = "Chicken Burger";
+                } else if (baseName.includes("Beef Burger Big")) {
+                    baseName = "Beef Burger Big";
+                } else if (baseName.includes("Beef Burger Small")) {
+                    baseName = "Beef Burger Small";
+                } else if (baseName.includes("Fresh Burger Chickens")) {
+                    baseName = "Fresh Burger Chickens";
+                }
+                
+                if (!similarGroups[baseName]) {
+                    similarGroups[baseName] = [];
+                }
+                
+                similarGroups[baseName].push(item);
+            });
+            
+            // ترشيح المجموعات التي تحتوي على أكثر من صنف واحد
+            const filteredGroups = {};
+            for (const group in similarGroups) {
+                if (similarGroups[group].length > 1) {
+                    filteredGroups[group] = similarGroups[group];
+                }
+            }
+            
+            return filteredGroups;
+        }
+
+        // تحديث عرض جرد اللحوم مع إضافة كلمة عجز/زيادة والعمود الجديد
         function updateMeatInventory() {
             const container = document.getElementById('meat-inventory-container');
             container.innerHTML = '';
             
             // تصفية الأصناف المختارة التي تنتمي لللحوم
-            const meatItems = selectedItems.filter(item => 
+            let meatItems = selectedItems.filter(item => 
                 item.group === 'meat'
             );
             
@@ -1827,21 +1914,90 @@
                 return;
             }
             
+            // البحث عن الأصناف المتشابهة
+            const similarGroups = findSimilarItems(meatItems);
+            
+            // ترتيب الأصناف بشكل يدوي لتجميع الأصناف المتشابهة
+            meatItems.sort((a, b) => {
+                // ترتيب خاص لتجميع الأصناف المتشابهة
+                const groupsOrder = {
+                    "Chicken Big Fillet": 1,
+                    "Chicken Fillet": 2,
+                    "Chicken Finger Fillet": 3,
+                    "Chicken Tikka": 4,
+                    "Chicken Fried": 5,
+                    "Chicken Small Wings": 6,
+                    "Chicken Wings": 7,
+                    "Drumstick whole Fried": 8,
+                    "وصلة دجاج": 9,
+                    "Chicken Burger": 10,
+                    "Beef Burger Big": 11,
+                    "Beef Burger Small": 12,
+                    "Fresh Burger Chickens": 13
+                };
+                
+                let groupA = "";
+                let groupB = "";
+                
+                for (const group in groupsOrder) {
+                    if (a.name.includes(group)) {
+                        groupA = group;
+                        break;
+                    }
+                }
+                
+                for (const group in groupsOrder) {
+                    if (b.name.includes(group)) {
+                        groupB = group;
+                        break;
+                    }
+                }
+                
+                if (groupA && groupB) {
+                    return groupsOrder[groupA] - groupsOrder[groupB];
+                } else if (groupA) {
+                    return -1;
+                } else if (groupB) {
+                    return 1;
+                }
+                
+                return a.name.localeCompare(b.name);
+            });
+            
             // تجميع الأصناف حسب المجموعات الفرعية
             const groupedItems = {};
             meatItems.forEach(item => {
                 // تحديد المجموعة الفرعية بناءً على اسم الصنف
                 let subGroup = 'أخرى';
-                if (item.name && (item.name.includes('فيليه') || item.name.includes('فيلية'))) {
+                
+                if (item.name.includes('Big Fillet')) {
+                    subGroup = 'بيج فيليه';
+                } else if (item.name.includes('Finger Fillet')) {
+                    subGroup = 'أصابع فيليه';
+                } else if (item.name.includes('Chicken Fillet') && !item.name.includes('Finger') && !item.name.includes('Big') && !item.name.includes('Grilled')) {
                     subGroup = 'فيليه';
-                } else if (item.name && item.name.includes('برجر')) {
+                } else if (item.name.includes('Grilled Chicken Fillet')) {
+                    subGroup = 'فيليه مشوي';
+                } else if (item.name.includes('Tikka')) {
+                    subGroup = 'تيكا';
+                } else if (item.name.includes('Fried')) {
+                    subGroup = 'فرايد';
+                } else if (item.name.includes('Burger') && !item.name.includes('Fresh')) {
                     subGroup = 'برجر';
-                } else if (item.name && (item.name.includes('دجاج') || item.name.includes('شاورما'))) {
-                    subGroup = 'دجاج';
-                } else if (item.name && item.name.includes('لحم')) {
-                    subGroup = 'لحم';
-                } else if (item.name && item.name.includes('جناح')) {
+                } else if (item.name.includes('Fresh Burger Chickens')) {
+                    subGroup = 'برجر طازج';
+                } else if (item.name.includes('Wings')) {
                     subGroup = 'جناح';
+                } else if (item.name.includes('Drumstick') || item.name.includes('وصلة دجاج')) {
+                    subGroup = 'درام ستيك/وصلة';
+                } else if (item.name.includes('Quils') || item.name.includes('فري')) {
+                    subGroup = 'فري';
+                } else if (item.name.includes('Rooster') || item.name.includes('فروج')) {
+                    subGroup = 'فروج';
+                } else if (item.name.includes('Bint Al-Deek') || item.name.includes('بنت الديك')) {
+                    subGroup = 'بنت الديك';
+                } else if (item.name.includes('Royal')) {
+                    subGroup = 'ملكي';
                 }
                 
                 if (!groupedItems[subGroup]) {
@@ -1864,7 +2020,7 @@
                 const table = document.createElement('table');
                 table.className = 'inventory-table';
                 
-                // رأس الجدول
+                // رأس الجدول مع العمود الجديد
                 const thead = document.createElement('thead');
                 thead.innerHTML = `
                     <tr>
@@ -1875,67 +2031,181 @@
                         <th class="count-cell">الجرد بالوحدة الصغرى</th>
                         <th>الجرد الفعلي</th>
                         <th class="difference-cell">العجز/الزيادة</th>
+                        <th>الفروقات المجمعة</th>
                     </tr>
                 `;
                 table.appendChild(thead);
                 
                 const tbody = document.createElement('tbody');
-                let groupTotal = 0;
+                let rowIndex = 0;
+                let processedItems = new Set();
                 
                 groupedItems[group].forEach((item, index) => {
-                    const row = document.createElement('tr');
+                    // تخطي العناصر التي تمت معالجتها بالفعل في مجموعة متشابهة
+                    if (processedItems.has(item.code)) {
+                        return;
+                    }
                     
-                    // تحديد لون الفرق وإضافة كلمة عجز/زيادة
-                    const difference = item.difference || 0;
-                    const differenceClass = difference < 0 ? 'difference-negative' : 
-                                           difference > 0 ? 'difference-positive' : '';
-                    const differenceText = difference < 0 ? 'عجز' : 
-                                          difference > 0 ? 'زيادة' : '';
+                    // البحث عما إذا كان هذا العنصر جزءًا من مجموعة متشابهة
+                    let similarItems = [];
+                    let isPartOfSimilarGroup = false;
                     
-                    row.innerHTML = `
-                        <td>${index + 1}</td>
-                        <td>${item.name}</td>
-                        <td>${item.vendorUOM}</td>
-                        <td>${item.stockQty}</td>
-                        <td class="count-cell">${item.smallestUnitQty}</td>
-                        <td>
-                            <input type="number" class="actual-count-input" data-code="${item.code}" 
-                                   value="${item.actualCount || ''}" placeholder="0">
-                        </td>
-                        <td class="difference-cell ${differenceClass}" data-code="${item.code}" style="font-size: 18px; font-weight: bold;">
-                            ${difference} ${differenceText ? `<span class="difference-text" style="color: ${differenceClass.includes('negative') ? 'var(--accent-red)' : 'var(--accent-green)'};">(${differenceText})</span>` : ''}
-                        </td>
-                    `;
+                    for (const baseName in similarGroups) {
+                        const groupItems = similarGroups[baseName];
+                        const similarItem = groupItems.find(i => i.code === item.code);
+                        if (similarItem && groupItems.length > 1) {
+                            similarItems = groupItems;
+                            isPartOfSimilarGroup = true;
+                            break;
+                        }
+                    }
                     
-                    tbody.appendChild(row);
-                    
-                    // إضافة مستمع حدث لحساب الفرق
-                    const input = row.querySelector('.actual-count-input');
-                    input.addEventListener('input', function() {
-                        const actualCount = parseFloat(this.value) || 0;
-                        const difference = actualCount - item.smallestUnitQty;
+                    if (isPartOfSimilarGroup && similarItems.length > 0) {
+                        // عرض جميع العناصر المتشابهة معًا
+                        similarItems.forEach((similarItem, similarIndex) => {
+                            const row = document.createElement('tr');
+                            
+                            // تحديد لون الفرق وإضافة كلمة عجز/زيادة
+                            const difference = similarItem.difference || 0;
+                            const differenceClass = difference < 0 ? 'difference-negative' : 
+                                                   difference > 0 ? 'difference-positive' : '';
+                            const differenceText = difference < 0 ? 'عجز' : 
+                                                  difference > 0 ? 'زيادة' : '';
+                            
+                            row.innerHTML = `
+                                <td>${rowIndex + 1}</td>
+                                <td>${similarItem.name}</td>
+                                <td>${similarItem.vendorUOM}</td>
+                                <td>${similarItem.stockQty}</td>
+                                <td class="count-cell">${similarItem.smallestUnitQty}</td>
+                                <td>
+                                    <input type="number" class="actual-count-input" data-code="${similarItem.code}" 
+                                           value="${similarItem.actualCount || ''}" placeholder="0">
+                                </td>
+                                <td class="difference-cell ${differenceClass}" data-code="${similarItem.code}" style="font-size: 18px; font-weight: bold;">
+                                    ${difference} ${differenceText ? `<span class="difference-text" style="color: ${differenceClass.includes('negative') ? 'var(--accent-red)' : 'var(--accent-green)'};">(${differenceText})</span>` : ''}
+                                </td>
+                            `;
+                            
+                            // إذا كان هذا هو الصف الأول في المجموعة المتشابهة، أضف الخلية المجمعة
+                            if (similarIndex === 0) {
+                                const combinedDifference = similarItems.reduce((sum, i) => sum + (i.difference || 0), 0);
+                                const combinedClass = combinedDifference < 0 ? 'combined-difference-negative' : 
+                                                     combinedDifference > 0 ? 'combined-difference-positive' : 'combined-difference-zero';
+                                const combinedText = combinedDifference < 0 ? 'عجز' : 
+                                                    combinedDifference > 0 ? 'زيادة' : 'متساوي';
+                                
+                                const combinedCell = document.createElement('td');
+                                combinedCell.className = `combined-difference-cell ${combinedClass}`;
+                                combinedCell.rowSpan = similarItems.length;
+                                combinedCell.innerHTML = `${combinedDifference}<br><span style="font-size: 14px;">(${combinedText})</span>`;
+                                combinedCell.setAttribute('data-similar-group', similarItems.map(i => i.code).join(','));
+                                row.appendChild(combinedCell);
+                            }
+                            
+                            tbody.appendChild(row);
+                            processedItems.add(similarItem.code);
+                            rowIndex++;
+                            
+                            // إضافة مستمع حدث لحساب الفرق وتحديث الخلية المجمعة
+                            const input = row.querySelector('.actual-count-input');
+                            input.addEventListener('input', function() {
+                                const actualCount = parseFloat(this.value) || 0;
+                                const difference = actualCount - similarItem.smallestUnitQty;
+                                const differenceText = difference < 0 ? 'عجز' : 
+                                                      difference > 0 ? 'زيادة' : '';
+                                
+                                // تحديث الفرق في الخلية مع التلوين والنص
+                                const differenceCell = document.querySelector(`.difference-cell[data-code="${similarItem.code}"]`);
+                                differenceCell.innerHTML = `${Math.round(difference)} ${differenceText ? `<span class="difference-text" style="color: ${difference < 0 ? 'var(--accent-red)' : difference > 0 ? 'var(--accent-green)' : 'var(--primary)'};">(${differenceText})</span>` : ''}`;
+                                
+                                // تحديث اللون بناءً على القيمة
+                                differenceCell.classList.remove('difference-negative', 'difference-positive');
+                                if (difference < 0) {
+                                    differenceCell.classList.add('difference-negative');
+                                } else if (difference > 0) {
+                                    differenceCell.classList.add('difference-positive');
+                                }
+                                
+                                // تحديث بيانات العنصر
+                                similarItem.actualCount = actualCount;
+                                similarItem.difference = Math.round(difference);
+                                
+                                // تحديث الخلية المجمعة
+                                updateCombinedDifferenceCell(similarItems);
+                                
+                                // إعادة حساب المجموع
+                                updateGroupTotal(group, groupedItems[group]);
+                            });
+                        });
+                    } else {
+                        // عرض العنصر العادي
+                        const row = document.createElement('tr');
+                        
+                        // تحديد لون الفرق وإضافة كلمة عجز/زيادة
+                        const difference = item.difference || 0;
+                        const differenceClass = difference < 0 ? 'difference-negative' : 
+                                               difference > 0 ? 'difference-positive' : '';
                         const differenceText = difference < 0 ? 'عجز' : 
                                               difference > 0 ? 'زيادة' : '';
                         
-                        // تحديث الفرق في الخلية مع التلوين والنص
-                        const differenceCell = document.querySelector(`.difference-cell[data-code="${item.code}"]`);
-                        differenceCell.innerHTML = `${Math.round(difference)} ${differenceText ? `<span class="difference-text" style="color: ${difference < 0 ? 'var(--accent-red)' : difference > 0 ? 'var(--accent-green)' : 'var(--primary)'};">(${differenceText})</span>` : ''}`;
+                        row.innerHTML = `
+                            <td>${rowIndex + 1}</td>
+                            <td>${item.name}</td>
+                            <td>${item.vendorUOM}</td>
+                            <td>${item.stockQty}</td>
+                            <td class="count-cell">${item.smallestUnitQty}</td>
+                            <td>
+                                <input type="number" class="actual-count-input" data-code="${item.code}" 
+                                       value="${item.actualCount || ''}" placeholder="0">
+                            </td>
+                            <td class="difference-cell ${differenceClass}" data-code="${item.code}" style="font-size: 18px; font-weight: bold;">
+                                ${difference} ${differenceText ? `<span class="difference-text" style="color: ${differenceClass.includes('negative') ? 'var(--accent-red)' : 'var(--accent-green)'};">(${differenceText})</span>` : ''}
+                            </td>
+                            <td class="combined-difference-cell combined-difference-zero" data-code="${item.code}">
+                                ${difference}<br><span style="font-size: 14px;">(${differenceText || 'متساوي'})</span>
+                            </td>
+                        `;
                         
-                        // تحديث اللون بناءً على القيمة
-                        differenceCell.classList.remove('difference-negative', 'difference-positive');
-                        if (difference < 0) {
-                            differenceCell.classList.add('difference-negative');
-                        } else if (difference > 0) {
-                            differenceCell.classList.add('difference-positive');
-                        }
+                        tbody.appendChild(row);
+                        processedItems.add(item.code);
+                        rowIndex++;
                         
-                        // تحديث بيانات العنصر
-                        item.actualCount = actualCount;
-                        item.difference = Math.round(difference);
-                        
-                        // إعادة حساب المجموع
-                        updateGroupTotal(group, groupedItems[group]);
-                    });
+                        // إضافة مستمع حدث لحساب الفرق
+                        const input = row.querySelector('.actual-count-input');
+                        input.addEventListener('input', function() {
+                            const actualCount = parseFloat(this.value) || 0;
+                            const difference = actualCount - item.smallestUnitQty;
+                            const differenceText = difference < 0 ? 'عجز' : 
+                                                  difference > 0 ? 'زيادة' : '';
+                            
+                            // تحديث الفرق في الخلية مع التلوين والنص
+                            const differenceCell = document.querySelector(`.difference-cell[data-code="${item.code}"]`);
+                            differenceCell.innerHTML = `${Math.round(difference)} ${differenceText ? `<span class="difference-text" style="color: ${difference < 0 ? 'var(--accent-red)' : difference > 0 ? 'var(--accent-green)' : 'var(--primary)'};">(${differenceText})</span>` : ''}`;
+                            
+                            // تحديث اللون بناءً على القيمة
+                            differenceCell.classList.remove('difference-negative', 'difference-positive');
+                            if (difference < 0) {
+                                differenceCell.classList.add('difference-negative');
+                            } else if (difference > 0) {
+                                differenceCell.classList.add('difference-positive');
+                            }
+                            
+                            // تحديث الخلية المجمعة
+                            const combinedCell = row.querySelector('.combined-difference-cell');
+                            const combinedClass = difference < 0 ? 'combined-difference-negative' : 
+                                                 difference > 0 ? 'combined-difference-positive' : 'combined-difference-zero';
+                            combinedCell.className = `combined-difference-cell ${combinedClass}`;
+                            combinedCell.innerHTML = `${Math.round(difference)}<br><span style="font-size: 14px;">(${differenceText || 'متساوي'})</span>`;
+                            
+                            // تحديث بيانات العنصر
+                            item.actualCount = actualCount;
+                            item.difference = Math.round(difference);
+                            
+                            // إعادة حساب المجموع
+                            updateGroupTotal(group, groupedItems[group]);
+                        });
+                    }
                 });
                 
                 table.appendChild(tbody);
@@ -1949,7 +2219,7 @@
                 const groupTotalText = groupTotalValue < 0 ? 'عجز' : 
                                       groupTotalValue > 0 ? 'زيادة' : '';
                 totalRow.innerHTML = `
-                    <td colspan="6">إجمالي ${group}</td>
+                    <td colspan="7">إجمالي ${group}</td>
                     <td class="group-total-cell ${groupTotalClass}" data-group="${group}" style="font-size: 18px; font-weight: bold;">
                         ${groupTotalValue} ${groupTotalText ? `<span class="difference-text" style="color: ${groupTotalClass.includes('negative') ? 'var(--accent-red)' : 'var(--accent-green)'};">(${groupTotalText})</span>` : ''}
                     </td>
@@ -1958,6 +2228,22 @@
                 
                 categoryDiv.appendChild(table);
                 container.appendChild(categoryDiv);
+            }
+        }
+
+        // تحديث الخلية المجمعة للأصناف المتشابهة
+        function updateCombinedDifferenceCell(similarItems) {
+            const combinedDifference = similarItems.reduce((sum, item) => sum + (item.difference || 0), 0);
+            const combinedClass = combinedDifference < 0 ? 'combined-difference-negative' : 
+                                 combinedDifference > 0 ? 'combined-difference-positive' : 'combined-difference-zero';
+            const combinedText = combinedDifference < 0 ? 'عجز' : 
+                                combinedDifference > 0 ? 'زيادة' : 'متساوي';
+            
+            // العثور على الخلية المجمعة وتحديثها
+            const combinedCell = document.querySelector(`.combined-difference-cell[data-similar-group="${similarItems.map(i => i.code).join(',')}"]`);
+            if (combinedCell) {
+                combinedCell.className = `combined-difference-cell ${combinedClass}`;
+                combinedCell.innerHTML = `${combinedDifference}<br><span style="font-size: 14px;">(${combinedText})</span>`;
             }
         }
 
@@ -2298,7 +2584,7 @@
             });
         }
 
-        // ================= دالة حفظ PDF محسنة =================
+        // ================= دالة حفظ PDF محسنة مع إصلاحات =================
         async function generatePDF(sectionType) {
             // sectionType: 'meat' أو 'veg' أو 'appetizers'
             
@@ -2378,137 +2664,162 @@
                 // إنشاء محتوى الجرد
                 const pdfContent = pdfTemplate.querySelector('#pdf-content');
                 
-                // تجميع الأصناف حسب المجموعات الفرعية
-                const groupedItems = {};
-                items.forEach(item => {
-                    let subGroup = 'أخرى';
-                    
-                    if (sectionType === 'meat') {
-                        if (item.name && (item.name.includes('فيليه') || item.name.includes('فيلية'))) {
-                            subGroup = 'فيليه';
-                        } else if (item.name && item.name.includes('برجر')) {
-                            subGroup = 'برجر';
-                        } else if (item.name && (item.name.includes('دجاج') || item.name.includes('شاورما'))) {
-                            subGroup = 'دجاج';
-                        } else if (item.name && item.name.includes('لحم')) {
-                            subGroup = 'لحم';
-                        } else if (item.name && item.name.includes('جناح')) {
-                            subGroup = 'جناح';
+                // البحث عن الأصناف المتشابهة للجرد اللحوم
+                const similarGroups = {};
+                if (sectionType === 'meat') {
+                    const meatItems = items;
+                    meatItems.forEach(item => {
+                        let baseName = item.name;
+                        
+                        if (baseName.includes("Chicken Big Fillet")) {
+                            baseName = "Chicken Big Fillet";
+                        } else if (baseName.includes("Chicken Fillet") && !baseName.includes("Finger") && !baseName.includes("Grilled")) {
+                            baseName = "Chicken Fillet";
+                        } else if (baseName.includes("Chicken Finger Fillet") || baseName.includes("Ch.Finger Fillet")) {
+                            baseName = "Chicken Finger Fillet";
+                        } else if (baseName.includes("Chicken Tikka")) {
+                            baseName = "Chicken Tikka";
+                        } else if (baseName.includes("Chicken Fried")) {
+                            baseName = "Chicken Fried";
+                        } else if (baseName.includes("Chicken Small Wings")) {
+                            baseName = "Chicken Small Wings";
+                        } else if (baseName.includes("Chicken Wings")) {
+                            baseName = "Chicken Wings";
+                        } else if (baseName.includes("Drumstick whole Fried")) {
+                            baseName = "Drumstick whole Fried";
+                        } else if (baseName.includes("وصلة دجاج")) {
+                            baseName = "وصلة دجاج";
+                        } else if (baseName.includes("Chicken Burger") && !baseName.includes("Fresh")) {
+                            baseName = "Chicken Burger";
+                        } else if (baseName.includes("Beef Burger Big")) {
+                            baseName = "Beef Burger Big";
+                        } else if (baseName.includes("Beef Burger Small")) {
+                            baseName = "Beef Burger Small";
+                        } else if (baseName.includes("Fresh Burger Chickens")) {
+                            baseName = "Fresh Burger Chickens";
                         }
-                    } else if (sectionType === 'veg') {
-                        if (item.name && (item.name.includes('خيار') || item.name.includes('طماطم') || item.name.includes('بصل'))) {
-                            subGroup = 'خضروات أساسية';
-                        } else if (item.name && (item.name.includes('فلفل') || item.name.includes('جزر') || item.name.includes('بقدونس'))) {
-                            subGroup = 'خضروات متنوعة';
-                        } else if (item.name && (item.name.includes('ليمون') || item.name.includes('برتقال'))) {
-                            subGroup = 'حمضيات';
-                        } else if (item.name && item.name.includes('خس')) {
-                            subGroup = 'أوراق خضراء';
+                        
+                        if (!similarGroups[baseName]) {
+                            similarGroups[baseName] = [];
                         }
-                    } else {
-                        if (item.name && (item.name.includes('حمص') || item.name.includes('متبل'))) {
-                            subGroup = 'مقبلات أساسية';
-                        } else if (item.name && item.name.includes('سلطة')) {
-                            subGroup = 'سلطات';
-                        } else if (item.name && (item.name.includes('فتوش') || item.name.includes('تبولة'))) {
-                            subGroup = 'سلطات عربية';
-                        } else if (item.name && (item.name.includes('كول سلو') || item.name.includes('جرجير'))) {
-                            subGroup = 'سلطات متنوعة';
-                        } else if (item.name && (item.name.includes('أرز') || item.name.includes('بوري'))) {
-                            subGroup = 'أرز وبوري';
-                        } else if (item.name && (item.name.includes('صوص') || item.name.includes('صلصة') || item.name.includes('مايونيز') || item.name.includes('كاتشب'))) {
-                            subGroup = 'صلصات وبهارات';
-                        } else if (item.name && (item.name.includes('لبن') || item.name.includes('لبنة'))) {
-                            subGroup = 'مشتقات الحليب';
-                        } else if (item.name && item.name.includes('بيض')) {
-                            subGroup = 'أصناف متنوعة';
-                        }
-                    }
-                    
-                    if (!groupedItems[subGroup]) {
-                        groupedItems[subGroup] = [];
-                    }
-                    
-                    groupedItems[subGroup].push(item);
-                });
+                        
+                        similarGroups[baseName].push(item);
+                    });
+                }
                 
-                // بناء محتوى PDF
+                // بناء محتوى PDF - عرض جميع الأصناف في جدول واحد بدون فواصل
                 let contentHTML = '';
                 let totalDifference = 0;
-                let isFirstGroup = true;
+                let processedItems = new Set();
                 
-                for (const group in groupedItems) {
-                    const groupColor = sectionType === 'meat' ? 'var(--primary)' : 
-                                     sectionType === 'veg' ? 'var(--accent-green)' : 'var(--accent-orange)';
-                    
-                    contentHTML += `
-                        <div style="margin-bottom: 10px;">
-                            <div style="background: ${groupColor}; color: white; padding: 6px; border-radius: 4px; margin-bottom: 6px; font-weight: bold; font-size: 10px;">
-                                ${group}
-                            </div>
-                    `;
-                    
-                    // إضافة رأس الجدول فقط للمجموعة الأولى
-                    if (isFirstGroup) {
-                        contentHTML += `
-                            <table style="width: 100%; border-collapse: collapse; font-size: 9px; margin-bottom: 5px;">
-                                <thead>
-                                    <tr style="background: #EFF6FF;">
-                                        <th style="border: 1px solid #ddd; padding: 3px; text-align: center; width: 4%; font-size: 9px; font-weight: bold;">م</th>
-                                        <th style="border: 1px solid #ddd; padding: 3px; text-align: right; width: 30%; font-size: 9px; font-weight: bold;">اسم الصنف</th>
-                                        <th style="border: 1px solid #ddd; padding: 3px; text-align: center; width: 8%; font-size: 9px; font-weight: bold;">الشد</th>
-                                        <th style="border: 1px solid #ddd; padding: 3px; text-align: center; width: 10%; font-size: 9px; font-weight: bold;">جرد البرنامج</th>
-                                        <th style="border: 1px solid #ddd; padding: 3px; text-align: center; width: 10%; font-size: 9px; font-weight: bold;">جرد الوحدة الصغرى</th>
-                                        <th style="border: 1px solid #ddd; padding: 3px; text-align: center; width: 10%; font-size: 9px; font-weight: bold;">الجرد الفعلي</th>
-                                        <th style="border: 1px solid #ddd; padding: 3px; text-align: center; width: 12%; font-size: 9px; font-weight: bold;">العجز/الزيادة</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                        `;
-                        isFirstGroup = false;
-                    } else {
-                        contentHTML += `
-                            <table style="width: 100%; border-collapse: collapse; font-size: 9px; margin-bottom: 5px;">
-                                <tbody>
-                        `;
+                contentHTML += `
+                    <table style="width: 100%; border-collapse: collapse; font-size: 9px; margin-bottom: 5px;">
+                        <thead>
+                            <tr style="background: #EFF6FF;">
+                                <th style="border: 1px solid #ddd; padding: 3px; text-align: center; width: 4%; font-size: 9px; font-weight: bold;">م</th>
+                                <th style="border: 1px solid #ddd; padding: 3px; text-align: right; width: 30%; font-size: 9px; font-weight: bold;">اسم الصنف</th>
+                                <th style="border: 1px solid #ddd; padding: 3px; text-align: center; width: 8%; font-size: 9px; font-weight: bold;">الشد</th>
+                                <th style="border: 1px solid #ddd; padding: 3px; text-align: center; width: 10%; font-size: 9px; font-weight: bold;">جرد البرنامج</th>
+                                <th style="border: 1px solid #ddd; padding: 3px; text-align: center; width: 10%; font-size: 9px; font-weight: bold;">جرد الوحدة الصغرى</th>
+                                <th style="border: 1px solid #ddd; padding: 3px; text-align: center; width: 10%; font-size: 9px; font-weight: bold;">الجرد الفعلي</th>
+                                <th style="border: 1px solid #ddd; padding: 3px; text-align: center; width: 12%; font-size: 9px; font-weight: bold;">العجز/الزيادة</th>
+                                <th style="border: 1px solid #ddd; padding: 3px; text-align: center; width: 12%; font-size: 9px; font-weight: bold;">الفروقات المجمعة</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                `;
+                
+                let rowIndex = 0;
+                
+                // عرض الأصناف
+                items.forEach((item, index) => {
+                    // تخطي العناصر التي تمت معالجتها بالفعل في مجموعة متشابهة
+                    if (processedItems.has(item.code)) {
+                        return;
                     }
                     
-                    let groupDifference = 0;
+                    // البحث عما إذا كان هذا العنصر جزءًا من مجموعة متشابهة (لجرد اللحوم فقط)
+                    let similarItems = [];
+                    let isPartOfSimilarGroup = false;
                     
-                    groupedItems[group].forEach((item, index) => {
+                    if (sectionType === 'meat') {
+                        for (const baseName in similarGroups) {
+                            const groupItems = similarGroups[baseName];
+                            const similarItem = groupItems.find(i => i.code === item.code);
+                            if (similarItem && groupItems.length > 1) {
+                                similarItems = groupItems;
+                                isPartOfSimilarGroup = true;
+                                break;
+                            }
+                        }
+                    }
+                    
+                    if (isPartOfSimilarGroup && similarItems.length > 0) {
+                        // عرض جميع العناصر المتشابهة معًا
+                        similarItems.forEach((similarItem, similarIndex) => {
+                            const difference = similarItem.difference || 0;
+                            const differenceText = difference < 0 ? 'عجز' : 
+                                                  difference > 0 ? 'زيادة' : '';
+                            
+                            // إذا كان هذا هو الصف الأول في المجموعة المتشابهة، أضف الخلية المجمعة
+                            let combinedCellHTML = '';
+                            if (similarIndex === 0) {
+                                const combinedDifference = similarItems.reduce((sum, i) => sum + (i.difference || 0), 0);
+                                const combinedText = combinedDifference < 0 ? 'عجز' : 
+                                                    combinedDifference > 0 ? 'زيادة' : 'متساوي';
+                                combinedCellHTML = `
+                                    <td style="border: 1px solid #ddd; padding: 3px; text-align: center; font-size: 9px; font-weight: bold; color: ${combinedDifference < 0 ? 'red' : combinedDifference > 0 ? 'green' : '#333'};" rowspan="${similarItems.length}">
+                                        ${combinedDifference}<br><span style="font-size: 8px;">(${combinedText})</span>
+                                    </td>
+                                `;
+                            }
+                            
+                            contentHTML += `
+                                <tr>
+                                    <td style="border: 1px solid #ddd; padding: 3px; text-align: center; font-size: 9px;">${rowIndex + 1}</td>
+                                    <td style="border: 1px solid #ddd; padding: 3px; text-align: right; font-size: 9px;">${similarItem.name}</td>
+                                    <td style="border: 1px solid #ddd; padding: 3px; text-align: center; font-size: 9px;">${similarItem.vendorUOM}</td>
+                                    <td style="border: 1px solid #ddd; padding: 3px; text-align: center; font-size: 9px;">${similarItem.stockQty}</td>
+                                    <td style="border: 1px solid #ddd; padding: 3px; text-align: center; font-size: 9px; font-weight: bold;">${similarItem.smallestUnitQty}</td>
+                                    <td style="border: 1px solid #ddd; padding: 3px; text-align: center; font-size: 9px; font-weight: bold;">${similarItem.actualCount || 0}</td>
+                                    <td style="border: 1px solid #ddd; padding: 3px; text-align: center; font-size: 9px; font-weight: bold; color: ${difference < 0 ? 'red' : difference > 0 ? 'green' : '#333'};">${difference} ${differenceText ? `(${differenceText})` : ''}</td>
+                                    ${similarIndex === 0 ? combinedCellHTML : ''}
+                                </tr>
+                            `;
+                            
+                            processedItems.add(similarItem.code);
+                            totalDifference += difference;
+                            rowIndex++;
+                        });
+                    } else {
+                        // عرض العنصر العادي
                         const difference = item.difference || 0;
-                        groupDifference += difference;
-                        totalDifference += difference;
                         const differenceText = difference < 0 ? 'عجز' : 
                                               difference > 0 ? 'زيادة' : '';
                         
                         contentHTML += `
                             <tr>
-                                <td style="border: 1px solid #ddd; padding: 3px; text-align: center; font-size: 9px;">${index + 1}</td>
+                                <td style="border: 1px solid #ddd; padding: 3px; text-align: center; font-size: 9px;">${rowIndex + 1}</td>
                                 <td style="border: 1px solid #ddd; padding: 3px; text-align: right; font-size: 9px;">${item.name}</td>
                                 <td style="border: 1px solid #ddd; padding: 3px; text-align: center; font-size: 9px;">${item.vendorUOM}</td>
                                 <td style="border: 1px solid #ddd; padding: 3px; text-align: center; font-size: 9px;">${item.stockQty}</td>
                                 <td style="border: 1px solid #ddd; padding: 3px; text-align: center; font-size: 9px; font-weight: bold;">${item.smallestUnitQty}</td>
                                 <td style="border: 1px solid #ddd; padding: 3px; text-align: center; font-size: 9px; font-weight: bold;">${item.actualCount || 0}</td>
-                                <td style="border: 1px solid #ddd; padding: 3px; text-align: center; font-size: 9px; font-weight: bold; color: ${difference < 0 ? 'red' : difference > 0 ? 'green' : '#333'};">
-                                    ${difference} ${differenceText ? `(${differenceText})` : ''}
-                                </td>
+                                <td style="border: 1px solid #ddd; padding: 3px; text-align: center; font-size: 9px; font-weight: bold; color: ${difference < 0 ? 'red' : difference > 0 ? 'green' : '#333'};">${difference} ${differenceText ? `(${differenceText})` : ''}</td>
+                                <td style="border: 1px solid #ddd; padding: 3px; text-align: center; font-size: 9px; font-weight: bold; color: ${difference < 0 ? 'red' : difference > 0 ? 'green' : '#333'};">${difference}<br><span style="font-size: 8px;">(${differenceText || 'متساوي'})</span></td>
                             </tr>
                         `;
-                    });
-                    
-                    contentHTML += `
-                                </tbody>
-                                <tfoot>
-                                    <tr style="background: #f9f9f9; font-weight: bold;">
-                                        <td colspan="6" style="border: 1px solid #ddd; padding: 4px; text-align: right; font-size: 9px;">إجمالي ${group}</td>
-                                        <td style="border: 1px solid #ddd; padding: 4px; text-align: center; font-size: 9px; font-weight: bold; color: ${groupDifference < 0 ? 'red' : groupDifference > 0 ? 'green' : '#333'};">${groupDifference} ${groupDifference < 0 ? '(عجز)' : groupDifference > 0 ? '(زيادة)' : ''}</td>
-                                    </tr>
-                                </tfoot>
-                            </table>
-                        </div>
-                    `;
-                }
+                        
+                        processedItems.add(item.code);
+                        totalDifference += difference;
+                        rowIndex++;
+                    }
+                });
+                
+                contentHTML += `
+                        </tbody>
+                    </table>
+                `;
                 
                 // إضافة الإجمالي الكلي
                 contentHTML += `
@@ -2651,87 +2962,124 @@
             data.push([`تاريخ الإصدار: ${new Date().toLocaleDateString('ar-SA')}`]);
             data.push([]);
             
-            // تجميع الأصناف حسب المجموعات
-            const groupedItems = {};
-            items.forEach(item => {
-                let subGroup = 'أخرى';
+            // البحث عن الأصناف المتشابهة للجرد اللحوم
+            const similarGroups = {};
+            if (sectionType === 'meat') {
+                items.forEach(item => {
+                    let baseName = item.name;
+                    
+                    if (baseName.includes("Chicken Big Fillet")) {
+                        baseName = "Chicken Big Fillet";
+                    } else if (baseName.includes("Chicken Fillet") && !baseName.includes("Finger") && !baseName.includes("Grilled")) {
+                        baseName = "Chicken Fillet";
+                    } else if (baseName.includes("Chicken Finger Fillet") || baseName.includes("Ch.Finger Fillet")) {
+                        baseName = "Chicken Finger Fillet";
+                    } else if (baseName.includes("Chicken Tikka")) {
+                        baseName = "Chicken Tikka";
+                    } else if (baseName.includes("Chicken Fried")) {
+                        baseName = "Chicken Fried";
+                    } else if (baseName.includes("Chicken Small Wings")) {
+                        baseName = "Chicken Small Wings";
+                    } else if (baseName.includes("Chicken Wings")) {
+                        baseName = "Chicken Wings";
+                    } else if (baseName.includes("Drumstick whole Fried")) {
+                        baseName = "Drumstick whole Fried";
+                    } else if (baseName.includes("وصلة دجاج")) {
+                        baseName = "وصلة دجاج";
+                    } else if (baseName.includes("Chicken Burger") && !baseName.includes("Fresh")) {
+                        baseName = "Chicken Burger";
+                    } else if (baseName.includes("Beef Burger Big")) {
+                        baseName = "Beef Burger Big";
+                    } else if (baseName.includes("Beef Burger Small")) {
+                        baseName = "Beef Burger Small";
+                    } else if (baseName.includes("Fresh Burger Chickens")) {
+                        baseName = "Fresh Burger Chickens";
+                    }
+                    
+                    if (!similarGroups[baseName]) {
+                        similarGroups[baseName] = [];
+                    }
+                    
+                    similarGroups[baseName].push(item);
+                });
+            }
+            
+            // إضافة البيانات
+            data.push(['م', 'اسم الصنف', 'الشد', 'الجرد من البرنامج', 'الجرد بالوحدة الصغرى', 'الجرد الفعلي', 'العجز/الزيادة', 'الفروقات المجمعة']);
+            
+            let processedItems = new Set();
+            let rowIndex = 0;
+            
+            items.forEach((item) => {
+                // تخطي العناصر التي تمت معالجتها بالفعل في مجموعة متشابهة
+                if (processedItems.has(item.code)) {
+                    return;
+                }
+                
+                // البحث عما إذا كان هذا العنصر جزءًا من مجموعة متشابهة (لجرد اللحوم فقط)
+                let similarItems = [];
+                let isPartOfSimilarGroup = false;
                 
                 if (sectionType === 'meat') {
-                    if (item.name && (item.name.includes('فيليه') || item.name.includes('فيلية'))) {
-                        subGroup = 'فيليه';
-                    } else if (item.name && item.name.includes('برجر')) {
-                        subGroup = 'برجر';
-                    } else if (item.name && (item.name.includes('دجاج') || item.name.includes('شاورما'))) {
-                        subGroup = 'دجاج';
-                    } else if (item.name && item.name.includes('لحم')) {
-                        subGroup = 'لحم';
-                    } else if (item.name && item.name.includes('جناح')) {
-                        subGroup = 'جناح';
+                    for (const baseName in similarGroups) {
+                        const groupItems = similarGroups[baseName];
+                        const similarItem = groupItems.find(i => i.code === item.code);
+                        if (similarItem && groupItems.length > 1) {
+                            similarItems = groupItems;
+                            isPartOfSimilarGroup = true;
+                            break;
+                        }
                     }
-                } else if (sectionType === 'veg') {
-                    if (item.name && (item.name.includes('خيار') || item.name.includes('طماطم') || item.name.includes('بصل'))) {
-                        subGroup = 'خضروات أساسية';
-                    } else if (item.name && (item.name.includes('فلفل') || item.name.includes('جزر') || item.name.includes('بقدونس'))) {
-                        subGroup = 'خضروات متنوعة';
-                    } else if (item.name && (item.name.includes('ليمون') || item.name.includes('برتقال'))) {
-                        subGroup = 'حمضيات';
-                    } else if (item.name && item.name.includes('خس')) {
-                        subGroup = 'أوراق خضراء';
-                    }
+                }
+                
+                if (isPartOfSimilarGroup && similarItems.length > 0) {
+                    // عرض جميع العناصر المتشابهة معًا
+                    similarItems.forEach((similarItem, similarIndex) => {
+                        const differenceText = similarItem.difference < 0 ? 'عجز' : 
+                                              similarItem.difference > 0 ? 'زيادة' : '';
+                        
+                        let combinedValue = '';
+                        if (similarIndex === 0) {
+                            const combinedDifference = similarItems.reduce((sum, i) => sum + (i.difference || 0), 0);
+                            const combinedText = combinedDifference < 0 ? 'عجز' : 
+                                                combinedDifference > 0 ? 'زيادة' : 'متساوي';
+                            combinedValue = `${combinedDifference} (${combinedText})`;
+                        }
+                        
+                        data.push([
+                            rowIndex + 1,
+                            similarItem.name,
+                            similarItem.vendorUOM,
+                            similarItem.stockQty,
+                            similarItem.smallestUnitQty,
+                            similarItem.actualCount || 0,
+                            `${similarItem.difference || 0} ${differenceText ? `(${differenceText})` : ''}`,
+                            similarIndex === 0 ? combinedValue : ''
+                        ]);
+                        
+                        processedItems.add(similarItem.code);
+                        rowIndex++;
+                    });
                 } else {
-                    if (item.name && (item.name.includes('حمص') || item.name.includes('متبل'))) {
-                        subGroup = 'مقبلات أساسية';
-                    } else if (item.name && item.name.includes('سلطة')) {
-                        subGroup = 'سلطات';
-                    } else if (item.name && (item.name.includes('فتوش') || item.name.includes('تبولة'))) {
-                        subGroup = 'سلطات عربية';
-                    } else if (item.name && (item.name.includes('كول سلو') || item.name.includes('جرجير'))) {
-                        subGroup = 'سلطات متنوعة';
-                    } else if (item.name && (item.name.includes('أرز') || item.name.includes('بوري'))) {
-                        subGroup = 'أرز وبوري';
-                    } else if (item.name && (item.name.includes('صوص') || item.name.includes('صلصة') || item.name.includes('مايونيز') || item.name.includes('كاتشب'))) {
-                        subGroup = 'صلصات وبهارات';
-                    } else if (item.name && (item.name.includes('لبن') || item.name.includes('لبنة'))) {
-                        subGroup = 'مشتقات الحليب';
-                    } else if (item.name && item.name.includes('بيض')) {
-                        subGroup = 'أصناف متنوعة';
-                    }
-                }
-                
-                if (!groupedItems[subGroup]) {
-                    groupedItems[subGroup] = [];
-                }
-                
-                groupedItems[subGroup].push(item);
-            });
-            
-            // إضافة البيانات المجمعة مع تنسيق
-            for (const group in groupedItems) {
-                data.push([]);
-                data.push([group]);
-                data.push(['م', 'اسم الصنف', 'الشد', 'الجرد من البرنامج', 'الجرد بالوحدة الصغرى', 'الجرد الفعلي', 'العجز/الزيادة']);
-                
-                groupedItems[group].forEach((item, index) => {
+                    // عرض العنصر العادي
                     const differenceText = item.difference < 0 ? 'عجز' : 
                                           item.difference > 0 ? 'زيادة' : '';
+                    
                     data.push([
-                        index + 1,
+                        rowIndex + 1,
                         item.name,
                         item.vendorUOM,
                         item.stockQty,
                         item.smallestUnitQty,
                         item.actualCount || 0,
+                        `${item.difference || 0} ${differenceText ? `(${differenceText})` : ''}`,
                         `${item.difference || 0} ${differenceText ? `(${differenceText})` : ''}`
                     ]);
-                });
-                
-                // حساب إجمالي المجموعة
-                const groupTotal = groupedItems[group].reduce((sum, item) => sum + (item.difference || 0), 0);
-                const groupTotalText = groupTotal < 0 ? 'عجز' : 
-                                      groupTotal > 0 ? 'زيادة' : '';
-                data.push(['', '', '', '', '', 'إجمالي ' + group, `${groupTotal} ${groupTotalText ? `(${groupTotalText})` : ''}`]);
-                data.push([]);
-            }
+                    
+                    processedItems.add(item.code);
+                    rowIndex++;
+                }
+            });
             
             // إنشاء ورقة عمل مع تنسيق
             const ws = XLSX.utils.aoa_to_sheet(data);
@@ -2744,7 +3092,8 @@
                 { wch: 15 },  // العمود الرابع: الجرد من البرنامج
                 { wch: 18 },  // العمود الخامس: الجرد بالوحدة الصغرى
                 { wch: 15 },  // العمود السادس: الجرد الفعلي
-                { wch: 18 }   // العمود السابع: العجز/الزيادة
+                { wch: 18 },  // العمود السابع: العجز/الزيادة
+                { wch: 18 }   // العمود الثامن: الفروقات المجمعة
             ];
             ws['!cols'] = wscols;
             
