@@ -1,5 +1,3 @@
-[file name]: index Final.html
-[file content begin]
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
@@ -1884,6 +1882,21 @@
                     baseName = "Fresh Burger Chickens";
                 }
                 
+                // تجميع فروج نايف مع بنت الديك
+                if (baseName.includes("Rooster Junior") || baseName.includes("Bint Al-Deek") || 
+                    item.name.includes("فروج نايف") || item.name.includes("بنت الديك")) {
+                    baseName = "فروج/بنت الديك";
+                }
+                
+                // تجميع الفيليه المشوي مع الفيليه العادي والفيليه فلفل
+                if (baseName.includes("Grilled Chicken Fillet") || 
+                    baseName.includes("Chicken Fillet") && !baseName.includes("Finger") && !baseName.includes("Big") ||
+                    item.name.includes("فيليه مشوي") || item.name.includes("فيليه عادي") || item.name.includes("فيليه فلفل")) {
+                    if (!baseName.includes("Finger") && !baseName.includes("Big")) {
+                        baseName = "فيليه دجاج";
+                    }
+                }
+                
                 if (!similarGroups[baseName]) {
                     similarGroups[baseName] = [];
                 }
@@ -1925,7 +1938,7 @@
                 // ترتيب خاص لتجميع الأصناف المتشابهة
                 const groupsOrder = {
                     "Chicken Big Fillet": 1,
-                    "Chicken Fillet": 2,
+                    "فيليه دجاج": 2,
                     "Chicken Finger Fillet": 3,
                     "Chicken Tikka": 4,
                     "Chicken Fried": 5,
@@ -1936,21 +1949,26 @@
                     "Chicken Burger": 10,
                     "Beef Burger Big": 11,
                     "Beef Burger Small": 12,
-                    "Fresh Burger Chickens": 13
+                    "Fresh Burger Chickens": 13,
+                    "فروج/بنت الديك": 14
                 };
                 
                 let groupA = "";
                 let groupB = "";
                 
                 for (const group in groupsOrder) {
-                    if (a.name.includes(group)) {
+                    if (a.name.includes(group) || group === "فيليه دجاج" && 
+                        (a.name.includes("Grilled Chicken Fillet") || 
+                         (a.name.includes("Chicken Fillet") && !a.name.includes("Finger") && !a.name.includes("Big")))) {
                         groupA = group;
                         break;
                     }
                 }
                 
                 for (const group in groupsOrder) {
-                    if (b.name.includes(group)) {
+                    if (b.name.includes(group) || group === "فيليه دجاج" && 
+                        (b.name.includes("Grilled Chicken Fillet") || 
+                         (b.name.includes("Chicken Fillet") && !b.name.includes("Finger") && !b.name.includes("Big")))) {
                         groupB = group;
                         break;
                     }
@@ -1977,10 +1995,9 @@
                     subGroup = 'بيج فيليه';
                 } else if (item.name.includes('Finger Fillet')) {
                     subGroup = 'أصابع فيليه';
-                } else if (item.name.includes('Chicken Fillet') && !item.name.includes('Finger') && !item.name.includes('Big') && !item.name.includes('Grilled')) {
-                    subGroup = 'فيليه';
-                } else if (item.name.includes('Grilled Chicken Fillet')) {
-                    subGroup = 'فيليه مشوي';
+                } else if (item.name.includes('Grilled Chicken Fillet') || 
+                          (item.name.includes('Chicken Fillet') && !item.name.includes('Finger') && !item.name.includes('Big'))) {
+                    subGroup = 'فيليه دجاج';
                 } else if (item.name.includes('Tikka')) {
                     subGroup = 'تيكا';
                 } else if (item.name.includes('Fried')) {
@@ -1995,10 +2012,9 @@
                     subGroup = 'درام ستيك/وصلة';
                 } else if (item.name.includes('Quils') || item.name.includes('فري')) {
                     subGroup = 'فري';
-                } else if (item.name.includes('Rooster') || item.name.includes('فروج')) {
-                    subGroup = 'فروج';
-                } else if (item.name.includes('Bint Al-Deek') || item.name.includes('بنت الديك')) {
-                    subGroup = 'بنت الديك';
+                } else if (item.name.includes('Rooster') || item.name.includes('فروج') || 
+                          item.name.includes('Bint Al-Deek') || item.name.includes('بنت الديك')) {
+                    subGroup = 'فروج/بنت الديك';
                 } else if (item.name.includes('Royal')) {
                     subGroup = 'ملكي';
                 }
@@ -2396,6 +2412,17 @@
             }
         }
 
+        // تحديد السلطات في المقبلات
+        function isSaladItem(item) {
+            return item.name && (
+                item.name.includes('سلطة') || 
+                item.name.includes('فتوش') || 
+                item.name.includes('تبولة') || 
+                item.name.includes('كول سلو') ||
+                item.name.includes('جرجير')
+            );
+        }
+
         // تحديث عرض جرد المقبلات مع إضافة كلمة عجز/زيادة
         function updateAppetizersInventory() {
             const container = document.getElementById('appetizers-inventory-container');
@@ -2411,52 +2438,34 @@
                 return;
             }
             
-            // تجميع الأصناف حسب المجموعات الفرعية
-            const groupedItems = {};
+            // فصل السلطات عن باقي الأصناف
+            const saladItems = [];
+            const otherItems = [];
+            
             appetizersItems.forEach(item => {
-                // تحديد المجموعة الفرعية بناءً على اسم الصنف
-                let subGroup = 'أخرى';
-                if (item.name && (item.name.includes('حمص') || item.name.includes('متبل'))) {
-                    subGroup = 'مقبلات أساسية';
-                } else if (item.name && item.name.includes('سلطة')) {
-                    subGroup = 'سلطات';
-                } else if (item.name && (item.name.includes('فتوش') || item.name.includes('تبولة'))) {
-                    subGroup = 'سلطات عربية';
-                } else if (item.name && (item.name.includes('كول سلو') || item.name.includes('جرجير'))) {
-                    subGroup = 'سلطات متنوعة';
-                } else if (item.name && (item.name.includes('أرز') || item.name.includes('بوري'))) {
-                    subGroup = 'أرز وبوري';
-                } else if (item.name && (item.name.includes('صوص') || item.name.includes('صلصة') || item.name.includes('مايونيز') || item.name.includes('كاتشب'))) {
-                    subGroup = 'صلصات وبهارات';
-                } else if (item.name && (item.name.includes('لبن') || item.name.includes('لبنة'))) {
-                    subGroup = 'مشتقات الحليب';
-                } else if (item.name && item.name.includes('بيض')) {
-                    subGroup = 'أصناف متنوعة';
+                if (isSaladItem(item)) {
+                    saladItems.push(item);
+                } else {
+                    otherItems.push(item);
                 }
-                
-                if (!groupedItems[subGroup]) {
-                    groupedItems[subGroup] = [];
-                }
-                
-                groupedItems[subGroup].push(item);
             });
             
-            // عرض الأصناف المجمعة في جدول
-            for (const group in groupedItems) {
-                const categoryDiv = document.createElement('div');
-                categoryDiv.className = 'inventory-category';
+            // عرض السلطات أولاً مع مجموعة واحدة
+            if (saladItems.length > 0) {
+                const saladsCategoryDiv = document.createElement('div');
+                saladsCategoryDiv.className = 'inventory-category';
                 
-                const titleDiv = document.createElement('div');
-                titleDiv.className = 'category-title-orange';
-                titleDiv.textContent = group;
-                categoryDiv.appendChild(titleDiv);
+                const saladsTitleDiv = document.createElement('div');
+                saladsTitleDiv.className = 'category-title-orange';
+                saladsTitleDiv.textContent = 'السلطات';
+                saladsCategoryDiv.appendChild(saladsTitleDiv);
                 
-                const table = document.createElement('table');
-                table.className = 'inventory-table';
+                const saladsTable = document.createElement('table');
+                saladsTable.className = 'inventory-table';
                 
                 // رأس الجدول
-                const thead = document.createElement('thead');
-                thead.innerHTML = `
+                const saladsThead = document.createElement('thead');
+                saladsThead.innerHTML = `
                     <tr>
                         <th>م</th>
                         <th>اسم الصنف</th>
@@ -2465,13 +2474,16 @@
                         <th class="count-cell">الجرد بالوحدة الصغرى</th>
                         <th>الجرد الفعلي</th>
                         <th class="difference-cell">العجز/الزيادة</th>
+                        <th>الفروقات المجمعة</th>
                     </tr>
                 `;
-                table.appendChild(thead);
+                saladsTable.appendChild(saladsThead);
                 
-                const tbody = document.createElement('tbody');
+                const saladsTbody = document.createElement('tbody');
+                let saladRowIndex = 0;
                 
-                groupedItems[group].forEach((item, index) => {
+                // عرض كل السلطات معًا في مجموعة واحدة
+                saladItems.forEach((item, index) => {
                     const row = document.createElement('tr');
                     
                     // تحديد لون الفرق وإضافة كلمة عجز/زيادة
@@ -2482,7 +2494,7 @@
                                           difference > 0 ? 'زيادة' : '';
                     
                     row.innerHTML = `
-                        <td>${index + 1}</td>
+                        <td>${saladRowIndex + 1}</td>
                         <td>${item.name}</td>
                         <td>${item.vendorUOM}</td>
                         <td>${item.stockQty}</td>
@@ -2496,9 +2508,26 @@
                         </td>
                     `;
                     
-                    tbody.appendChild(row);
+                    // إذا كان هذا هو الصف الأول، أضف الخلية المجمعة
+                    if (index === 0) {
+                        const saladsTotalDifference = saladItems.reduce((sum, i) => sum + (i.difference || 0), 0);
+                        const saladsTotalClass = saladsTotalDifference < 0 ? 'combined-difference-negative' : 
+                                               saladsTotalDifference > 0 ? 'combined-difference-positive' : 'combined-difference-zero';
+                        const saladsTotalText = saladsTotalDifference < 0 ? 'عجز' : 
+                                              saladsTotalDifference > 0 ? 'زيادة' : 'متساوي';
+                        
+                        const combinedCell = document.createElement('td');
+                        combinedCell.className = `combined-difference-cell ${saladsTotalClass}`;
+                        combinedCell.rowSpan = saladItems.length;
+                        combinedCell.innerHTML = `${saladsTotalDifference}<br><span style="font-size: 14px;">(${saladsTotalText})</span>`;
+                        combinedCell.setAttribute('data-similar-group', 'salads-group');
+                        row.appendChild(combinedCell);
+                    }
                     
-                    // إضافة مستمع حدث لحساب الفرق
+                    saladsTbody.appendChild(row);
+                    saladRowIndex++;
+                    
+                    // إضافة مستمع حدث لحساب الفرق وتحديث الخلية المجمعة
                     const input = row.querySelector('.actual-count-input');
                     input.addEventListener('input', function() {
                         const actualCount = parseFloat(this.value) || 0;
@@ -2522,31 +2551,176 @@
                         item.actualCount = actualCount;
                         item.difference = Math.round(difference);
                         
-                        // إعادة حساب المجموع
-                        updateGroupTotal(group, groupedItems[group]);
+                        // تحديث الخلية المجمعة للسلطات
+                        const saladsTotalDifference = saladItems.reduce((sum, i) => sum + (i.difference || 0), 0);
+                        const saladsTotalClass = saladsTotalDifference < 0 ? 'combined-difference-negative' : 
+                                               saladsTotalDifference > 0 ? 'combined-difference-positive' : 'combined-difference-zero';
+                        const saladsTotalText = saladsTotalDifference < 0 ? 'عجز' : 
+                                              saladsTotalDifference > 0 ? 'زيادة' : 'متساوي';
+                        
+                        const combinedCell = document.querySelector('.combined-difference-cell[data-similar-group="salads-group"]');
+                        if (combinedCell) {
+                            combinedCell.className = `combined-difference-cell ${saladsTotalClass}`;
+                            combinedCell.innerHTML = `${saladsTotalDifference}<br><span style="font-size: 14px;">(${saladsTotalText})</span>`;
+                        }
                     });
                 });
                 
-                table.appendChild(tbody);
+                saladsTable.appendChild(saladsTbody);
                 
-                // صف المجموع
-                const totalRow = document.createElement('tr');
-                totalRow.className = 'group-total';
-                const groupTotalValue = groupedItems[group].reduce((sum, item) => sum + (item.difference || 0), 0);
-                const groupTotalClass = groupTotalValue < 0 ? 'difference-negative' : 
-                                       groupTotalValue > 0 ? 'difference-positive' : '';
-                const groupTotalText = groupTotalValue < 0 ? 'عجز' : 
-                                      groupTotalValue > 0 ? 'زيادة' : '';
-                totalRow.innerHTML = `
-                    <td colspan="6">إجمالي ${group}</td>
-                    <td class="group-total-cell ${groupTotalClass}" data-group="${group}" style="font-size: 18px; font-weight: bold;">
-                        ${groupTotalValue} ${groupTotalText ? `<span class="difference-text" style="color: ${groupTotalClass.includes('negative') ? 'var(--accent-red)' : 'var(--accent-green)'};">(${groupTotalText})</span>` : ''}
+                // صف المجموع للسلطات
+                const saladsTotalRow = document.createElement('tr');
+                saladsTotalRow.className = 'group-total';
+                const saladsTotalValue = saladItems.reduce((sum, item) => sum + (item.difference || 0), 0);
+                const saladsTotalClass = saladsTotalValue < 0 ? 'difference-negative' : 
+                                       saladsTotalValue > 0 ? 'difference-positive' : '';
+                const saladsTotalText = saladsTotalValue < 0 ? 'عجز' : 
+                                      saladsTotalValue > 0 ? 'زيادة' : '';
+                saladsTotalRow.innerHTML = `
+                    <td colspan="7">إجمالي السلطات</td>
+                    <td class="group-total-cell ${saladsTotalClass}" data-group="السلطات" style="font-size: 18px; font-weight: bold;">
+                        ${saladsTotalValue} ${saladsTotalText ? `<span class="difference-text" style="color: ${saladsTotalClass.includes('negative') ? 'var(--accent-red)' : 'var(--accent-green)'};">(${saladsTotalText})</span>` : ''}
                     </td>
                 `;
-                table.appendChild(totalRow);
+                saladsTable.appendChild(saladsTotalRow);
                 
-                categoryDiv.appendChild(table);
-                container.appendChild(categoryDiv);
+                saladsCategoryDiv.appendChild(saladsTable);
+                container.appendChild(saladsCategoryDiv);
+            }
+            
+            // عرض باقي الأصناف
+            if (otherItems.length > 0) {
+                // تجميع الأصناف حسب المجموعات الفرعية
+                const groupedItems = {};
+                otherItems.forEach(item => {
+                    // تحديد المجموعة الفرعية بناءً على اسم الصنف
+                    let subGroup = 'أخرى';
+                    if (item.name && (item.name.includes('حمص') || item.name.includes('متبل'))) {
+                        subGroup = 'مقبلات أساسية';
+                    } else if (item.name && (item.name.includes('أرز') || item.name.includes('بوري'))) {
+                        subGroup = 'أرز وبوري';
+                    } else if (item.name && (item.name.includes('صوص') || item.name.includes('صلصة') || item.name.includes('مايونيز') || item.name.includes('كاتشب'))) {
+                        subGroup = 'صلصات وبهارات';
+                    } else if (item.name && (item.name.includes('لبن') || item.name.includes('لبنة'))) {
+                        subGroup = 'مشتقات الحليب';
+                    } else if (item.name && item.name.includes('بيض')) {
+                        subGroup = 'أصناف متنوعة';
+                    }
+                    
+                    if (!groupedItems[subGroup]) {
+                        groupedItems[subGroup] = [];
+                    }
+                    
+                    groupedItems[subGroup].push(item);
+                });
+                
+                // عرض الأصناف المجمعة في جدول
+                for (const group in groupedItems) {
+                    const categoryDiv = document.createElement('div');
+                    categoryDiv.className = 'inventory-category';
+                    
+                    const titleDiv = document.createElement('div');
+                    titleDiv.className = 'category-title-orange';
+                    titleDiv.textContent = group;
+                    categoryDiv.appendChild(titleDiv);
+                    
+                    const table = document.createElement('table');
+                    table.className = 'inventory-table';
+                    
+                    // رأس الجدول
+                    const thead = document.createElement('thead');
+                    thead.innerHTML = `
+                        <tr>
+                            <th>م</th>
+                            <th>اسم الصنف</th>
+                            <th>الشد</th>
+                            <th>الجرد من البرنامج</th>
+                            <th class="count-cell">الجرد بالوحدة الصغرى</th>
+                            <th>الجرد الفعلي</th>
+                            <th class="difference-cell">العجز/الزيادة</th>
+                        </tr>
+                    `;
+                    table.appendChild(thead);
+                    
+                    const tbody = document.createElement('tbody');
+                    
+                    groupedItems[group].forEach((item, index) => {
+                        const row = document.createElement('tr');
+                        
+                        // تحديد لون الفرق وإضافة كلمة عجز/زيادة
+                        const difference = item.difference || 0;
+                        const differenceClass = difference < 0 ? 'difference-negative' : 
+                                               difference > 0 ? 'difference-positive' : '';
+                        const differenceText = difference < 0 ? 'عجز' : 
+                                              difference > 0 ? 'زيادة' : '';
+                        
+                        row.innerHTML = `
+                            <td>${index + 1}</td>
+                            <td>${item.name}</td>
+                            <td>${item.vendorUOM}</td>
+                            <td>${item.stockQty}</td>
+                            <td class="count-cell">${item.smallestUnitQty}</td>
+                            <td>
+                                <input type="number" class="actual-count-input" data-code="${item.code}" 
+                                       value="${item.actualCount || ''}" placeholder="0">
+                            </td>
+                            <td class="difference-cell ${differenceClass}" data-code="${item.code}" style="font-size: 18px; font-weight: bold;">
+                                ${difference} ${differenceText ? `<span class="difference-text" style="color: ${differenceClass.includes('negative') ? 'var(--accent-red)' : 'var(--accent-green)'};">(${differenceText})</span>` : ''}
+                            </td>
+                        `;
+                        
+                        tbody.appendChild(row);
+                        
+                        // إضافة مستمع حدث لحساب الفرق
+                        const input = row.querySelector('.actual-count-input');
+                        input.addEventListener('input', function() {
+                            const actualCount = parseFloat(this.value) || 0;
+                            const difference = actualCount - item.smallestUnitQty;
+                            const differenceText = difference < 0 ? 'عجز' : 
+                                                  difference > 0 ? 'زيادة' : '';
+                            
+                            // تحديث الفرق في الخلية مع التلوين والنص
+                            const differenceCell = document.querySelector(`.difference-cell[data-code="${item.code}"]`);
+                            differenceCell.innerHTML = `${Math.round(difference)} ${differenceText ? `<span class="difference-text" style="color: ${difference < 0 ? 'var(--accent-red)' : difference > 0 ? 'var(--accent-green)' : 'var(--primary)'};">(${differenceText})</span>` : ''}`;
+                            
+                            // تحديث اللون بناءً على القيمة
+                            differenceCell.classList.remove('difference-negative', 'difference-positive');
+                            if (difference < 0) {
+                                differenceCell.classList.add('difference-negative');
+                            } else if (difference > 0) {
+                                differenceCell.classList.add('difference-positive');
+                            }
+                            
+                            // تحديث بيانات العنصر
+                            item.actualCount = actualCount;
+                            item.difference = Math.round(difference);
+                            
+                            // إعادة حساب المجموع
+                            updateGroupTotal(group, groupedItems[group]);
+                        });
+                    });
+                    
+                    table.appendChild(tbody);
+                    
+                    // صف المجموع
+                    const totalRow = document.createElement('tr');
+                    totalRow.className = 'group-total';
+                    const groupTotalValue = groupedItems[group].reduce((sum, item) => sum + (item.difference || 0), 0);
+                    const groupTotalClass = groupTotalValue < 0 ? 'difference-negative' : 
+                                           groupTotalValue > 0 ? 'difference-positive' : '';
+                    const groupTotalText = groupTotalValue < 0 ? 'عجز' : 
+                                          groupTotalValue > 0 ? 'زيادة' : '';
+                    totalRow.innerHTML = `
+                        <td colspan="6">إجمالي ${group}</td>
+                        <td class="group-total-cell ${groupTotalClass}" data-group="${group}" style="font-size: 18px; font-weight: bold;">
+                            ${groupTotalValue} ${groupTotalText ? `<span class="difference-text" style="color: ${groupTotalClass.includes('negative') ? 'var(--accent-red)' : 'var(--accent-green)'};">(${groupTotalText})</span>` : ''}
+                        </td>
+                    `;
+                    table.appendChild(totalRow);
+                    
+                    categoryDiv.appendChild(table);
+                    container.appendChild(categoryDiv);
+                }
             }
         }
 
@@ -2702,6 +2876,21 @@
                             baseName = "Fresh Burger Chickens";
                         }
                         
+                        // تجميع فروج نايف مع بنت الديك
+                        if (baseName.includes("Rooster Junior") || baseName.includes("Bint Al-Deek") || 
+                            item.name.includes("فروج نايف") || item.name.includes("بنت الديك")) {
+                            baseName = "فروج/بنت الديك";
+                        }
+                        
+                        // تجميع الفيليه المشوي مع الفيليه العادي والفيليه فلفل
+                        if (baseName.includes("Grilled Chicken Fillet") || 
+                            baseName.includes("Chicken Fillet") && !baseName.includes("Finger") && !baseName.includes("Big") ||
+                            item.name.includes("فيليه مشوي") || item.name.includes("فيليه عادي") || item.name.includes("فيليه فلفل")) {
+                            if (!baseName.includes("Finger") && !baseName.includes("Big")) {
+                                baseName = "فيليه دجاج";
+                            }
+                        }
+                        
                         if (!similarGroups[baseName]) {
                             similarGroups[baseName] = [];
                         }
@@ -2716,7 +2905,7 @@
                 let processedItems = new Set();
                 
                 // حساب عدد الأعمدة
-                const hasCombinedColumn = sectionType === 'meat';
+                const hasCombinedColumn = sectionType === 'meat' || (sectionType === 'appetizers' && items.some(item => isSaladItem(item)));
                 const columnCount = hasCombinedColumn ? 8 : 7;
                 
                 contentHTML += `
@@ -2759,11 +2948,20 @@
                                 break;
                             }
                         }
+                    } else if (sectionType === 'appetizers' && isSaladItem(item)) {
+                        // تجميع كل السلطات معًا
+                        similarItems = items.filter(i => isSaladItem(i));
+                        isPartOfSimilarGroup = true;
                     }
                     
                     if (isPartOfSimilarGroup && similarItems.length > 0) {
                         // عرض جميع العناصر المتشابهة معًا
                         similarItems.forEach((similarItem, similarIndex) => {
+                            // تخطي إذا تمت معالجته بالفعل
+                            if (processedItems.has(similarItem.code)) {
+                                return;
+                            }
+                            
                             const difference = similarItem.difference || 0;
                             const differenceText = difference < 0 ? 'عجز' : 
                                                   difference > 0 ? 'زيادة' : '';
@@ -2809,7 +3007,7 @@
                                               difference > 0 ? 'زيادة' : '';
                         
                         let combinedCellHTML = '';
-                        if (hasCombinedColumn) {
+                        if (hasCombinedColumn && !isSaladItem(item)) {
                             combinedCellHTML = `
                                 <td style="border: 1px solid #ddd; padding: 1px; text-align: center; font-size: 8.5px; font-weight: bold; color: ${difference < 0 ? 'red' : difference > 0 ? 'green' : '#333'}; vertical-align: middle;">
                                     <span style="display: block; margin-bottom: 1px;">${difference}</span>
@@ -3020,6 +3218,21 @@
                         baseName = "Fresh Burger Chickens";
                     }
                     
+                    // تجميع فروج نايف مع بنت الديك
+                    if (baseName.includes("Rooster Junior") || baseName.includes("Bint Al-Deek") || 
+                        item.name.includes("فروج نايف") || item.name.includes("بنت الديك")) {
+                        baseName = "فروج/بنت الديك";
+                    }
+                    
+                    // تجميع الفيليه المشوي مع الفيليه العادي والفيليه فلفل
+                    if (baseName.includes("Grilled Chicken Fillet") || 
+                        baseName.includes("Chicken Fillet") && !baseName.includes("Finger") && !baseName.includes("Big") ||
+                        item.name.includes("فيليه مشوي") || item.name.includes("فيليه عادي") || item.name.includes("فيليه فلفل")) {
+                        if (!baseName.includes("Finger") && !baseName.includes("Big")) {
+                            baseName = "فيليه دجاج";
+                        }
+                    }
+                    
                     if (!similarGroups[baseName]) {
                         similarGroups[baseName] = [];
                     }
@@ -3054,11 +3267,19 @@
                             break;
                         }
                     }
+                } else if (sectionType === 'appetizers' && isSaladItem(item)) {
+                    // تجميع كل السلطات معًا
+                    similarItems = items.filter(i => isSaladItem(i));
+                    isPartOfSimilarGroup = true;
                 }
                 
                 if (isPartOfSimilarGroup && similarItems.length > 0) {
                     // عرض جميع العناصر المتشابهة معًا
                     similarItems.forEach((similarItem, similarIndex) => {
+                        if (processedItems.has(similarItem.code)) {
+                            return;
+                        }
+                        
                         const differenceText = similarItem.difference < 0 ? 'عجز' : 
                                               similarItem.difference > 0 ? 'زيادة' : '';
                         
@@ -3436,4 +3657,3 @@
     </script>
 </body>
 </html>
-[file content end]
