@@ -1,3 +1,5 @@
+[file name]: index Final.html
+[file content begin]
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
@@ -1227,66 +1229,67 @@
             { code: "K2012", name: "Vegitable Salad Small  ( سلطة خضراء صغيرة)", group: "appetizers", vendorUOM: "علبة", stockQty: 0, uuom: "علبة", smallestUnitQty: 0 }
         ];
         
-        // بيانات المطاعم والمدراء
+        // بيانات المطاعم والمدراء المحدثة من ملف Naif Restaurants with Managers Name.xlsx
         const restaurants = [
-            { name: "الفيحاء", areaManager: "حجازي", operationsManager: "طارق بيومي" },
-            { name: "شارع البحرين", areaManager: "مختار", operationsManager: "هاني عبدالله" },
-            { name: "جمعية العدان والقصور", areaManager: "انور", operationsManager: "طارق بيومي" },
-            { name: "الجابرية تكا و فرايد", areaManager: "مختار", operationsManager: "هاني عبدالله" },
-            { name: "الفحاحيل", areaManager: "وليد", operationsManager: "هاني عبدالله" },
-            { name: "أبو حليفة", areaManager: "ثروت", operationsManager: "هاني عبدالله" },
-            { name: "الرقعي", areaManager: "عماد", operationsManager: "طارق بيومي" },
-            { name: "مشرف", areaManager: "مختار", operationsManager: "هاني عبدالله" },
-            { name: "النافورة", areaManager: "مختار", operationsManager: "هاني عبدالله" },
-            { name: "القادسية", areaManager: "حجازي", operationsManager: "طارق بيومي" },
-            { name: "صباح السالم", areaManager: "ثروت", operationsManager: "هاني عبدالله" },
-            { name: "الضباعية", areaManager: "وليد", operationsManager: "هاني عبدالله" },
-            { name: "الشرق", areaManager: "وليد", operationsManager: "هاني عبدالله" },
-            { name: "الجابرية بنت الديك", areaManager: "مختار", operationsManager: "هاني عبدالله" },
-            { name: "الجهراء الزويخ", areaManager: "طارق", operationsManager: "طارق بيومي" },
-            { name: "الشويخ واره", areaManager: "حجازي", operationsManager: "طارق بيومي" },
-            { name: "السيد ياسين", areaManager: "مختار", operationsManager: "هاني عبدالله" },
-            { name: "الفنطاس", areaManager: "وليد", operationsManager: "هاني عبدالله" },
-            { name: "السندباد", areaManager: "مختار", operationsManager: "هاني عبدالله" },
-            { name: "المطار", areaManager: "حجازي", operationsManager: "طارق بيومي" },
-            { name: "المنقف", areaManager: "وليد", operationsManager: "هاني عبدالله" },
-            { name: "حولي بارك", areaManager: "حجازي", operationsManager: "طارق بيومي" },
-            { name: "الرقة", areaManager: "ثروت", operationsManager: "هاني عبدالله" },
-            { name: "الرحاب", areaManager: "عماد", operationsManager: "طارق بيومي" },
-            { name: "هدية", areaManager: "ثروت", operationsManager: "هاني عبدالله" },
-            { name: "نادي الصليبخات", areaManager: "عماد", operationsManager: "طارق بيومي" },
-            { name: "الجهراء الصناعية", areaManager: "حجازي", operationsManager: "طارق بيومي" },
-            { name: "الفروانية", areaManager: "عماد", operationsManager: "طارق بيومي" },
-            { name: "أسواق القرين", areaManager: "انور", operationsManager: "طارق بيومي" },
-            { name: "سلوى", areaManager: "ثروت", operationsManager: "هاني عبدالله" },
-            { name: "سوق الجليب", areaManager: "طارق", operationsManager: "طارق بيومي" },
-            { name: "الشهداء", areaManager: "انور", operationsManager: "طارق بيومi" },
-            { name: "الدسمة وبنيد القار", areaManager: "وليد", operationsManager: "هاني عبدالله" },
-            { name: "جمعية صباح الاحمد", areaManager: "ثروت", operationsManager: "هاني عبدالله" },
-            { name: "الافينيوز", areaManager: "طارق", operationsManager: "طارق بيومي" },
-            { name: "الصليبية الصناعية", areaManager: "طارق", operationsManager: "طارق بيومي" },
-            { name: "جمعية أبوفطيرة", areaManager: "وليد", operationsManager: "هاني عبدالله" },
-            { name: "غرب أبو فطيرة", areaManager: "انور", operationsManager: "طارق بيومي" },
-            { name: "خيطان العصيمي", areaManager: "انور", operationsManager: "طارق بيومي" },
-            { name: "الوفرة", areaManager: "ثروت", operationsManager: "هاني عبدالله" },
-            { name: "جمعية القيروان", areaManager: "طارق", operationsManager: "طارق بيومي" },
-            { name: "شرق الاحمدي", areaManager: "ثروت", operationsManager: "هاني عبدالله" },
-            { name: "الفروانية فرع 2", areaManager: "عماد", operationsManager: "طارق بيومي" },
-            { name: "جمعية الصليبية", areaManager: "طارق", operationsManager: "طارق بيومي" },
-            { name: "جمعية الزهراء", areaManager: "انور", operationsManager: "طارق بيومي" },
-            { name: "جمعية مدينة جابر الأحمد", areaManager: "عماد", operationsManager: "طارق بيومi" },
-            { name: "الخيران أوتليت مول", areaManager: "وليد", operationsManager: "هاني عبدالله" },
-            { name: "الخيران أويا مول", areaManager: "وليد", operationsManager: "هاني عبدالله" },
-            { name: "الجهراء ليالي الشرق", areaManager: "حجازي", operationsManager: "طارق بيومي" },
-            { name: "الجهراء مجمع مكة", areaManager: "طارق", operationsManager: "طارق بيومي" },
-            { name: "العارضية الجديد", areaManager: "عماد", operationsManager: "طارق بيومي" },
-            { name: "الري", areaManager: "مختار", operationsManager: "هاني عبدالله" },
-            { name: "مارينا مول", areaManager: "مختار", operationsManager: "هاني عبدallah" },
-            { name: "صباح السالم (العرين)", areaManager: "ثروت", operationsManager: "هاني عبدالله" },
-            { name: "مول 360", areaManager: "انور", operationsManager: "طارق بيومي" },
-            { name: "الخيول", areaManager: "ثروت", operationsManager: "هاني عبدالله" },
-            { name: "كبد", areaManager: "طارق", operationsManager: "طارق بيومي" },
-            { name: "مجمع الكوت", areaManager: "وليد", operationsManager: "هاني عبدالله" }
+            { name: "اسواق القرين", areaManager: "مرتضى", operationsManager: "طارق بيومي" },
+            { name: "الجابرية بنت الديك", areaManager: "طارق", operationsManager: "هاني عبدالله" },
+            { name: "الجابرية تكا و فرايد", areaManager: "طارق", operationsManager: "هاني عبدالله" },
+            { name: "الجهراء - ليالي الشرق", areaManager: "ثروت", operationsManager: "طارق بيومي" },
+            { name: "الجهراء - مجمع مكة", areaManager: "وليد", operationsManager: "طارق بيومي" },
+            { name: "الجهراء الزويخ", areaManager: "وليد", operationsManager: "طارق بيومي" },
+            { name: "الجهراء الصناعية", areaManager: "ثروت", operationsManager: "طارق بيومي" },
+            { name: "الخيران أوتليت", areaManager: "عماد", operationsManager: "هاني عبدالله" },
+            { name: "الخيران أويا", areaManager: "عماد", operationsManager: "هاني عبدالله" },
+            { name: "الخيول", areaManager: "حجازي", operationsManager: "هاني عبدالله" },
+            { name: "الدسمة وبنيد القار", areaManager: "انور", operationsManager: "هاني عبدالله" },
+            { name: "الرحاب", areaManager: "مختار", operationsManager: "طارق بيومي" },
+            { name: "الرقة", areaManager: "حجازي", operationsManager: "هاني عبدالله" },
+            { name: "الرقعي", areaManager: "ثروت", operationsManager: "طارق بيومي" },
+            { name: "الري", areaManager: "طارق", operationsManager: "هاني عبدالله" },
+            { name: "السندباد", areaManager: "طارق", operationsManager: "هاني عبدالله" },
+            { name: "الشرق", areaManager: "انور", operationsManager: "هاني عبدالله" },
+            { name: "الشويخ واره", areaManager: "ثروت", operationsManager: "طارق بيومي" },
+            { name: "الصليبية", areaManager: "مختار", operationsManager: "طارق بيومي" },
+            { name: "الضباعية", areaManager: "عماد", operationsManager: "هاني عبدالله" },
+            { name: "العارضية الحرفية", areaManager: "ثروت", operationsManager: "طارق بيومي" },
+            { name: "الفحاحيل", areaManager: "عماد", operationsManager: "هاني عبدالله" },
+            { name: "الفروانية", areaManager: "مختار", operationsManager: "طارق بيومي" },
+            { name: "الفروانية فرع 2", areaManager: "مختار", operationsManager: "طارق بيومي" },
+            { name: "الفنطاس", areaManager: "انور", operationsManager: "هاني عبدالله" },
+            { name: "الفيحاء", areaManager: "وليد", operationsManager: "طارق بيومي" },
+            { name: "القادسية", areaManager: "وليد", operationsManager: "طارق بيومi" },
+            { name: "المطار", areaManager: "ثروت", operationsManager: "طارق بيومي" },
+            { name: "المنقف", areaManager: "عماد", operationsManager: "هاني عبدالله" },
+            { name: "النافورة", areaManager: "طارق", operationsManager: "هاني عبدالله" },
+            { name: "أبوحليفة", areaManager: "حجازي", operationsManager: "هاني عبدالله" },
+            { name: "جمعية الزهراء التعاونية", areaManager: "وليد", operationsManager: "طارق بيومي" },
+            { name: "جمعية الشهداء", areaManager: "وليد", operationsManager: "طارق بيومي" },
+            { name: "جمعية الصليبية", areaManager: "مختار", operationsManager: "طارق بيومي" },
+            { name: "جمعية العدان والقصور", areaManager: "مرتضى", operationsManager: "طارق بيومي" },
+            { name: "جمعية القيروان", areaManager: "مختار", operationsManager: "طارق بيومي" },
+            { name: "جمعية الوفرة", areaManager: "حجازي", operationsManager: "هاني عبدالله" },
+            { name: "جمعية أبو فطيرة", areaManager: "عماد", operationsManager: "هاني عبدالله" },
+            { name: "جمعية مدينة جابر الأحمد", areaManager: "ثروت", operationsManager: "طارق بيومي" },
+            { name: "حولي الترفيهي", areaManager: "وليد", operationsManager: "طارق بيومي" },
+            { name: "خيطان العصيمي", areaManager: "مرتضى", operationsManager: "طارق بيومي" },
+            { name: "سلوى", areaManager: "انور", operationsManager: "هاني عبدالله" },
+            { name: "سوق الجليب", areaManager: "مختار", operationsManager: "طارق بيومي" },
+            { name: "سيد ياسين", areaManager: "طارق", operationsManager: "هاني عبدالله" },
+            { name: "شارع البحرين", areaManager: "طارق", operationsManager: "هاني عبدالله" },
+            { name: "شرق الاحمدي", areaManager: "حجازي", operationsManager: "هاني عبدالله" },
+            { name: "صباح السالم", areaManager: "انور", operationsManager: "هاني عبدالله" },
+            { name: "صباح السالم - العرين", areaManager: "انور", operationsManager: "هاني عبدالله" },
+            { name: "غرب أبو فطيرة الحرفية", areaManager: "مرتضى", operationsManager: "طارق بيومي" },
+            { name: "كبد", areaManager: "مختار", operationsManager: "طارق بيومي" },
+            { name: "مارينا مول - عالم المارينا", areaManager: "طارق", operationsManager: "هاني عبدالله" },
+            { name: "مجمع الافنيوز", areaManager: "مرتضى", operationsManager: "طارق بيومي" },
+            { name: "مجمع الكوت", areaManager: "عماد", operationsManager: "هاني عبدالله" },
+            { name: "مدينة سعد العبد الله", areaManager: "ثروت", operationsManager: "طارق بيومي" },
+            { name: "مدينة صباح الاحمد", areaManager: "حجازي", operationsManager: "هاني عبدالله" },
+            { name: "مشرف", areaManager: "انور", operationsManager: "هاني عبدالله" },
+            { name: "مول 360", areaManager: "وليد", operationsManager: "طارق بيومي" },
+            { name: "نادي الصليبخات", areaManager: "ثروت", operationsManager: "طارق بيومي" },
+            { name: "هدية", areaManager: "حجازي", operationsManager: "هاني عبدالله" }
         ];
         
         // جدول تحويل الوحدات من Excel
@@ -2712,18 +2715,22 @@
                 let totalDifference = 0;
                 let processedItems = new Set();
                 
+                // حساب عدد الأعمدة
+                const hasCombinedColumn = sectionType === 'meat';
+                const columnCount = hasCombinedColumn ? 8 : 7;
+                
                 contentHTML += `
                     <table style="width: 100%; border-collapse: collapse; font-size: 9px; margin-bottom: 5px;">
                         <thead>
                             <tr style="background: #EFF6FF;">
-                                <th style="border: 1px solid #ddd; padding: 3px; text-align: center; width: 4%; font-size: 9px; font-weight: bold;">م</th>
-                                <th style="border: 1px solid #ddd; padding: 3px; text-align: right; width: 30%; font-size: 9px; font-weight: bold;">اسم الصنف</th>
-                                <th style="border: 1px solid #ddd; padding: 3px; text-align: center; width: 8%; font-size: 9px; font-weight: bold;">الشد</th>
-                                <th style="border: 1px solid #ddd; padding: 3px; text-align: center; width: 10%; font-size: 9px; font-weight: bold;">جرد البرنامج</th>
-                                <th style="border: 1px solid #ddd; padding: 3px; text-align: center; width: 10%; font-size: 9px; font-weight: bold;">جرد الوحدة الصغرى</th>
-                                <th style="border: 1px solid #ddd; padding: 3px; text-align: center; width: 10%; font-size: 9px; font-weight: bold;">الجرد الفعلي</th>
-                                <th style="border: 1px solid #ddd; padding: 3px; text-align: center; width: 12%; font-size: 9px; font-weight: bold;">العجز/الزيادة</th>
-                                <th style="border: 1px solid #ddd; padding: 3px; text-align: center; width: 12%; font-size: 9px; font-weight: bold;">الفروقات المجمعة</th>
+                                <th style="border: 1px solid #ddd; padding: 2px; text-align: center; width: 4%; font-size: 9px; font-weight: bold;">م</th>
+                                <th style="border: 1px solid #ddd; padding: 2px; text-align: right; width: 30%; font-size: 9px; font-weight: bold;">اسم الصنف</th>
+                                <th style="border: 1px solid #ddd; padding: 2px; text-align: center; width: 10%; font-size: 9px; font-weight: bold;">الشد</th>
+                                <th style="border: 1px solid #ddd; padding: 2px; text-align: center; width: 9%; font-size: 9px; font-weight: bold;">جرد البرنامج</th>
+                                <th style="border: 1px solid #ddd; padding: 2px; text-align: center; width: 9%; font-size: 9px; font-weight: bold;">جرد الوحدة الصغرى</th>
+                                <th style="border: 1px solid #ddd; padding: 2px; text-align: center; width: 9%; font-size: 9px; font-weight: bold;">الجرد الفعلي</th>
+                                <th style="border: 1px solid #ddd; padding: 2px; text-align: center; width: 12%; font-size: 9px; font-weight: bold;">العجز/الزيادة</th>
+                                ${hasCombinedColumn ? '<th style="border: 1px solid #ddd; padding: 2px; text-align: center; width: 12%; font-size: 9px; font-weight: bold;">الفروقات المجمعة</th>' : ''}
                             </tr>
                         </thead>
                         <tbody>
@@ -2768,21 +2775,25 @@
                                 const combinedText = combinedDifference < 0 ? 'عجز' : 
                                                     combinedDifference > 0 ? 'زيادة' : 'متساوي';
                                 combinedCellHTML = `
-                                    <td style="border: 1px solid #ddd; padding: 3px; text-align: center; font-size: 9px; font-weight: bold; color: ${combinedDifference < 0 ? 'red' : combinedDifference > 0 ? 'green' : '#333'};" rowspan="${similarItems.length}">
-                                        ${combinedDifference}<br><span style="font-size: 8px;">(${combinedText})</span>
+                                    <td style="border: 1px solid #ddd; padding: 1px; text-align: center; font-size: 8.5px; font-weight: bold; color: ${combinedDifference < 0 ? 'red' : combinedDifference > 0 ? 'green' : '#333'}; vertical-align: middle;" rowspan="${similarItems.length}">
+                                        <span style="display: block; margin-bottom: 1px;">${combinedDifference}</span>
+                                        <span style="display: block; font-size: 7.6px; opacity: 0.9;">${combinedText}</span>
                                     </td>
                                 `;
                             }
                             
                             contentHTML += `
-                                <tr>
-                                    <td style="border: 1px solid #ddd; padding: 3px; text-align: center; font-size: 9px;">${rowIndex + 1}</td>
-                                    <td style="border: 1px solid #ddd; padding: 3px; text-align: right; font-size: 9px;">${similarItem.name}</td>
-                                    <td style="border: 1px solid #ddd; padding: 3px; text-align: center; font-size: 9px;">${similarItem.vendorUOM}</td>
-                                    <td style="border: 1px solid #ddd; padding: 3px; text-align: center; font-size: 9px;">${similarItem.stockQty}</td>
-                                    <td style="border: 1px solid #ddd; padding: 3px; text-align: center; font-size: 9px; font-weight: bold;">${similarItem.smallestUnitQty}</td>
-                                    <td style="border: 1px solid #ddd; padding: 3px; text-align: center; font-size: 9px; font-weight: bold;">${similarItem.actualCount || 0}</td>
-                                    <td style="border: 1px solid #ddd; padding: 3px; text-align: center; font-size: 9px; font-weight: bold; color: ${difference < 0 ? 'red' : difference > 0 ? 'green' : '#333'};">${difference} ${differenceText ? `(${differenceText})` : ''}</td>
+                                <tr style="height: 18px;">
+                                    <td style="border: 1px solid #ddd; padding: 1px; text-align: center; font-size: 9px; vertical-align: middle;">${rowIndex + 1}</td>
+                                    <td style="border: 1px solid #ddd; padding: 1px; text-align: right; font-size: 9px; vertical-align: middle;">${similarItem.name}</td>
+                                    <td style="border: 1px solid #ddd; padding: 1px; text-align: center; font-size: 9px; vertical-align: middle;">${similarItem.vendorUOM}</td>
+                                    <td style="border: 1px solid #ddd; padding: 1px; text-align: center; font-size: 9px; vertical-align: middle;">${similarItem.stockQty}</td>
+                                    <td style="border: 1px solid #ddd; padding: 1px; text-align: center; font-size: 9px; font-weight: bold; vertical-align: middle;">${similarItem.smallestUnitQty}</td>
+                                    <td style="border: 1px solid #ddd; padding: 1px; text-align: center; font-size: 9px; font-weight: bold; vertical-align: middle;">${similarItem.actualCount || 0}</td>
+                                    <td style="border: 1px solid #ddd; padding: 1px; text-align: center; font-size: 9px; font-weight: bold; color: ${difference < 0 ? 'red' : difference > 0 ? 'green' : '#333'}; vertical-align: middle;">
+                                        <span style="display: block; margin-bottom: 1px;">${difference}</span>
+                                        <span style="display: block; font-size: 8px; opacity: 0.9;">${differenceText || ''}</span>
+                                    </td>
                                     ${similarIndex === 0 ? combinedCellHTML : ''}
                                 </tr>
                             `;
@@ -2797,16 +2808,29 @@
                         const differenceText = difference < 0 ? 'عجز' : 
                                               difference > 0 ? 'زيادة' : '';
                         
+                        let combinedCellHTML = '';
+                        if (hasCombinedColumn) {
+                            combinedCellHTML = `
+                                <td style="border: 1px solid #ddd; padding: 1px; text-align: center; font-size: 8.5px; font-weight: bold; color: ${difference < 0 ? 'red' : difference > 0 ? 'green' : '#333'}; vertical-align: middle;">
+                                    <span style="display: block; margin-bottom: 1px;">${difference}</span>
+                                    <span style="display: block; font-size: 7.6px; opacity: 0.9;">${differenceText || 'متساوي'}</span>
+                                </td>
+                            `;
+                        }
+                        
                         contentHTML += `
-                            <tr>
-                                <td style="border: 1px solid #ddd; padding: 3px; text-align: center; font-size: 9px;">${rowIndex + 1}</td>
-                                <td style="border: 1px solid #ddd; padding: 3px; text-align: right; font-size: 9px;">${item.name}</td>
-                                <td style="border: 1px solid #ddd; padding: 3px; text-align: center; font-size: 9px;">${item.vendorUOM}</td>
-                                <td style="border: 1px solid #ddd; padding: 3px; text-align: center; font-size: 9px;">${item.stockQty}</td>
-                                <td style="border: 1px solid #ddd; padding: 3px; text-align: center; font-size: 9px; font-weight: bold;">${item.smallestUnitQty}</td>
-                                <td style="border: 1px solid #ddd; padding: 3px; text-align: center; font-size: 9px; font-weight: bold;">${item.actualCount || 0}</td>
-                                <td style="border: 1px solid #ddd; padding: 3px; text-align: center; font-size: 9px; font-weight: bold; color: ${difference < 0 ? 'red' : difference > 0 ? 'green' : '#333'};">${difference} ${differenceText ? `(${differenceText})` : ''}</td>
-                                <td style="border: 1px solid #ddd; padding: 3px; text-align: center; font-size: 9px; font-weight: bold; color: ${difference < 0 ? 'red' : difference > 0 ? 'green' : '#333'};">${difference}<br><span style="font-size: 8px;">(${differenceText || 'متساوي'})</span></td>
+                            <tr style="height: 18px;">
+                                <td style="border: 1px solid #ddd; padding: 1px; text-align: center; font-size: 9px; vertical-align: middle;">${rowIndex + 1}</td>
+                                <td style="border: 1px solid #ddd; padding: 1px; text-align: right; font-size: 9px; vertical-align: middle;">${item.name}</td>
+                                <td style="border: 1px solid #ddd; padding: 1px; text-align: center; font-size: 9px; vertical-align: middle;">${item.vendorUOM}</td>
+                                <td style="border: 1px solid #ddd; padding: 1px; text-align: center; font-size: 9px; vertical-align: middle;">${item.stockQty}</td>
+                                <td style="border: 1px solid #ddd; padding: 1px; text-align: center; font-size: 9px; font-weight: bold; vertical-align: middle;">${item.smallestUnitQty}</td>
+                                <td style="border: 1px solid #ddd; padding: 1px; text-align: center; font-size: 9px; font-weight: bold; vertical-align: middle;">${item.actualCount || 0}</td>
+                                <td style="border: 1px solid #ddd; padding: 1px; text-align: center; font-size: 9px; font-weight: bold; color: ${difference < 0 ? 'red' : difference > 0 ? 'green' : '#333'}; vertical-align: middle;">
+                                    <span style="display: block; margin-bottom: 1px;">${difference}</span>
+                                    <span style="display: block; font-size: 8px; opacity: 0.9;">${differenceText || ''}</span>
+                                </td>
+                                ${combinedCellHTML}
                             </tr>
                         `;
                         
@@ -3088,7 +3112,7 @@
             const wscols = [
                 { wch: 5 },   // العمود الأول: م
                 { wch: 35 },  // العمود الثاني: اسم الصنف
-                { wch: 10 },  // العمود الثالث: الشد
+                { wch: 12 },  // العمود الثالث: الشد (تم زيادته 25%)
                 { wch: 15 },  // العمود الرابع: الجرد من البرنامج
                 { wch: 18 },  // العمود الخامس: الجرد بالوحدة الصغرى
                 { wch: 15 },  // العمود السادس: الجرد الفعلي
@@ -3412,3 +3436,4 @@
     </script>
 </body>
 </html>
+[file content end]
