@@ -11,7 +11,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
         :root {
-            --primary: #1E3A8A;        /* أزرق (كما كان) */
+            --primary: #1E3A8A;        /* أزرق */
             --secondary: #3B82F6;
             --background: #EFF6FF;
             --text: #1F2937;
@@ -20,6 +20,8 @@
             --accent-red: #DC2626;
             --accent-green: #10B981;
             --accent-orange: #F59E0B;
+            --dark-red: #8B0000;       /* أحمر غامق */
+            --dark-green: #4CC552;      /* أخضر غامق */
         }
 
         * {
@@ -42,7 +44,7 @@
         }
 
         header {
-            background: #DC2626;        /* أحمر فقط */
+            background: #DC2626;        /* أحمر */
             color: white;
             padding: 15px 0;
             border-radius: 10px;
@@ -279,25 +281,25 @@
         .combined-difference-cell {
             font-size: 22px !important;
             font-weight: bold !important;
-            background-color: #f0f9ff;
-            border: 2px solid var(--secondary) !important;
             vertical-align: middle;
             height: 60px;
             min-width: 100px;
+            transition: all 0.2s;
         }
 
         .combined-difference-negative {
-            color: var(--accent-red) !important;
-            background-color: #fef2f2;
+            background-color: var(--dark-red) !important;
+            color: white !important;
         }
 
         .combined-difference-positive {
-            color: var(--accent-green) !important;
-            background-color: #f0fdf4;
+            background-color: var(--dark-green) !important;
+            color: white !important;
         }
 
         .combined-difference-zero {
-            color: var(--primary) !important;
+            background-color: #f0f9ff;
+            color: var(--primary);
         }
 
         .action-buttons {
@@ -408,6 +410,17 @@
 
         .category-title-orange {
             background-color: var(--accent-orange);
+            color: white;
+            padding: 10px;
+            border-radius: 6px;
+            margin-bottom: 10px;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        /* عنوان خاص بالكول سلو */
+        .category-title-brown {
+            background-color: #8B4513;
             color: white;
             padding: 10px;
             border-radius: 6px;
@@ -937,7 +950,7 @@
             </div>
         </section>
 
-        <!-- قسم جرد الأصناف الأخرى المتنوعة (جديد) -->
+        <!-- قسم جرد الأصناف الأخرى المتنوعة -->
         <section id="misc-section" class="section">
             <h2 style="color: var(--primary); margin-bottom: 20px;">جرد أصناف أخرى متنوعة</h2>
             <div class="restaurant-info">
@@ -1093,7 +1106,7 @@
         let currentWhatsappType = ''; // 'meat', 'veg', 'appetizers', 'misc'
         let whatsappAttachmentFile = null;
 
-        // الأصناف الأساسية (بعد حذف K1075 والسلطات الصغيرة)
+        // الأصناف الأساسية (بعد تعديل K1070 ليكون بالكيلو)
         const defaultItems = [
             // لحوم
             { code: "K1035", name: "Chicken Big Fillet  ( بيج فيلية)", group: "meat", vendorUOM: "KG", stockQty: 0, uuom: "جرام", smallestUnitQty: 0 },
@@ -1115,30 +1128,25 @@
             { code: "A1007", name: "Beef Burger Big(برجر لحم كبير)", group: "meat", vendorUOM: "KG", stockQty: 0, uuom: "جرام", smallestUnitQty: 0 },
             { code: "A1008", name: "Beef Burger Small(برجر لحم صغير)", group: "meat", vendorUOM: "KG", stockQty: 0, uuom: "جرام", smallestUnitQty: 0 },
             { code: "A1004", name: "Chicken Burger Small  ( برجر دجاج صغير)", group: "meat", vendorUOM: "KG", stockQty: 0, uuom: "جرام", smallestUnitQty: 0 },
-            { code: "K1070", name: "Fresh Burger Chickens برجر دجاج طازج", group: "meat", vendorUOM: "KG", stockQty: 0, uuom: "كيلو", smallestUnitQty: 0 },
+            { code: "K1070", name: "Fresh Burger Chickens برجر دجاج طازج", group: "meat", vendorUOM: "KG", stockQty: 0, uuom: "كيلو", smallestUnitQty: 0 }, // تم التعديل: uuom = "كيلو"
             { code: "K1071", name: "Chicken Small Wings Nor  جناح صغير عادي", group: "meat", vendorUOM: "KG", stockQty: 0, uuom: "جرام", smallestUnitQty: 0 },
             { code: "K1072", name: "Chicken Small Wings Spicy  جناح صغير فلفل", group: "meat", vendorUOM: "KG", stockQty: 0, uuom: "جرام", smallestUnitQty: 0 },
             { code: "K1010", name: "Chicken Wings  جناح متبل", group: "meat", vendorUOM: "KG", stockQty: 0, uuom: "جرام", smallestUnitQty: 0 },
-            // { code: "K1075", name: "Fillet Pizza Grill / فيلية بيتزا مشوي", group: "meat", vendorUOM: "KG", stockQty: 0, uuom: "جرام", smallestUnitQty: 0 }, // محذوف
             { code: "K1007", name: "Chicken Drum Stick ( درام ستيك)", group: "meat", vendorUOM: "KG", stockQty: 0, uuom: "جرام", smallestUnitQty: 0 },
             { code: "K1039", name: "Drumstic whole Fried  ( وصلة دجاج عادي)", group: "meat", vendorUOM: "KG", stockQty: 0, uuom: "جرام", smallestUnitQty: 0 },
             { code: "K1040", name: "Drumstick whole Fried spicy  ( وصلة دجاج فلفل)", group: "meat", vendorUOM: "KG", stockQty: 0, uuom: "جرام", smallestUnitQty: 0 },
             
-            // مقبلات (السلطات الكبيرة فقط)
+            // مقبلات (السلطات الكبيرة فقط، مع إضافة K2006 لاحقاً في الكود)
             { code: "K2035", name: "Fattoush Salad Big  ( سلطة فتوش كبيرة)", group: "appetizers", vendorUOM: "علبة", stockQty: 0, uuom: "علبة", smallestUnitQty: 0 },
-            // { code: "K2014", name: "Fattoush Salad Small  (سلطة فتوش صغيرة)", group: "appetizers", vendorUOM: "علبة", stockQty: 0, uuom: "علبة", smallestUnitQty: 0 }, // محذوف
             { code: "K2005", name: "Cole Slaw Big  (كول سلو كبير)", group: "appetizers", vendorUOM: "علبة", stockQty: 0, uuom: "علبة", smallestUnitQty: 0 },
-            // { code: "K2006", name: "Cole Slaw Small  ( كول سلو صغير)", group: "appetizers", vendorUOM: "علبة", stockQty: 0, uuom: "علبة", smallestUnitQty: 0 }, // محذوف
+            { code: "K2006", name: "Cole Slaw Small  ( كول سلو صغير)", group: "appetizers", vendorUOM: "علبة", stockQty: 0, uuom: "علبة", smallestUnitQty: 0 },
             { code: "K2001", name: "Hummus  ( حمص)", group: "appetizers", vendorUOM: "كيلو", stockQty: 0, uuom: "جرام", smallestUnitQty: 0 },
             { code: "K2020", name: "Hummus large ( ماعون حمص كبير)", group: "appetizers", vendorUOM: "كيلو", stockQty: 0, uuom: "جرام", smallestUnitQty: 0 },
             { code: "K2009", name: "Laban Naif Small (لبن نايف صغير )", group: "appetizers", vendorUOM: "علبة", stockQty: 0, uuom: "علبة", smallestUnitQty: 0 },
             { code: "K2008", name: "Rice&Milk Pudding ( أرز بالحليب)", group: "appetizers", vendorUOM: "علبة", stockQty: 0, uuom: "علبة", smallestUnitQty: 0 },
             { code: "K2033", name: "Rocca Salad Big  ( سلطة جرجيركبيرة)", group: "appetizers", vendorUOM: "علبة", stockQty: 0, uuom: "علبة", smallestUnitQty: 0 },
-            // { code: "K2016", name: "Rocca Salad Small  ( سلطة الجرجيرصغيرة)", group: "appetizers", vendorUOM: "علبة", stockQty: 0, uuom: "علبة", smallestUnitQty: 0 }, // محذوف
             { code: "K2034", name: "Taboulla Salad Big  ( سلطة تبولة كبيرة)", group: "appetizers", vendorUOM: "علبة", stockQty: 0, uuom: "علبة", smallestUnitQty: 0 },
-            // { code: "K2015", name: "Taboulla Salad Small  ( سلطة تبوله صغيرة)", group: "appetizers", vendorUOM: "علبة", stockQty: 0, uuom: "علبة", smallestUnitQty: 0 }, // محذوف
             { code: "K2036", name: "Vegitable Salad Big  ( سلطة خضراء كبيرة)", group: "appetizers", vendorUOM: "علبة", stockQty: 0, uuom: "علبة", smallestUnitQty: 0 }
-            // { code: "K2012", name: "Vegitable Salad Small  ( سلطة خضراء صغيرة)", group: "appetizers", vendorUOM: "علبة", stockQty: 0, uuom: "علبة", smallestUnitQty: 0 } // محذوف
         ];
 
         // بيانات المطاعم
@@ -1234,8 +1242,20 @@
             return 'other';
         }
 
-        function convertToSmallestUnit(quantity, vendorUOM, uuom) {
+        // دالة محسنة لتحويل الوحدات مع استثناءات خاصة
+        function convertToSmallestUnit(quantity, vendorUOM, uuom, itemCode = '') {
             if (!vendorUOM || !quantity) return Math.round(quantity);
+            
+            // استثناء خاص للصنف K1070: إذا كانت الوحدة الصغرى هي "كيلو" فلا نضرب في 1000
+            if (itemCode === 'K1070' && uuom && (uuom.includes('كيلو') || uuom.includes('KG') || uuom.includes('كجم'))) {
+                return Math.round(quantity);
+            }
+            
+            // استثناء خاص للصنف G1026: الوحدة الصغرى = quantity * 24 (رول)
+            if (itemCode === 'G1026') {
+                return Math.round(quantity * 24);
+            }
+            
             const vendorUOMUpper = vendorUOM.toUpperCase();
             let multiplier = 1;
             
@@ -1287,7 +1307,7 @@
                 const numMatch = vendorUOM.match(/(\d+(\.\d+)?)/);
                 if (numMatch) {
                     multiplier = parseFloat(numMatch[1]);
-                    if (vendorUOMUpper.includes('KILO') || vendorUOMUpper.includes('KG') || vendorUOMUpper.includes('كجم') || vendorUOMUpper.includes('كيلo')) multiplier *= 1000;
+                    if (vendorUOMUpper.includes('KILO') || vendorUOMUpper.includes('KG') || vendorUOMUpper.includes('كجم') || vendorUOMUpper.includes('كيلو')) multiplier *= 1000;
                     else if (vendorUOMUpper.includes('LTR') || vendorUOMUpper.includes('لتر')) multiplier *= 1000;
                 }
             }
@@ -1341,21 +1361,23 @@
                 const jsonData = XLSX.utils.sheet_to_json(worksheet);
                 
                 inventoryDataMain = jsonData.map(item => {
+                    const code = item['RM Code'] || '';
                     const stockQty = item.StockQty || 0;
                     const vendorUOM = item.VendorUOM || '';
                     const uuom = item.UUom || '';
-                    const smallestUnitQty = convertToSmallestUnit(stockQty, vendorUOM, uuom);
-                    const startQty = convertToSmallestUnit(item['Start Qty'] || 0, vendorUOM, uuom);
-                    const receivedQty = convertToSmallestUnit(item['Received Qty'] || 0, vendorUOM, uuom);
-                    const transferInQty = convertToSmallestUnit(item['Transfer In Qty'] || 0, vendorUOM, uuom);
-                    const transferOutQty = convertToSmallestUnit(item['Transfer Out Qty'] || 0, vendorUOM, uuom);
-                    const wastageQty = convertToSmallestUnit(item['Wastage Qty'] || 0, vendorUOM, uuom);
-                    const usageQty = convertToSmallestUnit(item['Usage Qty'] || 0, vendorUOM, uuom);
-                    const notConOrders = convertToSmallestUnit(item['Not Con. Orders'] || 0, vendorUOM, uuom);
+                    // تمرير الكود للدالة للتعامل مع الاستثناءات
+                    const smallestUnitQty = convertToSmallestUnit(stockQty, vendorUOM, uuom, code);
+                    const startQty = convertToSmallestUnit(item['Start Qty'] || 0, vendorUOM, uuom, code);
+                    const receivedQty = convertToSmallestUnit(item['Received Qty'] || 0, vendorUOM, uuom, code);
+                    const transferInQty = convertToSmallestUnit(item['Transfer In Qty'] || 0, vendorUOM, uuom, code);
+                    const transferOutQty = convertToSmallestUnit(item['Transfer Out Qty'] || 0, vendorUOM, uuom, code);
+                    const wastageQty = convertToSmallestUnit(item['Wastage Qty'] || 0, vendorUOM, uuom, code);
+                    const usageQty = convertToSmallestUnit(item['Usage Qty'] || 0, vendorUOM, uuom, code);
+                    const notConOrders = convertToSmallestUnit(item['Not Con. Orders'] || 0, vendorUOM, uuom, code);
                     const group = getItemGroup({ group: item.Group, name: item.RMName });
                     
                     return {
-                        code: item['RM Code'] || '',
+                        code: code,
                         name: item.RMName || '',
                         vendorUOM: vendorUOM,
                         stockQty: stockQty,
@@ -1399,21 +1421,22 @@
                 const jsonData = XLSX.utils.sheet_to_json(worksheet);
                 
                 inventoryDataSpot = jsonData.map(item => {
+                    const code = item['RM Code'] || '';
                     const stockQty = item.StockQty || 0;
                     const vendorUOM = item.VendorUOM || '';
                     const uuom = item.UUom || '';
-                    const smallestUnitQty = convertToSmallestUnit(stockQty, vendorUOM, uuom);
-                    const startQty = convertToSmallestUnit(item['Start Qty'] || 0, vendorUOM, uuom);
-                    const receivedQty = convertToSmallestUnit(item['Received Qty'] || 0, vendorUOM, uuom);
-                    const transferInQty = convertToSmallestUnit(item['Transfer In Qty'] || 0, vendorUOM, uuom);
-                    const transferOutQty = convertToSmallestUnit(item['Transfer Out Qty'] || 0, vendorUOM, uuom);
-                    const wastageQty = convertToSmallestUnit(item['Wastage Qty'] || 0, vendorUOM, uuom);
-                    const usageQty = convertToSmallestUnit(item['Usage Qty'] || 0, vendorUOM, uuom);
-                    const notConOrders = convertToSmallestUnit(item['Not Con. Orders'] || 0, vendorUOM, uuom);
+                    const smallestUnitQty = convertToSmallestUnit(stockQty, vendorUOM, uuom, code);
+                    const startQty = convertToSmallestUnit(item['Start Qty'] || 0, vendorUOM, uuom, code);
+                    const receivedQty = convertToSmallestUnit(item['Received Qty'] || 0, vendorUOM, uuom, code);
+                    const transferInQty = convertToSmallestUnit(item['Transfer In Qty'] || 0, vendorUOM, uuom, code);
+                    const transferOutQty = convertToSmallestUnit(item['Transfer Out Qty'] || 0, vendorUOM, uuom, code);
+                    const wastageQty = convertToSmallestUnit(item['Wastage Qty'] || 0, vendorUOM, uuom, code);
+                    const usageQty = convertToSmallestUnit(item['Usage Qty'] || 0, vendorUOM, uuom, code);
+                    const notConOrders = convertToSmallestUnit(item['Not Con. Orders'] || 0, vendorUOM, uuom, code);
                     const group = getItemGroup({ group: item.Group, name: item.RMName });
                     
                     return {
-                        code: item['RM Code'] || '',
+                        code: code,
                         name: item.RMName || '',
                         vendorUOM: vendorUOM,
                         stockQty: stockQty,
@@ -1449,13 +1472,19 @@
             defaultItems.forEach(defaultItem => {
                 const existingItemIndex = inventoryData.findIndex(item => item.code === defaultItem.code);
                 if (existingItemIndex === -1) {
+                    // تعيين smallestUnitQty بناءً على الاستثناءات
+                    let smallest = defaultItem.smallestUnitQty;
+                    if (defaultItem.code === 'K1070') smallest = defaultItem.stockQty; // لأن uuom = كيلو
+                    else if (defaultItem.code === 'G1026') smallest = defaultItem.stockQty * 24;
+                    else smallest = convertToSmallestUnit(defaultItem.stockQty, defaultItem.vendorUOM, defaultItem.uuom, defaultItem.code);
+                    
                     inventoryData.push({
                         code: defaultItem.code,
                         name: defaultItem.name,
                         vendorUOM: defaultItem.vendorUOM,
                         stockQty: defaultItem.stockQty,
                         uuom: defaultItem.uuom,
-                        smallestUnitQty: defaultItem.smallestUnitQty,
+                        smallestUnitQty: smallest,
                         startQty: 0,
                         receivedQty: 0,
                         transferInQty: 0,
@@ -1802,7 +1831,7 @@
                             <td class="difference-cell ${differenceClass}" data-code="${item.code}" style="font-size: 18px; font-weight: bold;">
                                 ${difference} ${differenceText ? `<span class="difference-text" style="color: ${differenceClass.includes('negative') ? 'var(--accent-red)' : 'var(--accent-green)'};">(${differenceText})</span>` : ''}
                             </td>
-                            <td class="combined-difference-cell combined-difference-zero" data-code="${item.code}">
+                            <td class="combined-difference-cell ${differenceClass.replace('difference', 'combined-difference') || 'combined-difference-zero'}" data-code="${item.code}">
                                 ${difference}<br><span style="font-size: 14px;">(${differenceText || 'متساوي'})</span>
                             </td>
                         `;
@@ -1947,13 +1976,18 @@
         }
 
         function isSaladItem(item) {
+            // نستثني الكول سلو من السلطات
             return item.name && (
-                item.name.includes('سلطة') || 
+                (item.name.includes('سلطة') || 
                 item.name.includes('فتوش') || 
                 item.name.includes('تبولة') || 
-                item.name.includes('كول سلو') ||
-                item.name.includes('جرجير')
+                item.name.includes('جرجير')) &&
+                !item.name.includes('كول سلو') && !item.code.startsWith('K2005') && !item.code.startsWith('K2006')
             );
+        }
+
+        function isColeSlawItem(item) {
+            return item.code === 'K2005' || item.code === 'K2006' || (item.name && item.name.includes('كول سلو'));
         }
 
         function updateAppetizersInventory() {
@@ -1966,8 +2000,109 @@
             }
             
             const saladItems = appetizersItems.filter(item => isSaladItem(item));
-            const otherItems = appetizersItems.filter(item => !isSaladItem(item));
+            const coleSlawItems = appetizersItems.filter(item => isColeSlawItem(item));
+            const otherItems = appetizersItems.filter(item => !isSaladItem(item) && !isColeSlawItem(item));
             
+            // عرض الكول سلو أولاً
+            if (coleSlawItems.length > 0) {
+                const coleSlawCategoryDiv = document.createElement('div');
+                coleSlawCategoryDiv.className = 'inventory-category';
+                const coleSlawTitleDiv = document.createElement('div');
+                coleSlawTitleDiv.className = 'category-title-brown';
+                coleSlawTitleDiv.textContent = 'كول سلو';
+                coleSlawCategoryDiv.appendChild(coleSlawTitleDiv);
+                
+                const coleSlawTable = document.createElement('table');
+                coleSlawTable.className = 'inventory-table';
+                const coleSlawThead = document.createElement('thead');
+                coleSlawThead.innerHTML = `
+                    <tr>
+                        <th>م</th>
+                        <th>اسم الصنف</th>
+                        <th>الشد</th>
+                        <th>الجرد من البرنامج</th>
+                        <th class="count-cell">الجرد بالوحدة الصغرى</th>
+                        <th>الجرد الفعلي</th>
+                        <th class="difference-cell">العجز/الزيادة</th>
+                        <th>الفروقات المجمعة</th>
+                    </tr>
+                `;
+                coleSlawTable.appendChild(coleSlawThead);
+                const coleSlawTbody = document.createElement('tbody');
+                
+                coleSlawItems.forEach((item, index) => {
+                    const row = document.createElement('tr');
+                    const difference = item.difference || 0;
+                    const differenceClass = difference < 0 ? 'difference-negative' : difference > 0 ? 'difference-positive' : '';
+                    const differenceText = difference < 0 ? 'عجز' : difference > 0 ? 'زيادة' : '';
+                    row.innerHTML = `
+                        <td>${index + 1}</td>
+                        <td>${item.name}</td>
+                        <td>${item.vendorUOM}</td>
+                        <td>${item.stockQty}</td>
+                        <td class="count-cell">${item.smallestUnitQty}</td>
+                        <td><input type="number" class="actual-count-input" data-code="${item.code}" value="${item.actualCount || ''}" placeholder="0"></td>
+                        <td class="difference-cell ${differenceClass}" data-code="${item.code}" style="font-size: 18px; font-weight: bold;">
+                            ${difference} ${differenceText ? `<span class="difference-text" style="color: ${differenceClass.includes('negative') ? 'var(--accent-red)' : 'var(--accent-green)'};">(${differenceText})</span>` : ''}
+                        </td>
+                    `;
+                    if (index === 0) {
+                        const coleSlawTotalDifference = coleSlawItems.reduce((sum, i) => sum + (i.difference || 0), 0);
+                        const coleSlawTotalClass = coleSlawTotalDifference < 0 ? 'combined-difference-negative' : 
+                                                   coleSlawTotalDifference > 0 ? 'combined-difference-positive' : 'combined-difference-zero';
+                        const coleSlawTotalText = coleSlawTotalDifference < 0 ? 'عجز' : coleSlawTotalDifference > 0 ? 'زيادة' : 'متساوي';
+                        const combinedCell = document.createElement('td');
+                        combinedCell.className = `combined-difference-cell ${coleSlawTotalClass}`;
+                        combinedCell.rowSpan = coleSlawItems.length;
+                        combinedCell.innerHTML = `${coleSlawTotalDifference}<br><span style="font-size: 14px;">(${coleSlawTotalText})</span>`;
+                        combinedCell.setAttribute('data-similar-group', 'coleslaw-group');
+                        row.appendChild(combinedCell);
+                    }
+                    coleSlawTbody.appendChild(row);
+                    
+                    const input = row.querySelector('.actual-count-input');
+                    input.addEventListener('input', function() {
+                        const actualCount = parseFloat(this.value) || 0;
+                        const diff = actualCount - item.smallestUnitQty;
+                        const diffText = diff < 0 ? 'عجز' : diff > 0 ? 'زيادة' : '';
+                        const diffCell = document.querySelector(`.difference-cell[data-code="${item.code}"]`);
+                        diffCell.innerHTML = `${Math.round(diff)} ${diffText ? `<span class="difference-text" style="color: ${diff < 0 ? 'var(--accent-red)' : diff > 0 ? 'var(--accent-green)' : 'var(--primary)'};">(${diffText})</span>` : ''}`;
+                        diffCell.classList.remove('difference-negative', 'difference-positive');
+                        if (diff < 0) diffCell.classList.add('difference-negative');
+                        else if (diff > 0) diffCell.classList.add('difference-positive');
+                        item.actualCount = actualCount;
+                        item.difference = Math.round(diff);
+                        
+                        const coleSlawTotalDifference = coleSlawItems.reduce((sum, i) => sum + (i.difference || 0), 0);
+                        const coleSlawTotalClass = coleSlawTotalDifference < 0 ? 'combined-difference-negative' : 
+                                                   coleSlawTotalDifference > 0 ? 'combined-difference-positive' : 'combined-difference-zero';
+                        const coleSlawTotalText = coleSlawTotalDifference < 0 ? 'عجز' : coleSlawTotalDifference > 0 ? 'زيادة' : 'متساوي';
+                        const combinedCell = document.querySelector('.combined-difference-cell[data-similar-group="coleslaw-group"]');
+                        if (combinedCell) {
+                            combinedCell.className = `combined-difference-cell ${coleSlawTotalClass}`;
+                            combinedCell.innerHTML = `${coleSlawTotalDifference}<br><span style="font-size: 14px;">(${coleSlawTotalText})</span>`;
+                        }
+                    });
+                });
+                
+                coleSlawTable.appendChild(coleSlawTbody);
+                const coleSlawTotalRow = document.createElement('tr');
+                coleSlawTotalRow.className = 'group-total';
+                const coleSlawTotalValue = coleSlawItems.reduce((sum, item) => sum + (item.difference || 0), 0);
+                const coleSlawTotalClass = coleSlawTotalValue < 0 ? 'difference-negative' : coleSlawTotalValue > 0 ? 'difference-positive' : '';
+                const coleSlawTotalText = coleSlawTotalValue < 0 ? 'عجز' : coleSlawTotalValue > 0 ? 'زيادة' : '';
+                coleSlawTotalRow.innerHTML = `
+                    <td colspan="7">إجمالي كول سلو</td>
+                    <td class="group-total-cell ${coleSlawTotalClass}" data-group="كول سلو" style="font-size: 18px; font-weight: bold;">
+                        ${coleSlawTotalValue} ${coleSlawTotalText ? `<span class="difference-text" style="color: ${coleSlawTotalClass.includes('negative') ? 'var(--accent-red)' : 'var(--accent-green)'};">(${coleSlawTotalText})</span>` : ''}
+                    </td>
+                `;
+                coleSlawTable.appendChild(coleSlawTotalRow);
+                coleSlawCategoryDiv.appendChild(coleSlawTable);
+                container.appendChild(coleSlawCategoryDiv);
+            }
+            
+            // عرض السلطات (بدون الكول سلو)
             if (saladItems.length > 0) {
                 const saladsCategoryDiv = document.createElement('div');
                 saladsCategoryDiv.className = 'inventory-category';
@@ -2068,6 +2203,7 @@
                 container.appendChild(saladsCategoryDiv);
             }
             
+            // باقي المقبلات
             if (otherItems.length > 0) {
                 const groupedItems = {};
                 otherItems.forEach(item => {
@@ -2305,38 +2441,51 @@
             } else showNotification('غير موجود');
         });
 
-        // ==================== دوال PDF, Excel, WhatsApp ====================
+        // ==================== دوال PDF, Excel, WhatsApp مع التحقق من اسم المطعم ====================
         async function generatePDF(sectionType) {
             if (!window.jspdf || !window.html2canvas) {
                 showNotification('مكتبات PDF غير محملة');
                 return;
             }
+            
+            // التحقق من اسم المطعم
+            let restaurantInput = '';
+            if (sectionType === 'meat') restaurantInput = document.getElementById('meat-restaurant-search').value;
+            else if (sectionType === 'veg') restaurantInput = document.getElementById('veg-restaurant-search').value;
+            else if (sectionType === 'appetizers') restaurantInput = document.getElementById('appetizers-restaurant-search').value;
+            else if (sectionType === 'misc') restaurantInput = document.getElementById('misc-restaurant-search').value;
+            
+            if (!restaurantInput.trim()) {
+                alert('الرجاء إدخال اسم المطعم قبل تصدير PDF');
+                return;
+            }
+            
             try {
                 let items = [], restaurantName = '', responsibleName = '', areaManager = '', operationsManager = '', title = '';
                 if (sectionType === 'meat') {
                     items = selectedItems.filter(item => item.group === 'meat');
-                    restaurantName = document.getElementById('meat-restaurant-search').value;
+                    restaurantName = restaurantInput;
                     responsibleName = document.getElementById('meat-responsible').value;
                     areaManager = document.getElementById('meat-area-manager').textContent;
                     operationsManager = document.getElementById('meat-operations-manager').textContent;
                     title = 'جرد أصناف اللحوم';
                 } else if (sectionType === 'veg') {
                     items = selectedItems.filter(item => item.group === 'vegetables');
-                    restaurantName = document.getElementById('veg-restaurant-search').value;
+                    restaurantName = restaurantInput;
                     responsibleName = document.getElementById('veg-responsible').value;
                     areaManager = document.getElementById('veg-area-manager').textContent;
                     operationsManager = document.getElementById('veg-operations-manager').textContent;
                     title = 'جرد أصناف الخضروات';
                 } else if (sectionType === 'appetizers') {
                     items = selectedItems.filter(item => item.group === 'appetizers');
-                    restaurantName = document.getElementById('appetizers-restaurant-search').value;
+                    restaurantName = restaurantInput;
                     responsibleName = document.getElementById('appetizers-responsible').value;
                     areaManager = document.getElementById('appetizers-area-manager').textContent;
                     operationsManager = document.getElementById('appetizers-operations-manager').textContent;
                     title = 'جرد أصناف المقبلات';
                 } else if (sectionType === 'misc') {
                     items = selectedItems.filter(item => item.group === 'other');
-                    restaurantName = document.getElementById('misc-restaurant-search').value;
+                    restaurantName = restaurantInput;
                     responsibleName = document.getElementById('misc-responsible').value;
                     areaManager = document.getElementById('misc-area-manager').textContent;
                     operationsManager = document.getElementById('misc-operations-manager').textContent;
@@ -2364,7 +2513,7 @@
                 let contentHTML = '';
                 let totalDifference = 0;
                 let processedItems = new Set();
-                const hasCombinedColumn = sectionType === 'meat' || (sectionType === 'appetizers' && items.some(item => isSaladItem(item)));
+                const hasCombinedColumn = sectionType === 'meat' || (sectionType === 'appetizers' && items.some(item => isSaladItem(item) || isColeSlawItem(item)));
                 const columnCount = hasCombinedColumn ? 8 : 7;
                 
                 contentHTML += `
@@ -2398,8 +2547,12 @@
                                 break;
                             }
                         }
-                    } else if (sectionType === 'appetizers' && isSaladItem(item)) {
-                        similarItems = items.filter(i => isSaladItem(i));
+                    } else if (sectionType === 'appetizers' && (isSaladItem(item) || isColeSlawItem(item))) {
+                        if (isColeSlawItem(item)) {
+                            similarItems = items.filter(i => isColeSlawItem(i));
+                        } else {
+                            similarItems = items.filter(i => isSaladItem(i));
+                        }
                         isPartOfSimilarGroup = true;
                     }
                     
@@ -2413,7 +2566,7 @@
                                 const combinedDiff = similarItems.reduce((sum, i) => sum + (i.difference || 0), 0);
                                 const combinedText = combinedDiff < 0 ? 'عجز' : combinedDiff > 0 ? 'زيادة' : 'متساوي';
                                 combinedCellHTML = `
-                                    <td style="border: 1px solid #ddd; padding: 1px; text-align: center; font-size: 8.5px; font-weight: bold; color: ${combinedDiff < 0 ? 'red' : combinedDiff > 0 ? 'green' : '#333'}; vertical-align: middle;" rowspan="${similarItems.length}">
+                                    <td style="border: 1px solid #ddd; padding: 1px; text-align: center; font-size: 8.5px; font-weight: bold; color: ${combinedDiff < 0 ? 'white' : combinedDiff > 0 ? 'white' : '#333'}; background-color: ${combinedDiff < 0 ? 'var(--dark-red)' : combinedDiff > 0 ? 'var(--dark-green)' : '#f0f9ff'}; vertical-align: middle;" rowspan="${similarItems.length}">
                                         <span style="display: block; margin-bottom: 1px;">${combinedDiff}</span>
                                         <span style="display: block; font-size: 7.6px; opacity: 0.9;">${combinedText}</span>
                                     </td>
@@ -2442,9 +2595,9 @@
                         const diff = item.difference || 0;
                         const diffText = diff < 0 ? 'عجز' : diff > 0 ? 'زيادة' : '';
                         let combinedCellHTML = '';
-                        if (hasCombinedColumn && !isSaladItem(item)) {
+                        if (hasCombinedColumn && !isSaladItem(item) && !isColeSlawItem(item)) {
                             combinedCellHTML = `
-                                <td style="border: 1px solid #ddd; padding: 1px; text-align: center; font-size: 8.5px; font-weight: bold; color: ${diff < 0 ? 'red' : diff > 0 ? 'green' : '#333'}; vertical-align: middle;">
+                                <td style="border: 1px solid #ddd; padding: 1px; text-align: center; font-size: 8.5px; font-weight: bold; color: ${diff < 0 ? 'white' : diff > 0 ? 'white' : '#333'}; background-color: ${diff < 0 ? 'var(--dark-red)' : diff > 0 ? 'var(--dark-green)' : '#f0f9ff'}; vertical-align: middle;">
                                     <span style="display: block; margin-bottom: 1px;">${diff}</span>
                                     <span style="display: block; font-size: 7.6px; opacity: 0.9;">${diffText || 'متساوي'}</span>
                                 </td>
@@ -2516,28 +2669,40 @@
         }
 
         function generateExcel(sectionType) {
+            // التحقق من اسم المطعم
+            let restaurantInput = '';
+            if (sectionType === 'meat') restaurantInput = document.getElementById('meat-restaurant-search').value;
+            else if (sectionType === 'veg') restaurantInput = document.getElementById('veg-restaurant-search').value;
+            else if (sectionType === 'appetizers') restaurantInput = document.getElementById('appetizers-restaurant-search').value;
+            else if (sectionType === 'misc') restaurantInput = document.getElementById('misc-restaurant-search').value;
+            
+            if (!restaurantInput.trim()) {
+                alert('الرجاء إدخال اسم المطعم قبل تصدير Excel');
+                return;
+            }
+            
             let items = [], restaurantName = '', responsibleName = '', title = '', fileName = '';
             if (sectionType === 'meat') {
                 items = selectedItems.filter(item => item.group === 'meat');
-                restaurantName = document.getElementById('meat-restaurant-search').value;
+                restaurantName = restaurantInput;
                 responsibleName = document.getElementById('meat-responsible').value;
                 title = 'جرد أصناف اللحوم';
                 fileName = 'جرد_اللحوم.xlsx';
             } else if (sectionType === 'veg') {
                 items = selectedItems.filter(item => item.group === 'vegetables');
-                restaurantName = document.getElementById('veg-restaurant-search').value;
+                restaurantName = restaurantInput;
                 responsibleName = document.getElementById('veg-responsible').value;
                 title = 'جرد أصناف الخضروات';
                 fileName = 'جرد_الخضروات.xlsx';
             } else if (sectionType === 'appetizers') {
                 items = selectedItems.filter(item => item.group === 'appetizers');
-                restaurantName = document.getElementById('appetizers-restaurant-search').value;
+                restaurantName = restaurantInput;
                 responsibleName = document.getElementById('appetizers-responsible').value;
                 title = 'جرد أصناف المقبلات';
                 fileName = 'جرد_المقبلات.xlsx';
             } else if (sectionType === 'misc') {
                 items = selectedItems.filter(item => item.group === 'other');
-                restaurantName = document.getElementById('misc-restaurant-search').value;
+                restaurantName = restaurantInput;
                 responsibleName = document.getElementById('misc-responsible').value;
                 title = 'جرد أصناف أخرى';
                 fileName = 'جرد_أخرى.xlsx';
@@ -2568,8 +2733,12 @@
                             break;
                         }
                     }
-                } else if (sectionType === 'appetizers' && isSaladItem(item)) {
-                    similarItems = items.filter(i => isSaladItem(i));
+                } else if (sectionType === 'appetizers' && (isSaladItem(item) || isColeSlawItem(item))) {
+                    if (isColeSlawItem(item)) {
+                        similarItems = items.filter(i => isColeSlawItem(i));
+                    } else {
+                        similarItems = items.filter(i => isSaladItem(i));
+                    }
                     isPartOfSimilarGroup = true;
                 }
                 
@@ -2635,6 +2804,18 @@
 
         // واتساب
         function sendWhatsapp(type) {
+            // التحقق من اسم المطعم
+            let restaurantInput = '';
+            if (type === 'meat') restaurantInput = document.getElementById('meat-restaurant-search').value;
+            else if (type === 'veg') restaurantInput = document.getElementById('veg-restaurant-search').value;
+            else if (type === 'appetizers') restaurantInput = document.getElementById('appetizers-restaurant-search').value;
+            else if (type === 'misc') restaurantInput = document.getElementById('misc-restaurant-search').value;
+            
+            if (!restaurantInput.trim()) {
+                alert('الرجاء إدخال اسم المطعم قبل الإرسال إلى واتساب');
+                return;
+            }
+            
             currentWhatsappType = type;
             document.getElementById('whatsapp-modal').style.display = 'flex';
             whatsappAttachmentFile = null;
@@ -2648,26 +2829,26 @@
         document.getElementById('confirm-whatsapp-send').addEventListener('click', function() {
             const phone = document.getElementById('whatsapp-number').value.replace(/\s+/g, '');
             if (!phone) { showNotification('أدخل رقم الهاتف'); return; }
-            let message = '', items = [];
+            let message = '', items = [], restaurantName = '';
             if (currentWhatsappType === 'meat') {
                 const responsible = document.getElementById('meat-responsible').value || 'غير محدد';
-                const restaurant = document.getElementById('meat-restaurant-search').value || 'غير محدد';
-                message = `جرد أصناف اللحوم\nالمطعم: ${restaurant}\nالمسئول: ${responsible}\n\n`;
+                restaurantName = document.getElementById('meat-restaurant-search').value || 'غير محدد';
+                message = `جرد أصناف اللحوم\nالمطعم: ${restaurantName}\nالمسئول: ${responsible}\n\n`;
                 items = selectedItems.filter(item => item.group === 'meat');
             } else if (currentWhatsappType === 'veg') {
                 const responsible = document.getElementById('veg-responsible').value || 'غير محدد';
-                const restaurant = document.getElementById('veg-restaurant-search').value || 'غير محدد';
-                message = `جرد أصناف الخضروات\nالمطعم: ${restaurant}\nالمسئول: ${responsible}\n\n`;
+                restaurantName = document.getElementById('veg-restaurant-search').value || 'غير محدد';
+                message = `جرد أصناف الخضروات\nالمطعم: ${restaurantName}\nالمسئول: ${responsible}\n\n`;
                 items = selectedItems.filter(item => item.group === 'vegetables');
             } else if (currentWhatsappType === 'appetizers') {
                 const responsible = document.getElementById('appetizers-responsible').value || 'غير محدد';
-                const restaurant = document.getElementById('appetizers-restaurant-search').value || 'غير محدد';
-                message = `جرد أصناف المقبلات\nالمطعم: ${restaurant}\nالمسئول: ${responsible}\n\n`;
+                restaurantName = document.getElementById('appetizers-restaurant-search').value || 'غير محدد';
+                message = `جرد أصناف المقبلات\nالمطعم: ${restaurantName}\nالمسئول: ${responsible}\n\n`;
                 items = selectedItems.filter(item => item.group === 'appetizers');
             } else if (currentWhatsappType === 'misc') {
                 const responsible = document.getElementById('misc-responsible').value || 'غير محدد';
-                const restaurant = document.getElementById('misc-restaurant-search').value || 'غير محدد';
-                message = `جرد أصناف أخرى\nالمطعم: ${restaurant}\nالمسئول: ${responsible}\n\n`;
+                restaurantName = document.getElementById('misc-restaurant-search').value || 'غير محدد';
+                message = `جرد أصناف أخرى\nالمطعم: ${restaurantName}\nالمسئول: ${responsible}\n\n`;
                 items = selectedItems.filter(item => item.group === 'other');
             }
             if (items.length === 0) { showNotification('لا توجد بيانات'); return; }
