@@ -628,18 +628,14 @@
         }
 
         .pdf-template {
-            position: fixed;
-            left: -10000px;
-            top: -10000px;
             width: 794px;
-            height: 1123px;
             background: white;
             padding: 10px;
             box-sizing: border-box;
-            z-index: -1000;
             font-size: 12px;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             direction: rtl;
+            margin: 0 auto; /* للتمركز */
         }
 
         .signature-card {
@@ -1075,8 +1071,8 @@
         <div class="notification" id="notification">تم حفظ البيانات بنجاح!</div>
     </div>
 
-    <!-- قالب PDF المخفي -->
-    <div id="pdf-template" class="pdf-template">
+    <!-- قالب PDF المخفي (مطابق لملف PDF OK.html) -->
+    <div id="pdf-template" style="display: none;">
         <div class="pdf-header" style="text-align: center; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 2px solid var(--primary);">
             <div style="display: flex; align-items: center; justify-content: center; margin-bottom: 10px;">
                 <img src="https://i.postimg.cc/NM2zJWZD/NAIF-LOGO.jpg" alt="شعار شركة نايف للأغذية" style="width: 60px; height: 60px; margin-left: 15px; border-radius: 50%;">
@@ -1108,7 +1104,7 @@
         let currentWhatsappType = ''; // 'meat', 'veg', 'appetizers', 'misc'
         let whatsappAttachmentFile = null;
 
-        // الأصناف الأساسية (بعد تعديل K1070 ليكون بالكيلو)
+        // الأصناف الأساسية (بعد تعديل K1070 ليكون بالكيلو وإضافة K1002, A1013, K1003)
         const defaultItems = [
             // لحوم
             { code: "K1035", name: "Chicken Big Fillet  ( بيج فيلية)", group: "meat", vendorUOM: "KG", stockQty: 0, uuom: "جرام", smallestUnitQty: 0 },
@@ -1130,13 +1126,18 @@
             { code: "A1007", name: "Beef Burger Big(برجر لحم كبير)", group: "meat", vendorUOM: "KG", stockQty: 0, uuom: "جرام", smallestUnitQty: 0 },
             { code: "A1008", name: "Beef Burger Small(برجر لحم صغير)", group: "meat", vendorUOM: "KG", stockQty: 0, uuom: "جرام", smallestUnitQty: 0 },
             { code: "A1004", name: "Chicken Burger Small  ( برجر دجاج صغير)", group: "meat", vendorUOM: "KG", stockQty: 0, uuom: "جرام", smallestUnitQty: 0 },
-            { code: "K1070", name: "Fresh Burger Chickens برجر دجاج طازج", group: "meat", vendorUOM: "KG", stockQty: 0, uuom: "كيلو", smallestUnitQty: 0 }, // تم التعديل: uuom = "كيلو"
+            { code: "K1070", name: "Fresh Burger Chickens برجر دجاج طازج", group: "meat", vendorUOM: "KG", stockQty: 0, uuom: "كيلو", smallestUnitQty: 0 },
             { code: "K1071", name: "Chicken Small Wings Nor  جناح صغير عادي", group: "meat", vendorUOM: "KG", stockQty: 0, uuom: "جرام", smallestUnitQty: 0 },
             { code: "K1072", name: "Chicken Small Wings Spicy  جناح صغير فلفل", group: "meat", vendorUOM: "KG", stockQty: 0, uuom: "جرام", smallestUnitQty: 0 },
             { code: "K1010", name: "Chicken Wings  جناح متبل", group: "meat", vendorUOM: "KG", stockQty: 0, uuom: "جرام", smallestUnitQty: 0 },
             { code: "K1007", name: "Chicken Drum Stick ( درام ستيك)", group: "meat", vendorUOM: "KG", stockQty: 0, uuom: "جرام", smallestUnitQty: 0 },
             { code: "K1039", name: "Drumstic whole Fried  ( وصلة دجاج عادي)", group: "meat", vendorUOM: "KG", stockQty: 0, uuom: "جرام", smallestUnitQty: 0 },
             { code: "K1040", name: "Drumstick whole Fried spicy  ( وصلة دجاج فلفل)", group: "meat", vendorUOM: "KG", stockQty: 0, uuom: "جرام", smallestUnitQty: 0 },
+            
+            // الأصناف الجديدة المطلوبة (الوحدة الصغرى كيلو)
+            { code: "K1002", name: "Chicken Gizzard ( قوانص دجاج)", group: "meat", vendorUOM: "KG", stockQty: 0, uuom: "كيلو", smallestUnitQty: 0 },
+            { code: "A1013", name: "Chicken Liver ( كبدة دجاج)", group: "meat", vendorUOM: "KG", stockQty: 0, uuom: "كيلو", smallestUnitQty: 0 },
+            { code: "K1003", name: "Chicken Hearts ( قلوب دجاج)", group: "meat", vendorUOM: "KG", stockQty: 0, uuom: "كيلو", smallestUnitQty: 0 },
             
             // مقبلات (السلطات الكبيرة فقط، مع إضافة K2006)
             { code: "K2035", name: "Fattoush Salad Big  ( سلطة فتوش كبيرة)", group: "appetizers", vendorUOM: "علبة", stockQty: 0, uuom: "علبة", smallestUnitQty: 0 },
@@ -1248,8 +1249,9 @@
         function convertToSmallestUnit(quantity, vendorUOM, uuom, itemCode = '') {
             if (!vendorUOM || !quantity) return Math.round(quantity);
             
-            // استثناء خاص للصنف K1070: إذا كانت الوحدة الصغرى هي "كيلو" فلا نضرب في 1000
-            if (itemCode === 'K1070' && uuom && (uuom.includes('كيلو') || uuom.includes('KG') || uuom.includes('كجم'))) {
+            // استثناء خاص للأصناف التي تكون الوحدة الصغرى فيها كيلو وليس جرام
+            const kgItems = ['K1070', 'K1002', 'A1013', 'K1003'];
+            if (kgItems.includes(itemCode) && uuom && (uuom.includes('كيلو') || uuom.includes('KG') || uuom.includes('كجم'))) {
                 return Math.round(quantity);
             }
             
@@ -1367,10 +1369,10 @@
                     let stockQty = item.StockQty || 0;
                     const vendorUOM = item.VendorUOM || '';
                     let uuom = item.UUom || '';
-                    // تمرير الكود للدالة للتعامل مع الاستثناءات
+                    // الأصناف التي الوحدة الصغرى فيها كيلو
+                    const kgItems = ['K1070', 'K1002', 'A1013', 'K1003'];
                     let smallestUnitQty = convertToSmallestUnit(stockQty, vendorUOM, uuom, code);
-                    // إذا كان الصنف K1070، نضمن أن الوحدة الصغرى هي كيلو والقيمة هي stockQty نفسها
-                    if (code === 'K1070') {
+                    if (kgItems.includes(code)) {
                         uuom = 'كيلو';
                         smallestUnitQty = stockQty; // لأن stockQty أساساً بالكيلو
                     }
@@ -1432,8 +1434,9 @@
                     let stockQty = item.StockQty || 0;
                     const vendorUOM = item.VendorUOM || '';
                     let uuom = item.UUom || '';
+                    const kgItems = ['K1070', 'K1002', 'A1013', 'K1003'];
                     let smallestUnitQty = convertToSmallestUnit(stockQty, vendorUOM, uuom, code);
-                    if (code === 'K1070') {
+                    if (kgItems.includes(code)) {
                         uuom = 'كيلو';
                         smallestUnitQty = stockQty;
                     }
@@ -1485,7 +1488,8 @@
                 if (existingItemIndex === -1) {
                     // تعيين smallestUnitQty بناءً على الاستثناءات
                     let smallest = defaultItem.smallestUnitQty;
-                    if (defaultItem.code === 'K1070') smallest = defaultItem.stockQty; // لأن uuom = كيلو
+                    const kgItems = ['K1070', 'K1002', 'A1013', 'K1003'];
+                    if (kgItems.includes(defaultItem.code)) smallest = defaultItem.stockQty; // لأن uuom = كيلو
                     else if (defaultItem.code === 'G1026') smallest = defaultItem.stockQty * 24;
                     else smallest = convertToSmallestUnit(defaultItem.stockQty, defaultItem.vendorUOM, defaultItem.uuom, defaultItem.code);
                     
@@ -2454,11 +2458,6 @@
 
         // ==================== دوال PDF, Excel, WhatsApp مع التحقق من اسم المطعم ====================
         async function generatePDF(sectionType) {
-            if (!window.jspdf || !window.html2canvas) {
-                showNotification('مكتبات PDF غير محملة');
-                return;
-            }
-            
             // التحقق من اسم المطعم
             let restaurantInput = '';
             if (sectionType === 'meat') restaurantInput = document.getElementById('meat-restaurant-search').value;
@@ -2504,8 +2503,22 @@
                 }
                 if (items.length === 0) { showNotification('لا توجد بيانات'); return; }
                 
-                const pdfTemplate = document.getElementById('pdf-template');
-                const restaurantInfoDiv = pdfTemplate.querySelector('#pdf-restaurant-info');
+                // استنساخ القالب
+                const template = document.getElementById('pdf-template');
+                const clone = template.cloneNode(true);
+                clone.id = 'pdf-clone-' + Date.now();
+                clone.style.display = 'block';
+                clone.style.position = 'absolute';
+                clone.style.left = '0';
+                clone.style.top = '0';
+                clone.style.zIndex = '10000';
+                clone.style.background = 'white';
+                clone.style.width = '794px';
+                clone.style.margin = '0';
+                document.body.appendChild(clone);
+                
+                // تعبئة البيانات في النسخة
+                const restaurantInfoDiv = clone.querySelector('#pdf-restaurant-info');
                 restaurantInfoDiv.innerHTML = `
                     <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
                         <div><strong>المطعم:</strong> ${restaurantName || 'غير محدد'}</div>
@@ -2516,11 +2529,11 @@
                         <div><strong>مدير التشغيل:</strong> ${operationsManager}</div>
                     </div>
                 `;
-                const pdfHeader = pdfTemplate.querySelector('.pdf-header');
+                const pdfHeader = clone.querySelector('.pdf-header');
                 const existingTitle = pdfHeader.querySelector('h2');
                 if (existingTitle) existingTitle.textContent = title;
                 
-                const pdfContent = pdfTemplate.querySelector('#pdf-content');
+                const pdfContent = clone.querySelector('#pdf-content');
                 let contentHTML = '';
                 let totalDifference = 0;
                 let processedItems = new Set();
@@ -2571,7 +2584,6 @@
                             if (processedItems.has(similarItem.code)) return;
                             const diff = similarItem.difference || 0;
                             const diffText = diff < 0 ? 'عجز' : diff > 0 ? 'زيادة' : '';
-                            // تحديد لون خلفية اسم الصنف حسب الفرق
                             const bgColor = diff < 0 ? '#FFE5E5' : diff > 0 ? '#E5FFE5' : 'transparent';
                             let combinedCellHTML = '';
                             if (similarIndex === 0) {
@@ -2651,32 +2663,44 @@
                 pdfContent.innerHTML = contentHTML;
                 
                 const now = new Date();
-                document.getElementById('pdf-print-date').textContent = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
+                clone.querySelector('#pdf-print-date').textContent = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
                 
-                pdfTemplate.style.display = 'block';
-                pdfTemplate.style.position = 'fixed';
-                pdfTemplate.style.left = '0';
-                pdfTemplate.style.top = '0';
-                pdfTemplate.style.zIndex = '10000';
-                pdfTemplate.style.background = 'white';
+                // تأخير بسيط لضمان تطبيق الأنماط
+                await new Promise(resolve => setTimeout(resolve, 300));
                 
-                await new Promise(r => setTimeout(r, 500));
-                const canvas = await html2canvas(pdfTemplate, { scale: 2, useCORS: true, backgroundColor: '#FFFFFF', width: 794, height: 1123 });
-                pdfTemplate.style.display = 'none';
-                pdfTemplate.style.position = 'fixed';
-                pdfTemplate.style.left = '-10000px';
-                pdfTemplate.style.top = '-10000px';
+                // استخدام html2canvas لإنشاء صورة من القالب وإضافتها إلى PDF
+                const canvas = await html2canvas(clone, { scale: 2, useCORS: true, backgroundColor: '#FFFFFF' });
+                
+                // إزالة النسخة بعد التصوير
+                document.body.removeChild(clone);
                 
                 const imgData = canvas.toDataURL('image/jpeg', 0.95);
-                const pdf = new window.jspdf.jsPDF('p', 'pt', 'a4');
+                const pdf = new jspdf.jsPDF('p', 'pt', 'a4');
                 const imgWidth = pdf.internal.pageSize.getWidth();
                 const imgHeight = (canvas.height * imgWidth) / canvas.width;
-                pdf.addImage(imgData, 'JPEG', 0, 0, imgWidth, imgHeight);
+                
+                // إذا كان الارتفاع يتجاوز ارتفاع الصفحة، نقسم الصورة إلى صفحات متعددة
+                let heightLeft = imgHeight;
+                let position = 0;
+                let pageHeight = pdf.internal.pageSize.getHeight();
+                
+                pdf.addImage(imgData, 'JPEG', 0, position, imgWidth, imgHeight);
+                heightLeft -= pageHeight;
+                
+                while (heightLeft > 0) {
+                    position = heightLeft - imgHeight;
+                    pdf.addPage();
+                    pdf.addImage(imgData, 'JPEG', 0, position, imgWidth, imgHeight);
+                    heightLeft -= pageHeight;
+                }
+                
                 const cleanRestaurantName = restaurantName.replace(/[^\w\u0600-\u06FF\s]/g, '') || 'غير-محدد';
                 const cleanType = sectionType === 'meat' ? 'اللحوم' : sectionType === 'veg' ? 'الخضروات' : sectionType === 'appetizers' ? 'المقبلات' : 'أخرى';
                 pdf.save(`جرد_${cleanType}_${cleanRestaurantName}.pdf`);
+                
                 showNotification('تم إنشاء PDF بنجاح');
             } catch (error) {
+                console.error('PDF Error:', error);
                 showNotification('خطأ في PDF: ' + error.message);
             }
         }
