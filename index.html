@@ -1071,7 +1071,7 @@
         <div class="notification" id="notification">تم حفظ البيانات بنجاح!</div>
     </div>
 
-    <!-- قالب PDF المخفي (مطابق لملف PDF OK.html) -->
+    <!-- قالب PDF المخفي (سيتم استنساخه) -->
     <div id="pdf-template" style="display: none;">
         <div class="pdf-header" style="text-align: center; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 2px solid var(--primary);">
             <div style="display: flex; align-items: center; justify-content: center; margin-bottom: 10px;">
@@ -2668,37 +2668,73 @@
                 // تأخير بسيط لضمان تطبيق الأنماط
                 await new Promise(resolve => setTimeout(resolve, 300));
                 
-                // استخدام html2canvas لإنشاء صورة من القالب وإضافتها إلى PDF
-                const canvas = await html2canvas(clone, { scale: 2, useCORS: true, backgroundColor: '#FFFFFF' });
-                
-                // إزالة النسخة بعد التصوير
-                document.body.removeChild(clone);
-                
-                const imgData = canvas.toDataURL('image/jpeg', 0.95);
-                const pdf = new jspdf.jsPDF('p', 'pt', 'a4');
-                const imgWidth = pdf.internal.pageSize.getWidth();
-                const imgHeight = (canvas.height * imgWidth) / canvas.width;
-                
-                // إذا كان الارتفاع يتجاوز ارتفاع الصفحة، نقسم الصورة إلى صفحات متعددة
-                let heightLeft = imgHeight;
-                let position = 0;
-                let pageHeight = pdf.internal.pageSize.getHeight();
-                
-                pdf.addImage(imgData, 'JPEG', 0, position, imgWidth, imgHeight);
-                heightLeft -= pageHeight;
-                
-                while (heightLeft > 0) {
-                    position = heightLeft - imgHeight;
-                    pdf.addPage();
-                    pdf.addImage(imgData, 'JPEG', 0, position, imgWidth, imgHeight);
-                    heightLeft -= pageHeight;
+                // ========== الطريقة الجديدة باستخدام html2canvas + jsPDF (بدلاً من html2pdf) ==========
+                try {
+                    // إظهار العنصر مؤقتاً لالتقاط الصورة
+                    const originalDisplay = clone.style.display;
+                    const originalPosition = clone.style.position;
+                    const originalLeft = clone.style.left;
+                    const originalTop = clone.style.top;
+                    
+                    clone.style.display = 'block';
+                    clone.style.position = 'fixed';
+                    clone.style.left = '0';
+                    clone.style.top = '0';
+                    clone.style.zIndex = '10000';
+                    clone.style.background = 'white';
+                    
+                    // استخدام html2canvas لالتقاط صورة للعنصر
+                    const canvas = await html2canvas(clone, {
+                        scale: 2,
+                        useCORS: true,
+                        logging: false,
+                        backgroundColor: '#FFFFFF',
+                        windowWidth: clone.scrollWidth,
+                        windowHeight: clone.scrollHeight
+                    });
+                    
+                    // إعادة العنصر إلى حالته الأصلية
+                    clone.style.display = originalDisplay;
+                    clone.style.position = originalPosition;
+                    clone.style.left = originalLeft;
+                    clone.style.top = originalTop;
+                    
+                    const imgData = canvas.toDataURL('image/jpeg', 0.95);
+                    
+                    // إنشاء PDF باستخدام jsPDF
+                    const { jsPDF } = window.jspdf;
+                    const pdf = new jsPDF({
+                        orientation: 'portrait',
+                        unit: 'px',
+                        format: 'a4'
+                    });
+                    
+                    const pdfWidth = pdf.internal.pageSize.getWidth();
+                    const pdfHeight = pdf.internal.pageSize.getHeight();
+                    const imgWidth = canvas.width;
+                    const imgHeight = canvas.height;
+                    const ratio = Math.min(pdfWidth / imgWidth, pdfHeight / imgHeight);
+                    const width = imgWidth * ratio;
+                    const height = imgHeight * ratio;
+                    
+                    pdf.addImage(imgData, 'JPEG', (pdfWidth - width) / 2, 0, width, height);
+                    
+                    // حفظ PDF
+                    const fileName = `جرد_${sectionType === 'meat' ? 'اللحوم' : sectionType === 'veg' ? 'الخضروات' : sectionType === 'appetizers' ? 'المقبلات' : 'أخرى'}_${restaurantName.replace(/[^\w\u0600-\u06FF\s]/g, '')}.pdf`;
+                    pdf.save(fileName);
+                    
+                    showNotification('تم إنشاء PDF بنجاح');
+                } catch (error) {
+                    console.error('خطأ في إنشاء PDF:', error);
+                    showNotification('حدث خطأ أثناء إنشاء PDF');
+                } finally {
+                    // إزالة النسخة من DOM
+                    if (clone && clone.parentNode) {
+                        clone.parentNode.removeChild(clone);
+                    }
                 }
+                // ============================================================
                 
-                const cleanRestaurantName = restaurantName.replace(/[^\w\u0600-\u06FF\s]/g, '') || 'غير-محدد';
-                const cleanType = sectionType === 'meat' ? 'اللحوم' : sectionType === 'veg' ? 'الخضروات' : sectionType === 'appetizers' ? 'المقبلات' : 'أخرى';
-                pdf.save(`جرد_${cleanType}_${cleanRestaurantName}.pdf`);
-                
-                showNotification('تم إنشاء PDF بنجاح');
             } catch (error) {
                 console.error('PDF Error:', error);
                 showNotification('خطأ في PDF: ' + error.message);
