@@ -20,8 +20,8 @@
             --accent-red: #DC2626;
             --accent-green: #10B981;
             --accent-orange: #F59E0B;
-            --dark-red: #8B0000;       /* أحمر غامق */
-            --dark-green: #4CC552;      /* أخضر غامق */
+            --dark-red: #FF0000;       /* أحمر غامق */
+            --dark-green: #4CC552;      /* أخضر غامق - تم التعديل حسب الطلب */
         }
 
         * {
@@ -279,7 +279,7 @@
         }
 
         .combined-difference-cell {
-            font-size: 22px !important;
+            font-size: 18px !important;
             font-weight: bold !important;
             vertical-align: middle;
             height: 60px;
@@ -1042,7 +1042,7 @@
                         </div>
                     </div>
                     <div class="file-attachment">
-                        <div style="margin-bottom: 8px; font-weight: bold; color: var(--primary);">إرفاق ملف (اختياري)</div>
+                        <div style="margin-bottom: 8px; font-weight: bold; color: var(--primary);;">إرفاق ملف (اختياري)</div>
                         <input type="file" id="whatsapp-attachment" style="display: none;" accept=".pdf,.xlsx,.xls,.jpg,.jpeg,.png">
                         <label for="whatsapp-attachment" class="btn btn-small btn-secondary" style="display: inline-block; margin-bottom: 8px;">اختر ملف</label>
                         <div id="attachment-name" style="font-size: 12px; color: #666;">لم يتم اختيار ملف</div>
@@ -1136,7 +1136,7 @@
             { code: "K1039", name: "Drumstic whole Fried  ( وصلة دجاج عادي)", group: "meat", vendorUOM: "KG", stockQty: 0, uuom: "جرام", smallestUnitQty: 0 },
             { code: "K1040", name: "Drumstick whole Fried spicy  ( وصلة دجاج فلفل)", group: "meat", vendorUOM: "KG", stockQty: 0, uuom: "جرام", smallestUnitQty: 0 },
             
-            // مقبلات (السلطات الكبيرة فقط، مع إضافة K2006 لاحقاً في الكود)
+            // مقبلات (السلطات الكبيرة فقط، مع إضافة K2006)
             { code: "K2035", name: "Fattoush Salad Big  ( سلطة فتوش كبيرة)", group: "appetizers", vendorUOM: "علبة", stockQty: 0, uuom: "علبة", smallestUnitQty: 0 },
             { code: "K2005", name: "Cole Slaw Big  (كول سلو كبير)", group: "appetizers", vendorUOM: "علبة", stockQty: 0, uuom: "علبة", smallestUnitQty: 0 },
             { code: "K2006", name: "Cole Slaw Small  ( كول سلو صغير)", group: "appetizers", vendorUOM: "علبة", stockQty: 0, uuom: "علبة", smallestUnitQty: 0 },
@@ -2514,7 +2514,6 @@
                 let totalDifference = 0;
                 let processedItems = new Set();
                 const hasCombinedColumn = sectionType === 'meat' || (sectionType === 'appetizers' && items.some(item => isSaladItem(item) || isColeSlawItem(item)));
-                const columnCount = hasCombinedColumn ? 8 : 7;
                 
                 contentHTML += `
                     <table style="width: 100%; border-collapse: collapse; font-size: 9px; margin-bottom: 5px;">
@@ -2566,9 +2565,9 @@
                                 const combinedDiff = similarItems.reduce((sum, i) => sum + (i.difference || 0), 0);
                                 const combinedText = combinedDiff < 0 ? 'عجز' : combinedDiff > 0 ? 'زيادة' : 'متساوي';
                                 combinedCellHTML = `
-                                    <td style="border: 1px solid #ddd; padding: 1px; text-align: center; font-size: 8.5px; font-weight: bold; color: ${combinedDiff < 0 ? 'white' : combinedDiff > 0 ? 'white' : '#333'}; background-color: ${combinedDiff < 0 ? 'var(--dark-red)' : combinedDiff > 0 ? 'var(--dark-green)' : '#f0f9ff'}; vertical-align: middle;" rowspan="${similarItems.length}">
+                                    <td style="border: 1px solid #ddd; padding: 1px; text-align: center; font-size: 12px; font-weight: 900; color: ${combinedDiff < 0 ? 'white' : combinedDiff > 0 ? 'white' : '#333'}; background-color: ${combinedDiff < 0 ? 'var(--dark-red)' : combinedDiff > 0 ? 'var(--dark-green)' : '#f0f9ff'}; vertical-align: middle;" rowspan="${similarItems.length}">
                                         <span style="display: block; margin-bottom: 1px;">${combinedDiff}</span>
-                                        <span style="display: block; font-size: 7.6px; opacity: 0.9;">${combinedText}</span>
+                                        <span style="display: block; font-size: 10px; opacity: 0.9;">${combinedText}</span>
                                     </td>
                                 `;
                             }
@@ -2597,9 +2596,9 @@
                         let combinedCellHTML = '';
                         if (hasCombinedColumn && !isSaladItem(item) && !isColeSlawItem(item)) {
                             combinedCellHTML = `
-                                <td style="border: 1px solid #ddd; padding: 1px; text-align: center; font-size: 8.5px; font-weight: bold; color: ${diff < 0 ? 'white' : diff > 0 ? 'white' : '#333'}; background-color: ${diff < 0 ? 'var(--dark-red)' : diff > 0 ? 'var(--dark-green)' : '#f0f9ff'}; vertical-align: middle;">
+                                <td style="border: 1px solid #ddd; padding: 1px; text-align: center; font-size: 10px; font-weight: 900; color: ${diff < 0 ? 'white' : diff > 0 ? 'white' : '#333'}; background-color: ${diff < 0 ? 'var(--dark-red)' : diff > 0 ? 'var(--dark-green)' : '#f0f9ff'}; vertical-align: middle;">
                                     <span style="display: block; margin-bottom: 1px;">${diff}</span>
-                                    <span style="display: block; font-size: 7.6px; opacity: 0.9;">${diffText || 'متساوي'}</span>
+                                    <span style="display: block; font-size: 10px; opacity: 0.9;">${diffText || 'متساوي'}</span>
                                 </td>
                             `;
                         }
