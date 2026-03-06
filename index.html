@@ -21,7 +21,9 @@
             --accent-green: #10B981;
             --accent-orange: #F59E0B;
             --dark-red: #FF0000;       /* أحمر غامق */
-            --dark-green: #4CC552;      /* أخضر غامق - تم التعديل حسب الطلب */
+            --dark-green: #4CC552;      /* أخضر غامق */
+            --light-red: #FFE5E5;       /* أحمر فاتح للخلفية */
+            --light-green: #E5FFE5;     /* أخضر فاتح للخلفية */
         }
 
         * {
@@ -1362,11 +1364,16 @@
                 
                 inventoryDataMain = jsonData.map(item => {
                     const code = item['RM Code'] || '';
-                    const stockQty = item.StockQty || 0;
+                    let stockQty = item.StockQty || 0;
                     const vendorUOM = item.VendorUOM || '';
-                    const uuom = item.UUom || '';
+                    let uuom = item.UUom || '';
                     // تمرير الكود للدالة للتعامل مع الاستثناءات
-                    const smallestUnitQty = convertToSmallestUnit(stockQty, vendorUOM, uuom, code);
+                    let smallestUnitQty = convertToSmallestUnit(stockQty, vendorUOM, uuom, code);
+                    // إذا كان الصنف K1070، نضمن أن الوحدة الصغرى هي كيلو والقيمة هي stockQty نفسها
+                    if (code === 'K1070') {
+                        uuom = 'كيلو';
+                        smallestUnitQty = stockQty; // لأن stockQty أساساً بالكيلو
+                    }
                     const startQty = convertToSmallestUnit(item['Start Qty'] || 0, vendorUOM, uuom, code);
                     const receivedQty = convertToSmallestUnit(item['Received Qty'] || 0, vendorUOM, uuom, code);
                     const transferInQty = convertToSmallestUnit(item['Transfer In Qty'] || 0, vendorUOM, uuom, code);
@@ -1422,10 +1429,14 @@
                 
                 inventoryDataSpot = jsonData.map(item => {
                     const code = item['RM Code'] || '';
-                    const stockQty = item.StockQty || 0;
+                    let stockQty = item.StockQty || 0;
                     const vendorUOM = item.VendorUOM || '';
-                    const uuom = item.UUom || '';
-                    const smallestUnitQty = convertToSmallestUnit(stockQty, vendorUOM, uuom, code);
+                    let uuom = item.UUom || '';
+                    let smallestUnitQty = convertToSmallestUnit(stockQty, vendorUOM, uuom, code);
+                    if (code === 'K1070') {
+                        uuom = 'كيلو';
+                        smallestUnitQty = stockQty;
+                    }
                     const startQty = convertToSmallestUnit(item['Start Qty'] || 0, vendorUOM, uuom, code);
                     const receivedQty = convertToSmallestUnit(item['Received Qty'] || 0, vendorUOM, uuom, code);
                     const transferInQty = convertToSmallestUnit(item['Transfer In Qty'] || 0, vendorUOM, uuom, code);
@@ -2560,6 +2571,8 @@
                             if (processedItems.has(similarItem.code)) return;
                             const diff = similarItem.difference || 0;
                             const diffText = diff < 0 ? 'عجز' : diff > 0 ? 'زيادة' : '';
+                            // تحديد لون خلفية اسم الصنف حسب الفرق
+                            const bgColor = diff < 0 ? '#FFE5E5' : diff > 0 ? '#E5FFE5' : 'transparent';
                             let combinedCellHTML = '';
                             if (similarIndex === 0) {
                                 const combinedDiff = similarItems.reduce((sum, i) => sum + (i.difference || 0), 0);
@@ -2574,7 +2587,7 @@
                             contentHTML += `
                                 <tr style="height: 18px;">
                                     <td style="border: 1px solid #ddd; padding: 1px; text-align: center; font-size: 9px; vertical-align: middle;">${rowIndex+1}</td>
-                                    <td style="border: 1px solid #ddd; padding: 1px; text-align: right; font-size: 9px; vertical-align: middle;">${similarItem.name}</td>
+                                    <td style="border: 1px solid #ddd; padding: 1px; text-align: right; font-size: 9px; vertical-align: middle; background-color: ${bgColor};">${similarItem.name}</td>
                                     <td style="border: 1px solid #ddd; padding: 1px; text-align: center; font-size: 9px; vertical-align: middle;">${similarItem.vendorUOM}</td>
                                     <td style="border: 1px solid #ddd; padding: 1px; text-align: center; font-size: 9px; vertical-align: middle;">${similarItem.stockQty}</td>
                                     <td style="border: 1px solid #ddd; padding: 1px; text-align: center; font-size: 9px; font-weight: bold; vertical-align: middle;">${similarItem.smallestUnitQty}</td>
@@ -2593,6 +2606,7 @@
                     } else {
                         const diff = item.difference || 0;
                         const diffText = diff < 0 ? 'عجز' : diff > 0 ? 'زيادة' : '';
+                        const bgColor = diff < 0 ? '#FFE5E5' : diff > 0 ? '#E5FFE5' : 'transparent';
                         let combinedCellHTML = '';
                         if (hasCombinedColumn && !isSaladItem(item) && !isColeSlawItem(item)) {
                             combinedCellHTML = `
@@ -2605,7 +2619,7 @@
                         contentHTML += `
                             <tr style="height: 18px;">
                                 <td style="border: 1px solid #ddd; padding: 1px; text-align: center; font-size: 9px; vertical-align: middle;">${rowIndex+1}</td>
-                                <td style="border: 1px solid #ddd; padding: 1px; text-align: right; font-size: 9px; vertical-align: middle;">${item.name}</td>
+                                <td style="border: 1px solid #ddd; padding: 1px; text-align: right; font-size: 9px; vertical-align: middle; background-color: ${bgColor};">${item.name}</td>
                                 <td style="border: 1px solid #ddd; padding: 1px; text-align: center; font-size: 9px; vertical-align: middle;">${item.vendorUOM}</td>
                                 <td style="border: 1px solid #ddd; padding: 1px; text-align: center; font-size: 9px; vertical-align: middle;">${item.stockQty}</td>
                                 <td style="border: 1px solid #ddd; padding: 1px; text-align: center; font-size: 9px; font-weight: bold; vertical-align: middle;">${item.smallestUnitQty}</td>
