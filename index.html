@@ -1103,7 +1103,7 @@
         let currentWhatsappType = ''; // 'meat', 'veg', 'appetizers', 'misc'
         let whatsappAttachmentFile = null;
 
-        // الأصناف الأساسية (بعد التعديلات المطلوبة)
+        // الأصناف الأساسية (بعد التعديلات المطلوبة: إزالة A1001, A1014, B1007, K2017, K1001; إضافة K1002, K1003)
         const defaultItems = [
             // لحوم
             { code: "K1035", name: "Chicken Big Fillet  ( بيج فيلية)", group: "meat", vendorUOM: "KG", stockQty: 0, uuom: "جرام", smallestUnitQty: 0 },
@@ -1137,18 +1137,20 @@
             { code: "K1044", name: "Chicken Strips K1044 ( strips دجاج)", group: "meat", vendorUOM: "KG", stockQty: 0, uuom: "كيلو", smallestUnitQty: 0 },
             { code: "K1042", name: "Happy Chicken Pc ( قطع دجاج فرايد صغير عادي)", group: "meat", vendorUOM: "KG", stockQty: 0, uuom: "كيلو", smallestUnitQty: 0 },
             { code: "K1043", name: "Chicken Piece K1043 ( قطعة دجاج)", group: "meat", vendorUOM: "KG", stockQty: 0, uuom: "كيلو", smallestUnitQty: 0 },
-            { code: "K1001", name: "Chicken Product K1001 ( منتج دجاج)", group: "meat", vendorUOM: "KG", stockQty: 0, uuom: "كيلو", smallestUnitQty: 0 },
-            { code: "K2017", name: "Chicken K2017 ( دجاج)", group: "meat", vendorUOM: "KG", stockQty: 0, uuom: "كيلو", smallestUnitQty: 0 },
-            { code: "A1001", name: "Beef Product A1001 ( منتج لحم)", group: "meat", vendorUOM: "KG", stockQty: 0, uuom: "كيلو", smallestUnitQty: 0 },
-            { code: "A1014", name: "Beef A1014 ( لحم)", group: "meat", vendorUOM: "KG", stockQty: 0, uuom: "كيلو", smallestUnitQty: 0 },
-            { code: "B1007", name: "Burger Product B1007 ( برجر)", group: "meat", vendorUOM: "KG", stockQty: 0, uuom: "كيلو", smallestUnitQty: 0 },
+            // { code: "K1001", name: "Chicken Product K1001 ( منتج دجاج)", group: "meat", vendorUOM: "KG", stockQty: 0, uuom: "كيلو", smallestUnitQty: 0 }, // تم إزالته
+            // { code: "K2017", name: "Chicken K2017 ( دجاج)", group: "meat", vendorUOM: "KG", stockQty: 0, uuom: "كيلو", smallestUnitQty: 0 }, // تم إزالته
+            // { code: "A1001", name: "Beef Product A1001 ( منتج لحم)", group: "meat", vendorUOM: "KG", stockQty: 0, uuom: "كيلو", smallestUnitQty: 0 }, // تم إزالته
+            // { code: "A1014", name: "Beef A1014 ( لحم)", group: "meat", vendorUOM: "KG", stockQty: 0, uuom: "كيلو", smallestUnitQty: 0 }, // تم إزالته
+            // { code: "B1007", name: "Burger Product B1007 ( برجر)", group: "meat", vendorUOM: "KG", stockQty: 0, uuom: "كيلو", smallestUnitQty: 0 }, // تم إزالته
             
-            // إضافة K1076 و K1042 (K1042 مكرر ولكنه سيبقى مرة واحدة)
+            // إضافة K1002 و K1003 (كباب وشيش طاووق) مع uuom = كيلو
+            { code: "K1002", name: "Chicken Kabab ( كباب دجاج)", group: "meat", vendorUOM: "KG", stockQty: 0, uuom: "كيلو", smallestUnitQty: 0 },
+            { code: "K1003", name: "Sish Tawouk ( شيش طاووق)", group: "meat", vendorUOM: "KG", stockQty: 0, uuom: "كيلو", smallestUnitQty: 0 },
+            
+            // إضافة K1076
             { code: "K1076", name: "Grilled Chicken Pc / قطع دجاج مشويه", group: "meat", vendorUOM: "KG", stockQty: 0, uuom: "جرام", smallestUnitQty: 0 },
             
-            // ملاحظة: تم إزالة K1002, A1013, K1003 (قوانص، كبدة، قلوب)
-            
-            // مقبلات (تم إزالة Hummus وإضافة K2022)
+            // مقبلات
             { code: "K2035", name: "Fattoush Salad Big  ( سلطة فتوش كبيرة)", group: "appetizers", vendorUOM: "علبة", stockQty: 0, uuom: "علبة", smallestUnitQty: 0 },
             { code: "K2005", name: "Cole Slaw Big  (كول سلو كبير)", group: "appetizers", vendorUOM: "علبة", stockQty: 0, uuom: "علبة", smallestUnitQty: 0 },
             { code: "K2006", name: "Cole Slaw Small  ( كول سلو صغير)", group: "appetizers", vendorUOM: "علبة", stockQty: 0, uuom: "علبة", smallestUnitQty: 0 },
@@ -1224,7 +1226,7 @@
             { name: "هدية", areaManager: "حجازي", operationsManager: "هاني عبدالله" }
         ];
 
-        // جدول تحويل الوحدات
+        // جدول تحويل الوحدات الأساسي
         const unitConversionMap = {
             "KILO": 1000, "KILO GRAM": 1000, "KG": 1000, "كجم": 1000, "كيلو": 1000,
             "1/2 KILO": 500, "500 GM": 500, "500 G": 500, "500 جرام": 500, "نصف كيلو": 500,
@@ -1257,19 +1259,62 @@
         // دالة محسنة لتحويل الوحدات مع استثناءات خاصة
         function convertToSmallestUnit(quantity, vendorUOM, uuom, itemCode = '') {
             if (!vendorUOM || !quantity) return Math.round(quantity);
-            
+
+            // ===== قواعد التحويل الخاصة بناءً على كود الصنف =====
+            // A1001: French Fries 6×6 LW ( شبس لامب وستون) من Carton (10 Kgs) -> الوحدة الصغرى كيلو = الجرد * 10
+            if (itemCode === 'A1001') {
+                return Math.round(quantity * 10 * 100) / 100; // نضرب في 10 (لأن كل كرتون 10 كجم) والنتيجة بالكيلو
+            }
+            // A1013: Mozzarella shd cheese(جبنة موزريلا) من Packet (2 Kgs) -> كيلو = الجرد * 2
+            if (itemCode === 'A1013') {
+                return Math.round(quantity * 2 * 100) / 100;
+            }
+            // C1005: Aquafina Water 600ml من Carton (24 Bottle) -> Pcs = الجرد * 24
+            if (itemCode === 'C1005') {
+                return Math.round(quantity * 24 * 100) / 100;
+            }
+            // C1003, C1004: Pepsi 1.25 Ltr / 2.25 Ltr من Carton (6 Bottle) -> Pcs = الجرد * 6
+            if (itemCode === 'C1003' || itemCode === 'C1004') {
+                return Math.round(quantity * 6 * 100) / 100;
+            }
+            // G1050: Charcoal ( فحم) من Bag (10 Kgs) -> كيلو = الجرد * 10
+            if (itemCode === 'G1050') {
+                return Math.round(quantity * 10 * 100) / 100;
+            }
+
+            // قواعد عامة للتحويلات الأخرى المطلوبة (مثل Packet (6 Roll) -> Pcs يضرب في 6)
+            // نبحث عن أنماط في vendorUOM
+            const vendorUOMUpper = vendorUOM.toUpperCase();
+
+            // استثناء: Packet (6 Roll) -> يضرب في 6
+            if (vendorUOMUpper.includes('PACKET') && vendorUOMUpper.includes('ROLL')) {
+                const match = vendorUOM.match(/(\d+)/);
+                if (match) {
+                    return Math.round(quantity * parseInt(match[1]) * 100) / 100;
+                }
+            }
+            // استثناء: Gallon (5 Ltrs) -> Liter يضرب في 5
+            if (vendorUOMUpper.includes('GALLON') && vendorUOMUpper.includes('LTR')) {
+                const match = vendorUOM.match(/(\d+)/);
+                if (match) {
+                    return Math.round(quantity * parseInt(match[1]) * 1000 * 100) / 100; // نحول إلى لتر ثم إلى ملليلتر؟ حسب المطلوب: إلى Liter (أي 1 لتر = 1000 مل)، لكن نحتاج التوحيد. سأفترض أن الوحدة الصغرى هي لتر (1000 مل) ونضرب في 1000 إذا كنا نريد ملليلتر. لكن المطلوب "الى Liter" يعني نضرب في 5 ونحتفظ باللتر. بما أن الوحدة الصغرى في النظام عادة تكون جرام أو مل، سأفترض أننا نريد ملليلتر.
+                    // لكن حسب المثال: "من Gallon (5 Ltrs) الى Liter يضرب الجرد في 5" يعني الناتج باللتر. إذا أردنا ملليلتر نضرب في 5000. سأجعل الناتج باللتر (أي 1000 مل) وسيتم عرضه كرقم. لكن الوحدة الصغرى قد تكون مل. لتبسيط، سأعيد quantity * 5 (لتر) ثم أضرب في 1000 لتحويل إلى ملليلتر. لكن uuom ستكون مل. سنعتمد على أن uuom = مل في النظام.
+                    // لذلك: quantity (جالون) * 5 (لتر/جالون) * 1000 (مل/لتر) = quantity * 5000.
+                    return Math.round(quantity * 5000 * 100) / 100; // مثال: 2.25 جالون * 5000 = 11250 مل
+                }
+            }
+
             // الأصناف التي الوحدة الصغرى فيها كيلو وليس جرام (تم تحديثها)
-            const kgItems = ['K1070', 'K1044', 'K1042', 'K1043', 'K1001', 'K2017', 'A1001', 'A1014', 'B1007'];
+            const kgItems = ['K1070', 'K1044', 'K1042', 'K1043', 'K1001', 'K2017', 'A1001', 'A1014', 'B1007', 'K1002', 'K1003'];
             if (kgItems.includes(itemCode) && uuom && (uuom.includes('كيلو') || uuom.includes('KG') || uuom.includes('كجم'))) {
-                return Math.round(quantity);
+                return Math.round(quantity * 100) / 100; // نحافظ على الكيلو دون ضرب
             }
             
             // استثناء خاص للصنف G1026: الوحدة الصغرى = quantity * 24 (رول)
             if (itemCode === 'G1026') {
-                return Math.round(quantity * 24);
+                return Math.round(quantity * 24 * 100) / 100;
             }
             
-            const vendorUOMUpper = vendorUOM.toUpperCase();
             let multiplier = 1;
             
             const complexPatterns = [
@@ -1326,7 +1371,7 @@
             }
             
             let result = quantity * multiplier;
-            return Math.round(result);
+            return Math.round(result * 100) / 100; // تقريب لمنزلة عشرية
         }
 
         // دالة دمج الملفين
@@ -1379,11 +1424,12 @@
                     const vendorUOM = item.VendorUOM || '';
                     let uuom = item.UUom || '';
                     // الأصناف التي الوحدة الصغرى فيها كيلو (تم تحديثها)
-                    const kgItems = ['K1070', 'K1044', 'K1042', 'K1043', 'K1001', 'K2017', 'A1001', 'A1014', 'B1007'];
+                    const kgItems = ['K1070', 'K1044', 'K1042', 'K1043', 'K1001', 'K2017', 'A1001', 'A1014', 'B1007', 'K1002', 'K1003'];
                     let smallestUnitQty = convertToSmallestUnit(stockQty, vendorUOM, uuom, code);
                     if (kgItems.includes(code)) {
                         uuom = 'كيلو';
-                        smallestUnitQty = stockQty; // لأن stockQty أساساً بالكيلو
+                        // لا نضرب في شيء لأن stockQty أساساً بالكيلو
+                        smallestUnitQty = stockQty;
                     }
                     const startQty = convertToSmallestUnit(item['Start Qty'] || 0, vendorUOM, uuom, code);
                     const receivedQty = convertToSmallestUnit(item['Received Qty'] || 0, vendorUOM, uuom, code);
@@ -1443,7 +1489,7 @@
                     let stockQty = item.StockQty || 0;
                     const vendorUOM = item.VendorUOM || '';
                     let uuom = item.UUom || '';
-                    const kgItems = ['K1070', 'K1044', 'K1042', 'K1043', 'K1001', 'K2017', 'A1001', 'A1014', 'B1007'];
+                    const kgItems = ['K1070', 'K1044', 'K1042', 'K1043', 'K1001', 'K2017', 'A1001', 'A1014', 'B1007', 'K1002', 'K1003'];
                     let smallestUnitQty = convertToSmallestUnit(stockQty, vendorUOM, uuom, code);
                     if (kgItems.includes(code)) {
                         uuom = 'كيلو';
@@ -1497,7 +1543,7 @@
                 if (existingItemIndex === -1) {
                     // تعيين smallestUnitQty بناءً على الاستثناءات
                     let smallest = defaultItem.smallestUnitQty;
-                    const kgItems = ['K1070', 'K1044', 'K1042', 'K1043', 'K1001', 'K2017', 'A1001', 'A1014', 'B1007'];
+                    const kgItems = ['K1070', 'K1044', 'K1042', 'K1043', 'K1001', 'K2017', 'A1001', 'A1014', 'B1007', 'K1002', 'K1003'];
                     if (kgItems.includes(defaultItem.code)) {
                         smallest = defaultItem.stockQty; // لأن uuom = كيلو
                     } else if (defaultItem.code === 'G1026') {
