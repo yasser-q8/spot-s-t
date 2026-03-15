@@ -240,6 +240,11 @@
             font-weight: 600;
         }
 
+        .inventory-table td:nth-child(4) {
+            font-size: 18px !important; /* تكبير خط "الجرد من البرنامج" بنسبة 50% */
+            font-weight: bold !important;
+        }
+
         .inventory-table td:nth-child(6) {
             font-size: 18px !important;
             font-weight: bold !important;
@@ -474,6 +479,29 @@
             border: 1px solid #ddd;
             border-radius: 4px;
             font-size: 14px;
+        }
+
+        /* تنسيق الصف الواحد للحقول الثلاثة */
+        .info-row-compact {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+
+        .info-item {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .info-item .info-label {
+            width: auto;
+            margin-bottom: 5px;
+            display: block;
+        }
+
+        .info-item .info-value {
+            width: 100%;
         }
 
         .restaurant-autocomplete {
@@ -725,6 +753,9 @@
             .inventory-table td:nth-child(2) {
                 font-size: 14px !important;
             }
+            .inventory-table td:nth-child(4) {
+                font-size: 16px !important;
+            }
             .inventory-table td:nth-child(6) {
                 font-size: 16px !important;
             }
@@ -738,6 +769,10 @@
             .combined-difference-cell {
                 font-size: 16px !important;
                 height: 40px;
+            }
+            .info-row-compact {
+                flex-direction: column;
+                gap: 10px;
             }
         }
 
@@ -835,26 +870,28 @@
         <section id="meat-section" class="section">
             <h2 style="color: var(--primary); margin-bottom: 20px;">جرد أصناف اللحوم</h2>
             <div class="restaurant-info">
-                <div class="info-row">
-                    <div class="info-label">اسم المطعم:</div>
-                    <div class="info-value">
-                        <div class="restaurant-autocomplete">
-                            <input type="text" class="restaurant-search-input" id="meat-restaurant-search" placeholder="اكتب اسم المطعم...">
-                            <div class="restaurant-suggestions" id="meat-restaurant-suggestions"></div>
+                <div class="info-row-compact">
+                    <div class="info-item">
+                        <div class="info-label">اسم المطعم:</div>
+                        <div class="info-value">
+                            <div class="restaurant-autocomplete">
+                                <input type="text" class="restaurant-search-input" id="meat-restaurant-search" placeholder="اكتب اسم المطعم...">
+                                <div class="restaurant-suggestions" id="meat-restaurant-suggestions"></div>
+                            </div>
+                            <input type="hidden" id="meat-restaurant-name">
                         </div>
-                        <input type="hidden" id="meat-restaurant-name">
                     </div>
-                </div>
-                <div class="info-row">
-                    <div class="info-label">مسئول المطعم:</div>
-                    <div class="info-value">
-                        <input type="text" id="meat-responsible" placeholder="اسم المسئول">
+                    <div class="info-item">
+                        <div class="info-label">مسئول المطعم:</div>
+                        <div class="info-value">
+                            <input type="text" id="meat-responsible" placeholder="اسم المسئول">
+                        </div>
                     </div>
-                </div>
-                <div class="info-row">
-                    <div class="info-label">تاريخ ووقت الجرد:</div>
-                    <div class="info-value">
-                        <input type="datetime-local" id="meat-datetime" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                    <div class="info-item">
+                        <div class="info-label">تاريخ ووقت الجرد:</div>
+                        <div class="info-value">
+                            <input type="datetime-local" id="meat-datetime" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                        </div>
                     </div>
                 </div>
                 <div class="manager-info">
@@ -880,26 +917,28 @@
         <section id="veg-section" class="section">
             <h2 style="color: var(--primary); margin-bottom: 20px;">جرد أصناف الخضروات</h2>
             <div class="restaurant-info">
-                <div class="info-row">
-                    <div class="info-label">اسم المطعم:</div>
-                    <div class="info-value">
-                        <div class="restaurant-autocomplete">
-                            <input type="text" class="restaurant-search-input" id="veg-restaurant-search" placeholder="اكتب اسم المطعم...">
-                            <div class="restaurant-suggestions" id="veg-restaurant-suggestions"></div>
+                <div class="info-row-compact">
+                    <div class="info-item">
+                        <div class="info-label">اسم المطعم:</div>
+                        <div class="info-value">
+                            <div class="restaurant-autocomplete">
+                                <input type="text" class="restaurant-search-input" id="veg-restaurant-search" placeholder="اكتب اسم المطعم...">
+                                <div class="restaurant-suggestions" id="veg-restaurant-suggestions"></div>
+                            </div>
+                            <input type="hidden" id="veg-restaurant-name">
                         </div>
-                        <input type="hidden" id="veg-restaurant-name">
                     </div>
-                </div>
-                <div class="info-row">
-                    <div class="info-label">مسئول المطعم:</div>
-                    <div class="info-value">
-                        <input type="text" id="veg-responsible" placeholder="اسم المسئول">
+                    <div class="info-item">
+                        <div class="info-label">مسئول المطعم:</div>
+                        <div class="info-value">
+                            <input type="text" id="veg-responsible" placeholder="اسم المسئول">
+                        </div>
                     </div>
-                </div>
-                <div class="info-row">
-                    <div class="info-label">التاريخ والوقت:</div>
-                    <div class="info-value">
-                        <input type="datetime-local" id="veg-datetime" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                    <div class="info-item">
+                        <div class="info-label">تاريخ ووقت الجرد:</div>
+                        <div class="info-value">
+                            <input type="datetime-local" id="veg-datetime" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                        </div>
                     </div>
                 </div>
                 <div class="manager-info">
@@ -925,26 +964,28 @@
         <section id="appetizers-section" class="section">
             <h2 style="color: var(--primary); margin-bottom: 20px;">جرد أصناف المقبلات</h2>
             <div class="restaurant-info">
-                <div class="info-row">
-                    <div class="info-label">اسم المطعم:</div>
-                    <div class="info-value">
-                        <div class="restaurant-autocomplete">
-                            <input type="text" class="restaurant-search-input" id="appetizers-restaurant-search" placeholder="اكتب اسم المطعم...">
-                            <div class="restaurant-suggestions" id="appetizers-restaurant-suggestions"></div>
+                <div class="info-row-compact">
+                    <div class="info-item">
+                        <div class="info-label">اسم المطعم:</div>
+                        <div class="info-value">
+                            <div class="restaurant-autocomplete">
+                                <input type="text" class="restaurant-search-input" id="appetizers-restaurant-search" placeholder="اكتب اسم المطعم...">
+                                <div class="restaurant-suggestions" id="appetizers-restaurant-suggestions"></div>
+                            </div>
+                            <input type="hidden" id="appetizers-restaurant-name">
                         </div>
-                        <input type="hidden" id="appetizers-restaurant-name">
                     </div>
-                </div>
-                <div class="info-row">
-                    <div class="info-label">مسئول المطعم:</div>
-                    <div class="info-value">
-                        <input type="text" id="appetizers-responsible" placeholder="اسم المسئول">
+                    <div class="info-item">
+                        <div class="info-label">مسئول المطعم:</div>
+                        <div class="info-value">
+                            <input type="text" id="appetizers-responsible" placeholder="اسم المسئول">
+                        </div>
                     </div>
-                </div>
-                <div class="info-row">
-                    <div class="info-label">التاريخ والوقت:</div>
-                    <div class="info-value">
-                        <input type="datetime-local" id="appetizers-datetime" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                    <div class="info-item">
+                        <div class="info-label">تاريخ ووقت الجرد:</div>
+                        <div class="info-value">
+                            <input type="datetime-local" id="appetizers-datetime" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                        </div>
                     </div>
                 </div>
                 <div class="manager-info">
@@ -970,26 +1011,28 @@
         <section id="misc-section" class="section">
             <h2 style="color: var(--primary); margin-bottom: 20px;">جرد أصناف أخرى متنوعة</h2>
             <div class="restaurant-info">
-                <div class="info-row">
-                    <div class="info-label">اسم المطعم:</div>
-                    <div class="info-value">
-                        <div class="restaurant-autocomplete">
-                            <input type="text" class="restaurant-search-input" id="misc-restaurant-search" placeholder="اكتب اسم المطعم...">
-                            <div class="restaurant-suggestions" id="misc-restaurant-suggestions"></div>
+                <div class="info-row-compact">
+                    <div class="info-item">
+                        <div class="info-label">اسم المطعم:</div>
+                        <div class="info-value">
+                            <div class="restaurant-autocomplete">
+                                <input type="text" class="restaurant-search-input" id="misc-restaurant-search" placeholder="اكتب اسم المطعم...">
+                                <div class="restaurant-suggestions" id="misc-restaurant-suggestions"></div>
+                            </div>
+                            <input type="hidden" id="misc-restaurant-name">
                         </div>
-                        <input type="hidden" id="misc-restaurant-name">
                     </div>
-                </div>
-                <div class="info-row">
-                    <div class="info-label">مسئول المطعم:</div>
-                    <div class="info-value">
-                        <input type="text" id="misc-responsible" placeholder="اسم المسئول">
+                    <div class="info-item">
+                        <div class="info-label">مسئول المطعم:</div>
+                        <div class="info-value">
+                            <input type="text" id="misc-responsible" placeholder="اسم المسئول">
+                        </div>
                     </div>
-                </div>
-                <div class="info-row">
-                    <div class="info-label">التاريخ والوقت:</div>
-                    <div class="info-value">
-                        <input type="datetime-local" id="misc-datetime" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                    <div class="info-item">
+                        <div class="info-label">تاريخ ووقت الجرد:</div>
+                        <div class="info-value">
+                            <input type="datetime-local" id="misc-datetime" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                        </div>
                     </div>
                 </div>
                 <div class="manager-info">
@@ -1106,7 +1149,7 @@
                 </div>
             </div>
         </div>
-        <div id="pdf-restaurant-info" style="margin-bottom: 15px; padding: 10px; background: #EFF6FF; border-radius: 4px; font-size: 12px; border: 1px solid var(--primary);"></div>
+        <div id="pdf-restaurant-info" style="margin-bottom: 15px; padding: 10px; background: #EFF6FF; border-radius: 4px; font-size: 16px; border: 1px solid var(--primary);"></div>
         <div id="pdf-content" style="font-size: 11px;"></div>
         <div id="pdf-footer" style="margin-top: 20px; padding-top: 10px; border-top: 1px solid #ddd; text-align: center; font-size: 10px; color: #666;">
             <div style="margin-bottom: 5px;">تم إنشاء هذا التقرير بواسطة نظام جرد أصناف المطاعم</div>
@@ -1268,6 +1311,18 @@
             "DOZEN": 12, "دزنة": 12,
             "LBS": 453.592, "رطل": 453.592
         };
+
+        // دالة لتنسيق التاريخ والوقت بالأرقام الإنجليزية (dd/mm/yyyy hh:mm)
+        function formatDateTimeEn(dateTimeValue) {
+            if (!dateTimeValue) return 'غير محدد';
+            const date = new Date(dateTimeValue);
+            const day = String(date.getDate()).padStart(2, '0');
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const year = date.getFullYear();
+            const hours = String(date.getHours()).padStart(2, '0');
+            const minutes = String(date.getMinutes()).padStart(2, '0');
+            return `${day}/${month}/${year} ${hours}:${minutes}`;
+        }
 
         // ==================== دوال مساعدة ====================
         function getItemGroup(item) {
@@ -2591,20 +2646,8 @@
                 }
                 if (items.length === 0) { showNotification('لا توجد بيانات'); return; }
                 
-                // تنسيق التاريخ والوقت للعرض
-                let formattedDateTime = '';
-                if (dateTimeValue) {
-                    const date = new Date(dateTimeValue);
-                    formattedDateTime = date.toLocaleString('ar-SA', { 
-                        year: 'numeric', 
-                        month: 'numeric', 
-                        day: 'numeric', 
-                        hour: '2-digit', 
-                        minute: '2-digit' 
-                    });
-                } else {
-                    formattedDateTime = 'غير محدد';
-                }
+                // تنسيق التاريخ والوقت للعرض بالأرقام الإنجليزية
+                let formattedDateTime = formatDateTimeEn(dateTimeValue);
                 
                 // استنساخ القالب
                 const template = document.getElementById('pdf-template');
@@ -2632,7 +2675,7 @@
                         <div><strong>مدير التشغيل:</strong> ${operationsManager}</div>
                     </div>
                     <div style="display: flex; justify-content: center;">
-                        <div><strong>التاريخ والوقت:</strong> ${formattedDateTime}</div>
+                        <div><strong>تاريخ ووقت الجرد:</strong> ${formattedDateTime}</div>
                     </div>
                 `;
                 const pdfHeader = clone.querySelector('.pdf-header');
@@ -2896,20 +2939,8 @@
             data.push([title]); data.push([]);
             data.push([`المطعم: ${restaurantName || 'غير محدد'}`]);
             data.push([`المسئول: ${responsibleName || 'غير محدد'}`]);
-            // تنسيق التاريخ والوقت
-            let formattedDateTime = '';
-            if (dateTimeValue) {
-                const date = new Date(dateTimeValue);
-                formattedDateTime = date.toLocaleString('ar-SA', { 
-                    year: 'numeric', 
-                    month: 'numeric', 
-                    day: 'numeric', 
-                    hour: '2-digit', 
-                    minute: '2-digit' 
-                });
-            } else {
-                formattedDateTime = 'غير محدد';
-            }
+            // تنسيق التاريخ والوقت بالأرقام الإنجليزية
+            let formattedDateTime = formatDateTimeEn(dateTimeValue);
             data.push([`التاريخ والوقت: ${formattedDateTime}`]);
             data.push([`تاريخ الإصدار: ${new Date().toLocaleDateString('ar-SA')}`]);
             data.push([]);
@@ -3054,12 +3085,7 @@
                 items = selectedItems.filter(item => item.group === 'other');
             }
             // إضافة التاريخ والوقت
-            if (dateTimeValue) {
-                const date = new Date(dateTimeValue);
-                message += `التاريخ والوقت: ${date.toLocaleString('ar-SA', { year: 'numeric', month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit' })}\n\n`;
-            } else {
-                message += '\n';
-            }
+            message += `التاريخ والوقت: ${formatDateTimeEn(dateTimeValue)}\n\n`;
             if (items.length === 0) { showNotification('لا توجد بيانات'); return; }
             items.forEach(item => {
                 const diffText = item.difference < 0 ? 'عجز' : item.difference > 0 ? 'زيادة' : '';
