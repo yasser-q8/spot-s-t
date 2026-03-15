@@ -851,6 +851,12 @@
                         <input type="text" id="meat-responsible" placeholder="اسم المسئول">
                     </div>
                 </div>
+                <div class="info-row">
+                    <div class="info-label">تاريخ ووقت الجرد:</div>
+                    <div class="info-value">
+                        <input type="datetime-local" id="meat-datetime" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                    </div>
+                </div>
                 <div class="manager-info">
                     <div class="manager-box">
                         <div class="manager-label">مدير المنطقة</div>
@@ -888,6 +894,12 @@
                     <div class="info-label">مسئول المطعم:</div>
                     <div class="info-value">
                         <input type="text" id="veg-responsible" placeholder="اسم المسئول">
+                    </div>
+                </div>
+                <div class="info-row">
+                    <div class="info-label">التاريخ والوقت:</div>
+                    <div class="info-value">
+                        <input type="datetime-local" id="veg-datetime" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
                     </div>
                 </div>
                 <div class="manager-info">
@@ -929,6 +941,12 @@
                         <input type="text" id="appetizers-responsible" placeholder="اسم المسئول">
                     </div>
                 </div>
+                <div class="info-row">
+                    <div class="info-label">التاريخ والوقت:</div>
+                    <div class="info-value">
+                        <input type="datetime-local" id="appetizers-datetime" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                    </div>
+                </div>
                 <div class="manager-info">
                     <div class="manager-box">
                         <div class="manager-label">مدير المنطقة</div>
@@ -966,6 +984,12 @@
                     <div class="info-label">مسئول المطعم:</div>
                     <div class="info-value">
                         <input type="text" id="misc-responsible" placeholder="اسم المسئول">
+                    </div>
+                </div>
+                <div class="info-row">
+                    <div class="info-label">التاريخ والوقت:</div>
+                    <div class="info-value">
+                        <input type="datetime-local" id="misc-datetime" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
                     </div>
                 </div>
                 <div class="manager-info">
@@ -2531,13 +2555,14 @@
             }
             
             try {
-                let items = [], restaurantName = '', responsibleName = '', areaManager = '', operationsManager = '', title = '';
+                let items = [], restaurantName = '', responsibleName = '', areaManager = '', operationsManager = '', title = '', dateTimeValue = '';
                 if (sectionType === 'meat') {
                     items = selectedItems.filter(item => item.group === 'meat');
                     restaurantName = restaurantInput;
                     responsibleName = document.getElementById('meat-responsible').value;
                     areaManager = document.getElementById('meat-area-manager').textContent;
                     operationsManager = document.getElementById('meat-operations-manager').textContent;
+                    dateTimeValue = document.getElementById('meat-datetime').value;
                     title = 'جرد أصناف اللحوم';
                 } else if (sectionType === 'veg') {
                     items = selectedItems.filter(item => item.group === 'vegetables');
@@ -2545,6 +2570,7 @@
                     responsibleName = document.getElementById('veg-responsible').value;
                     areaManager = document.getElementById('veg-area-manager').textContent;
                     operationsManager = document.getElementById('veg-operations-manager').textContent;
+                    dateTimeValue = document.getElementById('veg-datetime').value;
                     title = 'جرد أصناف الخضروات';
                 } else if (sectionType === 'appetizers') {
                     items = selectedItems.filter(item => item.group === 'appetizers');
@@ -2552,6 +2578,7 @@
                     responsibleName = document.getElementById('appetizers-responsible').value;
                     areaManager = document.getElementById('appetizers-area-manager').textContent;
                     operationsManager = document.getElementById('appetizers-operations-manager').textContent;
+                    dateTimeValue = document.getElementById('appetizers-datetime').value;
                     title = 'جرد أصناف المقبلات';
                 } else if (sectionType === 'misc') {
                     items = selectedItems.filter(item => item.group === 'other');
@@ -2559,9 +2586,25 @@
                     responsibleName = document.getElementById('misc-responsible').value;
                     areaManager = document.getElementById('misc-area-manager').textContent;
                     operationsManager = document.getElementById('misc-operations-manager').textContent;
+                    dateTimeValue = document.getElementById('misc-datetime').value;
                     title = 'جرد أصناف أخرى';
                 }
                 if (items.length === 0) { showNotification('لا توجد بيانات'); return; }
+                
+                // تنسيق التاريخ والوقت للعرض
+                let formattedDateTime = '';
+                if (dateTimeValue) {
+                    const date = new Date(dateTimeValue);
+                    formattedDateTime = date.toLocaleString('ar-SA', { 
+                        year: 'numeric', 
+                        month: 'numeric', 
+                        day: 'numeric', 
+                        hour: '2-digit', 
+                        minute: '2-digit' 
+                    });
+                } else {
+                    formattedDateTime = 'غير محدد';
+                }
                 
                 // استنساخ القالب
                 const template = document.getElementById('pdf-template');
@@ -2584,9 +2627,12 @@
                         <div><strong>المطعم:</strong> ${restaurantName || 'غير محدد'}</div>
                         <div><strong>مسئول المطعم:</strong> ${responsibleName || 'غير محدد'}</div>
                     </div>
-                    <div style="display: flex; justify-content: space-between;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
                         <div><strong>مدير المنطقة:</strong> ${areaManager}</div>
                         <div><strong>مدير التشغيل:</strong> ${operationsManager}</div>
+                    </div>
+                    <div style="display: flex; justify-content: center;">
+                        <div><strong>التاريخ والوقت:</strong> ${formattedDateTime}</div>
                     </div>
                 `;
                 const pdfHeader = clone.querySelector('.pdf-header');
@@ -2814,29 +2860,33 @@
                 return;
             }
             
-            let items = [], restaurantName = '', responsibleName = '', title = '', fileName = '';
+            let items = [], restaurantName = '', responsibleName = '', title = '', fileName = '', dateTimeValue = '';
             if (sectionType === 'meat') {
                 items = selectedItems.filter(item => item.group === 'meat');
                 restaurantName = restaurantInput;
                 responsibleName = document.getElementById('meat-responsible').value;
+                dateTimeValue = document.getElementById('meat-datetime').value;
                 title = 'جرد أصناف اللحوم';
                 fileName = 'جرد_اللحوم.xlsx';
             } else if (sectionType === 'veg') {
                 items = selectedItems.filter(item => item.group === 'vegetables');
                 restaurantName = restaurantInput;
                 responsibleName = document.getElementById('veg-responsible').value;
+                dateTimeValue = document.getElementById('veg-datetime').value;
                 title = 'جرد أصناف الخضروات';
                 fileName = 'جرد_الخضروات.xlsx';
             } else if (sectionType === 'appetizers') {
                 items = selectedItems.filter(item => item.group === 'appetizers');
                 restaurantName = restaurantInput;
                 responsibleName = document.getElementById('appetizers-responsible').value;
+                dateTimeValue = document.getElementById('appetizers-datetime').value;
                 title = 'جرد أصناف المقبلات';
                 fileName = 'جرد_المقبلات.xlsx';
             } else if (sectionType === 'misc') {
                 items = selectedItems.filter(item => item.group === 'other');
                 restaurantName = restaurantInput;
                 responsibleName = document.getElementById('misc-responsible').value;
+                dateTimeValue = document.getElementById('misc-datetime').value;
                 title = 'جرد أصناف أخرى';
                 fileName = 'جرد_أخرى.xlsx';
             }
@@ -2846,6 +2896,21 @@
             data.push([title]); data.push([]);
             data.push([`المطعم: ${restaurantName || 'غير محدد'}`]);
             data.push([`المسئول: ${responsibleName || 'غير محدد'}`]);
+            // تنسيق التاريخ والوقت
+            let formattedDateTime = '';
+            if (dateTimeValue) {
+                const date = new Date(dateTimeValue);
+                formattedDateTime = date.toLocaleString('ar-SA', { 
+                    year: 'numeric', 
+                    month: 'numeric', 
+                    day: 'numeric', 
+                    hour: '2-digit', 
+                    minute: '2-digit' 
+                });
+            } else {
+                formattedDateTime = 'غير محدد';
+            }
+            data.push([`التاريخ والوقت: ${formattedDateTime}`]);
             data.push([`تاريخ الإصدار: ${new Date().toLocaleDateString('ar-SA')}`]);
             data.push([]);
             
@@ -2962,27 +3027,38 @@
         document.getElementById('confirm-whatsapp-send').addEventListener('click', function() {
             const phone = document.getElementById('whatsapp-number').value.replace(/\s+/g, '');
             if (!phone) { showNotification('أدخل رقم الهاتف'); return; }
-            let message = '', items = [], restaurantName = '';
+            let message = '', items = [], restaurantName = '', dateTimeValue = '';
             if (currentWhatsappType === 'meat') {
                 const responsible = document.getElementById('meat-responsible').value || 'غير محدد';
                 restaurantName = document.getElementById('meat-restaurant-search').value || 'غير محدد';
-                message = `جرد أصناف اللحوم\nالمطعم: ${restaurantName}\nالمسئول: ${responsible}\n\n`;
+                dateTimeValue = document.getElementById('meat-datetime').value;
+                message = `جرد أصناف اللحوم\nالمطعم: ${restaurantName}\nالمسئول: ${responsible}\n`;
                 items = selectedItems.filter(item => item.group === 'meat');
             } else if (currentWhatsappType === 'veg') {
                 const responsible = document.getElementById('veg-responsible').value || 'غير محدد';
                 restaurantName = document.getElementById('veg-restaurant-search').value || 'غير محدد';
-                message = `جرد أصناف الخضروات\nالمطعم: ${restaurantName}\nالمسئول: ${responsible}\n\n`;
+                dateTimeValue = document.getElementById('veg-datetime').value;
+                message = `جرد أصناف الخضروات\nالمطعم: ${restaurantName}\nالمسئول: ${responsible}\n`;
                 items = selectedItems.filter(item => item.group === 'vegetables');
             } else if (currentWhatsappType === 'appetizers') {
                 const responsible = document.getElementById('appetizers-responsible').value || 'غير محدد';
                 restaurantName = document.getElementById('appetizers-restaurant-search').value || 'غير محدد';
-                message = `جرد أصناف المقبلات\nالمطعم: ${restaurantName}\nالمسئول: ${responsible}\n\n`;
+                dateTimeValue = document.getElementById('appetizers-datetime').value;
+                message = `جرد أصناف المقبلات\nالمطعم: ${restaurantName}\nالمسئول: ${responsible}\n`;
                 items = selectedItems.filter(item => item.group === 'appetizers');
             } else if (currentWhatsappType === 'misc') {
                 const responsible = document.getElementById('misc-responsible').value || 'غير محدد';
                 restaurantName = document.getElementById('misc-restaurant-search').value || 'غير محدد';
-                message = `جرد أصناف أخرى\nالمطعم: ${restaurantName}\nالمسئول: ${responsible}\n\n`;
+                dateTimeValue = document.getElementById('misc-datetime').value;
+                message = `جرد أصناف أخرى\nالمطعم: ${restaurantName}\nالمسئول: ${responsible}\n`;
                 items = selectedItems.filter(item => item.group === 'other');
+            }
+            // إضافة التاريخ والوقت
+            if (dateTimeValue) {
+                const date = new Date(dateTimeValue);
+                message += `التاريخ والوقت: ${date.toLocaleString('ar-SA', { year: 'numeric', month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit' })}\n\n`;
+            } else {
+                message += '\n';
             }
             if (items.length === 0) { showNotification('لا توجد بيانات'); return; }
             items.forEach(item => {
@@ -3013,8 +3089,25 @@
             setTimeout(() => notif.style.display = 'none', 3000);
         }
 
+        // تعيين التاريخ والوقت الحاليين للحقول عند تحميل الصفحة
+        function setDefaultDateTime() {
+            const now = new Date();
+            const year = now.getFullYear();
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            const day = String(now.getDate()).padStart(2, '0');
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            const defaultValue = `${year}-${month}-${day}T${hours}:${minutes}`;
+            
+            document.getElementById('meat-datetime').value = defaultValue;
+            document.getElementById('veg-datetime').value = defaultValue;
+            document.getElementById('appetizers-datetime').value = defaultValue;
+            document.getElementById('misc-datetime').value = defaultValue;
+        }
+
         // تهيئة
         window.addEventListener('DOMContentLoaded', function() {
+            setDefaultDateTime();
             updateStats();
             updateRestaurantsTable();
             setupRestaurantAutocomplete('meat-restaurant-search', 'meat-restaurant-suggestions', { restaurantName: 'meat-restaurant-name', areaManager: 'meat-area-manager', operationsManager: 'meat-operations-manager' });
