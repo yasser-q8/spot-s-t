@@ -84,24 +84,29 @@
             font-weight: bold;
         }
 
-        .scroll-down-btn {
+        .scroll-down-btn, .scroll-top-btn {
             background-color: white;
             color: var(--primary);
-            border: none;
-            border-radius: 50%;
-            width: 45px;
-            height: 45px;
-            font-size: 24px;
+            border: 2px solid var(--primary);
+            border-radius: 25px;
+            padding: 8px 15px;
+            font-size: 14px;
+            font-weight: bold;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
             box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-            transition: transform 0.2s;
+            transition: transform 0.2s, background-color 0.2s;
         }
-        .scroll-down-btn:hover {
-            transform: translateY(5px);
+
+        .scroll-down-btn:hover, .scroll-top-btn:hover {
+            transform: translateY(3px);
             background-color: #f0f0f0;
+        }
+
+        .scroll-top-btn:hover {
+            transform: translateY(-3px);
         }
 
         .nav-tabs {
@@ -393,22 +398,22 @@
 
         .signature-card {
             position: fixed; bottom: 20px; left: 20px;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            color: white; padding: 10.5px 17.5px; border-radius: 8.5px;
-            box-shadow: 0 8px 25px rgba(0,0,0,0.3); font-weight: 600; z-index: 1000;
-            animation: float 6s ease-in-out infinite; cursor: pointer; border: 2px solid rgba(255,255,255,0.2);
+            background: transparent;
+            color: var(--primary); padding: 7.8px 13px; border-radius: 8.5px;
+            font-weight: 600; z-index: 1000;
+            animation: float 6s ease-in-out infinite; cursor: pointer; border: 2px solid red;
             text-decoration: none;
         }
 
-        .signature-card:hover { transform: scale(1.05); box-shadow: 0 12px 35px rgba(0,0,0,0.4); }
-        .signature-card .name { font-size: 0.95rem; font-weight: 700; margin-bottom: 5px; }
-        .signature-card .title { font-size: 0.7rem; opacity: 0.9; font-weight: 500; }
+        .signature-card:hover { transform: scale(1.05); }
+        .signature-card .name { font-size: 0.71rem; font-weight: 700; margin-bottom: 3.7px; text-shadow: none; }
+        .signature-card .title { font-size: 0.52rem; opacity: 0.9; font-weight: 500; }
 
         .file-attachment { margin-top: 15px; padding: 10px; border: 2px dashed var(--secondary); border-radius: 6px; text-align: center; background-color: rgba(59, 130, 246, 0.05); }
 
         @media (max-width: 768px) {
             .signature-card { position: relative; bottom: auto; left: auto; margin: 20px auto 0; width: fit-content; animation: none; }
-            .header-content { flex-direction: column; text-align: center; }
+            .header-content { flex-direction: column; text-align: center; gap: 15px; }
             .nav-tabs { flex-direction: column; }
             .stats-cards { grid-template-columns: 1fr; }
             .action-buttons { flex-direction: column; }
@@ -430,7 +435,7 @@
                         <div class="company-name"><h2>شركة نايف للأغذية</h2></div>
                     </div>
                 </div>
-                <button class="scroll-down-btn" id="scroll-down-btn" title="انتقل إلى أسفل الصفحة">↓</button>
+                <button class="scroll-down-btn" id="scroll-down-btn" title="الذهاب لأسفل الصفحة">الذهاب لأسفل الصفحة ↓</button>
             </div>
         </header>
 
@@ -660,6 +665,10 @@
         </div>
 
         <div class="notification" id="notification">تم حفظ البيانات بنجاح!</div>
+        
+        <div style="text-align: center; margin-top: 30px;">
+            <button class="scroll-top-btn" id="scroll-top-btn" title="الصعود أعلى الصفحة">الصعود أعلى الصفحة ↑</button>
+        </div>
     </div>
 
     <div id="pdf-template" style="display: none;">
@@ -1119,7 +1128,6 @@
             else if (diff > 0) row.classList.add('row-difference-positive');
         }
 
-        // دالة مركزية لتوليد جداول الجرد وتجنب التكرار
         function renderGroupedItems(container, groupedItems, similarGroups) {
             for (const group in groupedItems) {
                 const categoryDiv = document.createElement('div'); categoryDiv.className = 'inventory-category';
@@ -1381,7 +1389,7 @@
                                 const cText = cDiff < 0 ? 'عجز' : cDiff > 0 ? 'زيادة' : 'متساوي';
                                 combinedHtml = `<td style="border:1px solid #ddd; padding:1px; text-align:center; font-size:12px; font-weight:900; color:${cDiff<0?'white':cDiff>0?'white':'#333'}; background-color:${cDiff<0?'var(--dark-red)':cDiff>0?'var(--dark-green)':'#f0f9ff'}; vertical-align:middle;" rowspan="${similarItems.length}"><span style="display:block; margin-bottom:1px;">${cDiff}</span><span style="display:block; font-size:10px; opacity:0.9;">${cText}</span></td>`;
                             }
-                            contentHTML += `<tr style="height:18px; background-color:${bgColor};"><td style="border:1px solid #ddd; padding:1px; text-align:center; font-size:9px; vertical-align:middle;">${rowIndex+1}</td><td style="border:1px solid #ddd; padding:1px; text-align:right; font-size:9px; vertical-align:middle;">${sim.name}</td><td style="border:1px solid #ddd; padding:1px; text-align:center; font-size:9px; vertical-align:middle;">${sim.vendorUOM}</td><td style="border:1px solid #ddd; padding:1px; text-align:center; font-size:9px; vertical-align:middle;">${sim.stockQty}</td><td style="border:1px solid #ddd; padding:1px; text-align:center; font-size:9px; font-weight:bold; vertical-align:middle;">${sim.smallestUnitQty}</td><td style="border:1px solid #ddd; padding:1px; text-align:center; font-size:9px; font-weight:bold; vertical-align:middle;">${sim.actualCount||0}</td><td style="border:1px solid #ddd; padding:1px; text-align:center; font-size:9px; font-weight:bold; color:${diff<0?'red':diff>0?'green':'#333'}; vertical-align:middle;"><span style="display:block; margin-bottom:1px;">${diff}</span><span style="display:block; font-size:8px; opacity:0.9;">${diffText||''}</span></td>${si===0?combinedHtml:''}</tr>`;
+                            contentHTML += `<tr style="height:18px; background-color:${bgColor};"><td style="border:1px solid #ddd; padding:1px; text-align:center; font-size:9px; vertical-align:middle;">${rowIndex+1}</td><td style="border:1px solid #ddd; padding:1px; text-align:right; font-size:9px; vertical-align:middle;">${sim.name}</td><td style="border:1px solid #ddd; padding:1px; text-align:center; font-size:9px; vertical-align:middle;">${sim.vendorUOM}</td><td style="border:1px solid #ddd; padding:1px; text-align:center; font-size:9px; vertical-align:middle;">${sim.stockQty}</td><td style="border:1px solid #ddd; padding:1px; text-align:center; font-size:9px; font-weight:bold; vertical-align:middle;">${sim.smallestUnitQty}</td><td style="border:1px solid #ddd; padding:1px; text-align:center; font-size:9.9px; font-weight:bold; vertical-align:middle;">${sim.actualCount||0}</td><td style="border:1px solid #ddd; padding:1px; text-align:center; font-size:9px; font-weight:bold; color:${diff<0?'red':diff>0?'green':'#333'}; vertical-align:middle;"><span style="display:block; margin-bottom:1px;">${diff}</span><span style="display:block; font-size:8px; opacity:0.9;">${diffText||''}</span></td>${si===0?combinedHtml:''}</tr>`;
                             processedItems.add(sim.code);
                             totalDifference += diff;
                             rowIndex++;
@@ -1394,7 +1402,7 @@
                         if (hasCombinedColumn && !item.name.includes('سلطة') && !item.name.includes('كول سلو')) {
                             combinedHtml = `<td style="border:1px solid #ddd; padding:1px; text-align:center; font-size:10px; font-weight:900; color:${diff<0?'white':diff>0?'white':'#333'}; background-color:${diff<0?'var(--dark-red)':diff>0?'var(--dark-green)':'#f0f9ff'}; vertical-align:middle;"><span style="display:block; margin-bottom:1px;">${diff}</span><span style="display:block; font-size:10px; opacity:0.9;">${diffText||'متساوي'}</span></td>`;
                         }
-                        contentHTML += `<tr style="height:18px; background-color:${bgColor};"><td style="border:1px solid #ddd; padding:1px; text-align:center; font-size:9px; vertical-align:middle;">${rowIndex+1}</td><td style="border:1px solid #ddd; padding:1px; text-align:right; font-size:9px; vertical-align:middle;">${item.name}</td><td style="border:1px solid #ddd; padding:1px; text-align:center; font-size:9px; vertical-align:middle;">${item.vendorUOM}</td><td style="border:1px solid #ddd; padding:1px; text-align:center; font-size:9px; vertical-align:middle;">${item.stockQty}</td><td style="border:1px solid #ddd; padding:1px; text-align:center; font-size:9px; font-weight:bold; vertical-align:middle;">${item.smallestUnitQty}</td><td style="border:1px solid #ddd; padding:1px; text-align:center; font-size:9px; font-weight:bold; vertical-align:middle;">${item.actualCount||0}</td><td style="border:1px solid #ddd; padding:1px; text-align:center; font-size:9px; font-weight:bold; color:${diff<0?'red':diff>0?'green':'#333'}; vertical-align:middle;"><span style="display:block; margin-bottom:1px;">${diff}</span><span style="display:block; font-size:8px; opacity:0.9;">${diffText||''}</span></td>${combinedHtml}</tr>`;
+                        contentHTML += `<tr style="height:18px; background-color:${bgColor};"><td style="border:1px solid #ddd; padding:1px; text-align:center; font-size:9px; vertical-align:middle;">${rowIndex+1}</td><td style="border:1px solid #ddd; padding:1px; text-align:right; font-size:9px; vertical-align:middle;">${item.name}</td><td style="border:1px solid #ddd; padding:1px; text-align:center; font-size:9px; vertical-align:middle;">${item.vendorUOM}</td><td style="border:1px solid #ddd; padding:1px; text-align:center; font-size:9px; vertical-align:middle;">${item.stockQty}</td><td style="border:1px solid #ddd; padding:1px; text-align:center; font-size:9px; font-weight:bold; vertical-align:middle;">${item.smallestUnitQty}</td><td style="border:1px solid #ddd; padding:1px; text-align:center; font-size:9.9px; font-weight:bold; vertical-align:middle;">${item.actualCount||0}</td><td style="border:1px solid #ddd; padding:1px; text-align:center; font-size:9px; font-weight:bold; color:${diff<0?'red':diff>0?'green':'#333'}; vertical-align:middle;"><span style="display:block; margin-bottom:1px;">${diff}</span><span style="display:block; font-size:8px; opacity:0.9;">${diffText||''}</span></td>${combinedHtml}</tr>`;
                         processedItems.add(item.code);
                         totalDifference += diff;
                         rowIndex++;
@@ -1483,6 +1491,10 @@
             window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
         });
 
+        document.getElementById('scroll-top-btn').addEventListener('click', function() {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+
         function showNotification(msg) {
             const notif = document.getElementById('notification');
             notif.textContent = msg;
@@ -1533,20 +1545,16 @@
         }
 
         window.addEventListener('DOMContentLoaded', function() {
-            // تفعيل نظام النقر على التابات (Tabs Navigation)
             document.querySelectorAll('.nav-tab').forEach(tab => {
                 tab.addEventListener('click', function() {
-                    // إزالة کلاس active من جميع التابات والمقاطع
                     document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
                     document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
                     
-                    // إضافة کلاس active للتاب الحالي والقسم الخاص به
                     this.classList.add('active');
                     const targetId = this.getAttribute('data-target');
                     const targetSection = document.getElementById(targetId);
                     if (targetSection) targetSection.classList.add('active');
                     
-                    // تحديث الجدول المعروض في القسم المفتوح
                     if (targetId === 'meat-section') updateMeatInventory();
                     else if (targetId === 'veg-section') updateVegInventory();
                     else if (targetId === 'appetizers-section') updateAppetizersInventory();
