@@ -24,6 +24,8 @@
             --dark-green: #4CC552;
             --light-red: #FFE5E5;
             --light-green: #E5FFE5;
+            --table-header-bg: #4EE2EC;  /* اللون الجديد لرؤوس الجداول */
+            --table-header-text: #1F2937; /* لون النص الداكن للتباين */
         }
 
         * {
@@ -227,17 +229,19 @@
             font-size: 12px;
         }
 
-        .inventory-table th, .inventory-table td {
+        /* تعديل لون رأس الجدول والخلفية */
+        .inventory-table th, .inventory-table thead th {
+            background-color: var(--table-header-bg);
+            color: var(--table-header-text);
+            font-size: 11px;
+            font-weight: bold;
+            border: 1px solid #bbb; /* حدود أوضح قليلاً */
+        }
+
+        .inventory-table td {
             border: 1px solid #ddd;
             padding: 8px;
             text-align: center;
-        }
-
-        .inventory-table th {
-            background-color: var(--primary);
-            color: white;
-            font-size: 11px;
-            font-weight: bold;
         }
 
         .inventory-table tr:nth-child(even) {
@@ -318,13 +322,14 @@
 
         .inventory-category { margin-bottom: 20px; }
         .category-title {
-            background-color: var(--primary);
-            color: white;
+            background-color: var(--table-header-bg);  /* اللون الجديد */
+            color: var(--table-header-text);
             padding: 10px;
             border-radius: 6px;
             margin-bottom: 10px;
             font-weight: bold;
             font-size: 14px;
+            border: 1px solid #bbb;
         }
 
         .search-filter { margin-bottom: 20px; }
@@ -1264,15 +1269,61 @@
             renderGroupedItems(container, groupedItems, similarGroups);
         }
 
+        // دالة محدثة لشاشة المقبلات مع ترتيب المجموعات
         function updateAppetizersInventory() {
             const container = document.getElementById('appetizers-inventory-container');
             container.innerHTML = '';
-            let appItems = selectedItems.filter(item => item.group === 'appetizers');
-            if (appItems.length === 0) { container.innerHTML = '<p style="text-align: center; padding: 20px; color: var(--primary); font-weight: bold;">لم يتم اختيار أي أصناف مقبلات للجرد</p>'; return; }
-            const similarGroups = findSimilarItems(appItems);
-            appItems.sort((a, b) => a.name.localeCompare(b.name));
-            const groupedItems = { 'المقبلات': appItems };
-            renderGroupedItems(container, groupedItems, similarGroups);
+            let appetizerItems = selectedItems.filter(item => item.group === 'appetizers');
+            if (appetizerItems.length === 0) {
+                container.innerHTML = '<p style="text-align: center; padding: 20px; color: var(--primary); font-weight: bold;">لم يتم اختيار أي أصناف مقبلات للجرد</p>';
+                return;
+            }
+
+            // تصنيف الأصناف إلى مجموعات فرعية محددة
+            const subGroups = {
+                'السلطات': [],
+                'الكول سلو': [],
+                'الحمص والمتبل': [],
+                'الألبان والحلويات': [],
+                'أخرى': []
+            };
+
+            appetizerItems.forEach(item => {
+                const name = item.name;
+                if (name.includes('سلطة') || name.includes('فتوش') || name.includes('تبولة') || name.includes('جرجير') || name.includes('خضراء')) {
+                    subGroups['السلطات'].push(item);
+                } else if (name.includes('كول سلو') || name.includes('Cole Slaw')) {
+                    subGroups['الكول سلو'].push(item);
+                } else if (name.includes('حمص') || name.includes('متبل') || name.includes('Hummus') || name.includes('Mutabbal')) {
+                    subGroups['الحمص والمتبل'].push(item);
+                } else if (name.includes('لبن') || name.includes('أرز بالحليب') || name.includes('Rice&Milk') || name.includes('Laban')) {
+                    subGroups['الألبان والحلويات'].push(item);
+                } else {
+                    subGroups['أخرى'].push(item);
+                }
+            });
+
+            // حذف المجموعات الفارغة
+            const finalGroups = {};
+            for (const [groupName, items] of Object.entries(subGroups)) {
+                if (items.length > 0) {
+                    // ترتيب العناصر داخل المجموعة حسب الاسم
+                    items.sort((a, b) => a.name.localeCompare(b.name));
+                    finalGroups[groupName] = items;
+                }
+            }
+
+            // ترتيب عرض المجموعات حسب الأولوية: سلطات، كول سلو، حمص/متبل، ألبان/حلويات، أخرى
+            const orderedGroups = {};
+            const order = ['السلطات', 'الكول سلو', 'الحمص والمتبل', 'الألبان والحلويات', 'أخرى'];
+            for (const key of order) {
+                if (finalGroups[key]) {
+                    orderedGroups[key] = finalGroups[key];
+                }
+            }
+
+            const similarGroups = findSimilarItems(appetizerItems);
+            renderGroupedItems(container, orderedGroups, similarGroups);
         }
 
         function updateMiscInventory() {
