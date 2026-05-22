@@ -480,9 +480,7 @@
             <div class="inventory-table-container">
                 <table class="inventory-table" id="items-table">
                     <thead>
-                        <tr>
-                            <th>RM Code</th><th>اسم الصنف</th><th>الوحدة</th><th>الرصيد الحالي</th><th>الوحدة الصغرى</th><th>الرصيد بالصغرى</th><th>اختيار للجرد</th><th>الحركة</th>
-                        </tr>
+                        <tr><th>RM Code</th><th>اسم الصنف</th><th>الوحدة</th><th>الرصيد الحالي</th><th>الوحدة الصغرى</th><th>الرصيد بالصغرى</th><th>اختيار للجرد</th><th>الحركة</th></tr>
                     </thead>
                     <tbody id="items-table-body"></tbody>
                 </table>
@@ -1382,14 +1380,16 @@
                             if (processedItems.has(sim.code)) continue;
                             const diff = sim.difference || 0;
                             const diffText = diff < 0 ? 'عجز' : diff > 0 ? 'زيادة' : '';
-                            const bgColor = diff < 0 ? '#FFE5E5' : diff > 0 ? '#E5FFE5' : 'transparent';
+                            const lightBg = diff < 0 ? '#FFE5E5' : diff > 0 ? '#E5FFE5' : 'transparent';
                             let combinedHtml = '';
                             if (si === 0) {
                                 const cDiff = similarItems.reduce((s,i) => s + (i.difference||0),0);
                                 const cText = cDiff < 0 ? 'عجز' : cDiff > 0 ? 'زيادة' : 'متساوي';
-                                combinedHtml = `<td style="border:1px solid #ddd; padding:1px; text-align:center; font-size:12px; font-weight:900; color:${cDiff<0?'white':cDiff>0?'white':'#333'}; background-color:${cDiff<0?'var(--dark-red)':cDiff>0?'var(--dark-green)':'#f0f9ff'}; vertical-align:middle;" rowspan="${similarItems.length}"><span style="display:block; margin-bottom:1px;">${cDiff}</span><span style="display:block; font-size:10px; opacity:0.9;">${cText}</span></td>`;
+                                const darkBg = cDiff < 0 ? '#FF0000' : cDiff > 0 ? '#4CC552' : '#f0f9ff';
+                                const textColor = (cDiff !== 0) ? 'white' : '#333';
+                                combinedHtml = `<td style="border:1px solid #ddd; padding:1px; text-align:center; font-size:12px; font-weight:900; vertical-align:middle; background-color:${darkBg}; color:${textColor};" rowspan="${similarItems.length}"><span style="display:block; margin-bottom:1px;">${cDiff}</span><span style="display:block; font-size:10px; opacity:0.9;">${cText}</span></td>`;
                             }
-                            contentHTML += `<tr style="height:18px; background-color:${bgColor};"><td style="border:1px solid #ddd; padding:1px; text-align:center; font-size:9px; vertical-align:middle;">${rowIndex+1}</td><td style="border:1px solid #ddd; padding:1px; text-align:right; font-size:9px; vertical-align:middle;">${sim.name}</td><td style="border:1px solid #ddd; padding:1px; text-align:center; font-size:9px; vertical-align:middle;">${sim.vendorUOM}</td><td style="border:1px solid #ddd; padding:1px; text-align:center; font-size:9px; vertical-align:middle;">${sim.stockQty}</td><td style="border:1px solid #ddd; padding:1px; text-align:center; font-size:9px; font-weight:bold; vertical-align:middle;">${sim.smallestUnitQty}</td><td style="border:1px solid #ddd; padding:1px; text-align:center; font-size:9.9px; font-weight:bold; vertical-align:middle;">${sim.actualCount||0}</td><td style="border:1px solid #ddd; padding:1px; text-align:center; font-size:9px; font-weight:bold; color:${diff<0?'red':diff>0?'green':'#333'}; vertical-align:middle;"><span style="display:block; margin-bottom:1px;">${diff}</span><span style="display:block; font-size:8px; opacity:0.9;">${diffText||''}</span></td>${si===0?combinedHtml:''}</tr>`;
+                            contentHTML += `<tr style="height:18px;"><td style="border:1px solid #ddd; padding:1px; text-align:center; font-size:9px; vertical-align:middle; background-color:${lightBg};">${rowIndex+1}</td><td style="border:1px solid #ddd; padding:1px; text-align:right; font-size:9px; vertical-align:middle; background-color:${lightBg};">${sim.name}</td><td style="border:1px solid #ddd; padding:1px; text-align:center; font-size:9px; vertical-align:middle; background-color:${lightBg};">${sim.vendorUOM}</td><td style="border:1px solid #ddd; padding:1px; text-align:center; font-size:9px; vertical-align:middle; background-color:${lightBg};">${sim.stockQty}</td><td style="border:1px solid #ddd; padding:1px; text-align:center; font-size:9px; font-weight:bold; vertical-align:middle; background-color:${lightBg};">${sim.smallestUnitQty}</td><td style="border:1px solid #ddd; padding:1px; text-align:center; font-size:9.9px; font-weight:bold; vertical-align:middle; background-color:${lightBg};">${sim.actualCount||0}</td><td style="border:1px solid #ddd; padding:1px; text-align:center; font-size:9px; font-weight:bold; color:${diff<0?'red':diff>0?'green':'#333'}; vertical-align:middle; background-color:${lightBg};"><span style="display:block; margin-bottom:1px;">${diff}</span><span style="display:block; font-size:8px; opacity:0.9;">${diffText||''}</span></td>${si===0?combinedHtml:''}</tr>`;
                             processedItems.add(sim.code);
                             totalDifference += diff;
                             rowIndex++;
@@ -1397,12 +1397,14 @@
                     } else {
                         const diff = item.difference || 0;
                         const diffText = diff < 0 ? 'عجز' : diff > 0 ? 'زيادة' : '';
-                        const bgColor = diff < 0 ? '#FFE5E5' : diff > 0 ? '#E5FFE5' : 'transparent';
+                        const lightBg = diff < 0 ? '#FFE5E5' : diff > 0 ? '#E5FFE5' : 'transparent';
                         let combinedHtml = '';
                         if (hasCombinedColumn && !item.name.includes('سلطة') && !item.name.includes('كول سلو')) {
-                            combinedHtml = `<td style="border:1px solid #ddd; padding:1px; text-align:center; font-size:10px; font-weight:900; color:${diff<0?'white':diff>0?'white':'#333'}; background-color:${diff<0?'var(--dark-red)':diff>0?'var(--dark-green)':'#f0f9ff'}; vertical-align:middle;"><span style="display:block; margin-bottom:1px;">${diff}</span><span style="display:block; font-size:10px; opacity:0.9;">${diffText||'متساوي'}</span></td>`;
+                            const darkBg = diff < 0 ? '#FF0000' : diff > 0 ? '#4CC552' : '#f0f9ff';
+                            const textColor = (diff !== 0) ? 'white' : '#333';
+                            combinedHtml = `<td style="border:1px solid #ddd; padding:1px; text-align:center; font-size:10px; font-weight:900; background-color:${darkBg}; color:${textColor}; vertical-align:middle;"><span style="display:block; margin-bottom:1px;">${diff}</span><span style="display:block; font-size:10px; opacity:0.9;">${diffText||'متساوي'}</span></td>`;
                         }
-                        contentHTML += `<tr style="height:18px; background-color:${bgColor};"><td style="border:1px solid #ddd; padding:1px; text-align:center; font-size:9px; vertical-align:middle;">${rowIndex+1}</td><td style="border:1px solid #ddd; padding:1px; text-align:right; font-size:9px; vertical-align:middle;">${item.name}</td><td style="border:1px solid #ddd; padding:1px; text-align:center; font-size:9px; vertical-align:middle;">${item.vendorUOM}</td><td style="border:1px solid #ddd; padding:1px; text-align:center; font-size:9px; vertical-align:middle;">${item.stockQty}</td><td style="border:1px solid #ddd; padding:1px; text-align:center; font-size:9px; font-weight:bold; vertical-align:middle;">${item.smallestUnitQty}</td><td style="border:1px solid #ddd; padding:1px; text-align:center; font-size:9.9px; font-weight:bold; vertical-align:middle;">${item.actualCount||0}</td><td style="border:1px solid #ddd; padding:1px; text-align:center; font-size:9px; font-weight:bold; color:${diff<0?'red':diff>0?'green':'#333'}; vertical-align:middle;"><span style="display:block; margin-bottom:1px;">${diff}</span><span style="display:block; font-size:8px; opacity:0.9;">${diffText||''}</span></td>${combinedHtml}</tr>`;
+                        contentHTML += `<tr style="height:18px;"><td style="border:1px solid #ddd; padding:1px; text-align:center; font-size:9px; vertical-align:middle; background-color:${lightBg};">${rowIndex+1}</td><td style="border:1px solid #ddd; padding:1px; text-align:right; font-size:9px; vertical-align:middle; background-color:${lightBg};">${item.name}</td><td style="border:1px solid #ddd; padding:1px; text-align:center; font-size:9px; vertical-align:middle; background-color:${lightBg};">${item.vendorUOM}</td><td style="border:1px solid #ddd; padding:1px; text-align:center; font-size:9px; vertical-align:middle; background-color:${lightBg};">${item.stockQty}</td><td style="border:1px solid #ddd; padding:1px; text-align:center; font-size:9px; font-weight:bold; vertical-align:middle; background-color:${lightBg};">${item.smallestUnitQty}</td><td style="border:1px solid #ddd; padding:1px; text-align:center; font-size:9.9px; font-weight:bold; vertical-align:middle; background-color:${lightBg};">${item.actualCount||0}</td><td style="border:1px solid #ddd; padding:1px; text-align:center; font-size:9px; font-weight:bold; color:${diff<0?'red':diff>0?'green':'#333'}; vertical-align:middle; background-color:${lightBg};"><span style="display:block; margin-bottom:1px;">${diff}</span><span style="display:block; font-size:8px; opacity:0.9;">${diffText||''}</span></td>${combinedHtml}</tr>`;
                         processedItems.add(item.code);
                         totalDifference += diff;
                         rowIndex++;
