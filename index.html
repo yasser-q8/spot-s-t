@@ -252,7 +252,7 @@
         .inventory-table th:nth-child(2) { width: 27%; }
         .inventory-table th:nth-child(3) { width: 8%; }
         .inventory-table th:nth-child(4) { width: 8%; }
-        .inventory-table th:nth-child(5) { width: 9%; }
+        .inventory-table th:nth-child(5) { width: 9%; } font-size: 11px;
         .inventory-table th:nth-child(6) { width: 10%; }
         .inventory-table th:nth-child(7) { width: 12%; }
         .inventory-table th:nth-child(8) { width: 21%; }
@@ -1597,6 +1597,83 @@
         document.getElementById('cancel-whatsapp-send').addEventListener('click', () => document.getElementById('whatsapp-modal').style.display = 'none');
         document.getElementById('close-whatsapp-modal').addEventListener('click', () => document.getElementById('whatsapp-modal').style.display = 'none');
         document.getElementById('close-movement-modal').addEventListener('click', () => document.getElementById('movement-modal').style.display = 'none');
+
+
+// إرسال رسالة واتساب (يعمل الآن)
+document.getElementById('confirm-whatsapp-send').addEventListener('click', () => {
+    const phone = document.getElementById('whatsapp-number').value.trim();
+    if (!phone) {
+        showNotification('الرجاء إدخال رقم الهاتف');
+        return;
+    }
+
+    // تحديد القسم النشط (أي تبويب جرد مفتوح)
+    let activeSection = document.querySelector('.section.active');
+    let sectionType = '';
+    let items = [];
+    let restaurantName = '';
+    let responsibleName = '';
+    let dateTimeValue = '';
+
+    if (activeSection.id === 'meat-section') {
+        sectionType = 'اللحوم';
+        items = selectedItems.filter(item => item.group === 'meat');
+        restaurantName = document.getElementById('meat-restaurant-search').value;
+        responsibleName = document.getElementById('meat-responsible').value;
+        dateTimeValue = document.getElementById('meat-datetime').value;
+    } else if (activeSection.id === 'veg-section') {
+        sectionType = 'الخضروات';
+        items = selectedItems.filter(item => item.group === 'vegetables');
+        restaurantName = document.getElementById('veg-restaurant-search').value;
+        responsibleName = document.getElementById('veg-responsible').value;
+        dateTimeValue = document.getElementById('veg-datetime').value;
+    } else if (activeSection.id === 'appetizers-section') {
+        sectionType = 'المقبلات';
+        items = selectedItems.filter(item => item.group === 'appetizers');
+        restaurantName = document.getElementById('appetizers-restaurant-search').value;
+        responsibleName = document.getElementById('appetizers-responsible').value;
+        dateTimeValue = document.getElementById('appetizers-datetime').value;
+    } else if (activeSection.id === 'misc-section') {
+        sectionType = 'أخرى';
+        items = selectedItems.filter(item => item.group === 'other');
+        restaurantName = document.getElementById('misc-restaurant-search').value;
+        responsibleName = document.getElementById('misc-responsible').value;
+        dateTimeValue = document.getElementById('misc-datetime').value;
+    } else {
+        showNotification('الرجاء فتح قسم الجرد المطلوب أولاً');
+        return;
+    }
+
+    if (items.length === 0) {
+        showNotification('لا توجد أصناف محددة للجرد في هذا القسم');
+        return;
+    }
+
+    // حساب إجمالي الفروقات
+    let totalDiff = items.reduce((sum, item) => sum + (item.difference || 0), 0);
+    let diffText = totalDiff === 0 ? 'مطابق' : (totalDiff < 0 ? `عجز ${Math.abs(totalDiff)}` : `زيادة ${totalDiff}`);
+
+    const formattedDate = formatDateTimeEn(dateTimeValue);
+
+    // بناء نص الرسالة
+    let message = `📊 *تقرير جرد ${sectionType}* 📊\n\n`;
+    message += `🏢 المطعم: ${restaurantName || 'غير محدد'}\n`;
+    message += `👤 المسؤول: ${responsibleName || 'غير محدد'}\n`;
+    message += `📅 التاريخ: ${formattedDate}\n`;
+    message += `📦 عدد الأصناف: ${items.length}\n`;
+    message += `⚖️ إجمالي الفروقات: ${diffText}\n\n`;
+    message += `🔹 تم إنشاء هذا التقرير بواسطة نظام جرد شركة نايف للأغذية.\n`;
+    message += `📎 يمكنك إرفاق ملف PDF الخاص بالتقرير (من زر تصدير PDF) بشكل منفصل.`;
+
+    const encodedMessage = encodeURIComponent(message);
+    const whatsappUrl = `https://wa.me/${phone}?text=${encodedMessage}`;
+
+    window.open(whatsappUrl, '_blank');
+    document.getElementById('whatsapp-modal').style.display = 'none';
+    showNotification('تم فتح واتساب بنجاح');
+});
+
+
         
         document.getElementById('scroll-down-btn').addEventListener('click', function() {
             window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
