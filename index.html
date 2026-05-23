@@ -24,8 +24,9 @@
             --dark-green: #4CC552;
             --light-red: #FFE5E5;
             --light-green: #E5FFE5;
-            --table-header-bg: #4EE2EC;
-            --table-header-text: #1F2937;
+            --table-header-bg-start: #13F1FC;
+            --table-header-bg-end: #0470DC;
+            --royal-blue: #1E3A8A;
         }
 
         * {
@@ -42,7 +43,7 @@
         }
 
         .container {
-            max-width: 1300px;
+            max-width: 1400px;
             margin: 0 auto;
             padding: 20px;
         }
@@ -222,25 +223,46 @@
             font-weight: bold;
         }
 
-        .inventory-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 20px;
-            font-size: 12px;
+        /* تدرج رؤوس الجداول */
+        .inventory-table th, 
+        .inventory-table thead th,
+        .category-title {
+            background: linear-gradient(135deg, var(--table-header-bg-start), var(--table-header-bg-end));
+            color: white !important;
+            font-weight: bold;
+            border: 1px solid #0a5a9c;
+            text-shadow: 0 1px 1px rgba(0,0,0,0.2);
+        }
+        
+        .inventory-table th {
+            padding: 10px 5px;
         }
 
-        .inventory-table th, .inventory-table thead th {
-            background-color: var(--table-header-bg);
-            color: var(--table-header-text);
-            font-size: 11px;
-            font-weight: bold;
-            border: 1px solid #bbb;
+        /* جعل جميع الجداول بنفس العرض */
+        .inventory-table {
+            width: 100%;
+            table-layout: fixed;
+            border-collapse: collapse;
+            font-size: 13px;
+            margin-bottom: 15px;
         }
+
+        /* توزيع نسب الأعمدة بشكل ثابت */
+        .inventory-table th:nth-child(1) { width: 5%; }
+        .inventory-table th:nth-child(2) { width: 27%; }
+        .inventory-table th:nth-child(3) { width: 8%; }
+        .inventory-table th:nth-child(4) { width: 8%; }
+        .inventory-table th:nth-child(5) { width: 9%; }
+        .inventory-table th:nth-child(6) { width: 10%; }
+        .inventory-table th:nth-child(7) { width: 12%; }
+        .inventory-table th:nth-child(8) { width: 21%; }
 
         .inventory-table td {
             border: 1px solid #ddd;
-            padding: 8px;
+            padding: 8px 4px;
             text-align: center;
+            word-break: break-word;
+            vertical-align: middle;
         }
 
         .inventory-table tr:nth-child(even) {
@@ -254,14 +276,10 @@
         .row-difference-negative { background-color: var(--light-red) !important; }
         .row-difference-positive { background-color: var(--light-green) !important; }
 
-        .inventory-table td:nth-child(2) { font-size: 16px !important; font-weight: 600; }
-        .inventory-table td:nth-child(4) { font-size: 18px !important; font-weight: bold !important; }
-        .inventory-table td:nth-child(6) { font-size: 18px !important; font-weight: bold !important; color: var(--primary); }
-
         .actual-count-input {
             width: 90px;
             padding: 6px;
-            font-size: 23px !important;
+            font-size: 18px !important;
             font-weight: bold !important;
             text-align: center;
             border: 2px solid var(--primary);
@@ -278,14 +296,20 @@
             font-size: 18px !important;
             font-weight: bold !important;
             vertical-align: middle;
-            height: 60px;
-            min-width: 100px;
             transition: all 0.2s;
         }
-
+        /* حالات الفروقات المجمعة */
         .combined-difference-negative { background-color: var(--dark-red) !important; color: white !important; }
         .combined-difference-positive { background-color: var(--dark-green) !important; color: white !important; }
-        .combined-difference-zero { background-color: #f0f9ff; color: var(--primary); }
+        .combined-difference-matched { 
+            background-color: var(--royal-blue) !important; 
+            color: white !important;
+            box-shadow: inset 0 0 0 1px #3b82f6;
+        }
+        .combined-difference-no-count { 
+            background-color: #cbd5e1 !important; 
+            color: #1e293b !important;
+        }
 
         .action-buttons {
             display: flex;
@@ -321,14 +345,13 @@
 
         .inventory-category { margin-bottom: 20px; }
         .category-title {
-            background-color: var(--table-header-bg);
-            color: var(--table-header-text);
             padding: 10px;
-            border-radius: 6px;
+            border-radius: 8px;
             margin-bottom: 10px;
             font-weight: bold;
-            font-size: 14px;
-            border: 1px solid #bbb;
+            font-size: 16px;
+            border: none;
+            color: white;
         }
 
         .search-filter { margin-bottom: 20px; }
@@ -1119,10 +1142,10 @@
                 return val !== undefined && val !== null && val !== 0 && val !== '';
             });
             if (!hasAnyActualCount) {
-                return { text: 'لم يتم جرد الصنف', statusClass: 'combined-difference-zero' };
+                return { text: 'لم يتم جرد الصنف', statusClass: 'combined-difference-no-count' };
             }
             if (combinedDifference === 0) {
-                return { text: 'الجرد مطابق', statusClass: 'combined-difference-zero' };
+                return { text: 'الجرد مطابق', statusClass: 'combined-difference-matched' };
             }
             if (combinedDifference < 0) {
                 return { text: 'عجز', statusClass: 'combined-difference-negative' };
@@ -1148,10 +1171,10 @@
             let statusClass = '';
             if (!hasActual) {
                 text = 'لم يتم جرد الصنف';
-                statusClass = 'combined-difference-zero';
+                statusClass = 'combined-difference-no-count';
             } else if (diff === 0) {
                 text = 'الجرد مطابق';
-                statusClass = 'combined-difference-zero';
+                statusClass = 'combined-difference-matched';
             } else if (diff < 0) {
                 text = 'عجز';
                 statusClass = 'combined-difference-negative';
@@ -1196,7 +1219,7 @@
                             const diff = similarItem.difference || 0;
                             const diffClass = diff < 0 ? 'difference-negative' : diff > 0 ? 'difference-positive' : '';
                             const diffText = diff < 0 ? 'عجز' : diff > 0 ? 'زيادة' : '';
-                            row.innerHTML = `<td>${rowIndex + 1}</td><td>${similarItem.name}</td><td>${similarItem.vendorUOM}</td><td>${similarItem.stockQty}</td><td class="count-cell">${similarItem.smallestUnitQty}</td><td><input type="number" class="actual-count-input" data-code="${similarItem.code}" value="${similarItem.actualCount || ''}" placeholder="0"></td><td class="difference-cell ${diffClass}" data-code="${similarItem.code}" style="font-size: 18px; font-weight: bold;">${diff} ${diffText ? `<span class="difference-text" style="color: ${diff < 0 ? 'var(--accent-red)' : diff > 0 ? 'var(--accent-green)' : 'var(--primary)'};">(${diffText})</span>` : ''}</td>`;
+                            row.innerHTML = `<tr>${rowIndex + 1}</td><td>${similarItem.name}</td><td>${similarItem.vendorUOM}</td><td>${similarItem.stockQty}</td><td class="count-cell">${similarItem.smallestUnitQty}</td><td><input type="number" class="actual-count-input" data-code="${similarItem.code}" value="${similarItem.actualCount || ''}" placeholder="0"></td><td class="difference-cell ${diffClass}" data-code="${similarItem.code}" style="font-size: 18px; font-weight: bold;">${diff} ${diffText ? `<span class="difference-text" style="color: ${diff < 0 ? 'var(--accent-red)' : diff > 0 ? 'var(--accent-green)' : 'var(--primary)'};">(${diffText})</span>` : ''}</td>`;
                             applyRowColoring(row, diff);
                             if (similarIndex === 0) {
                                 const combinedDiff = similarItems.reduce((s, i) => s + (i.difference || 0), 0);
@@ -1231,7 +1254,7 @@
                         const diff = item.difference || 0;
                         const diffClass = diff < 0 ? 'difference-negative' : diff > 0 ? 'difference-positive' : '';
                         const diffText = diff < 0 ? 'عجز' : diff > 0 ? 'زيادة' : '';
-                        row.innerHTML = `<td>${rowIndex + 1}</td><td>${item.name}</td><td>${item.vendorUOM}</td><td>${item.stockQty}</td><td class="count-cell">${item.smallestUnitQty}</td><td><input type="number" class="actual-count-input" data-code="${item.code}" value="${item.actualCount || ''}" placeholder="0"></td><td class="difference-cell ${diffClass}" data-code="${item.code}" style="font-size: 18px; font-weight: bold;">${diff} ${diffText ? `<span class="difference-text" style="color: ${diff < 0 ? 'var(--accent-red)' : diff > 0 ? 'var(--accent-green)' : 'var(--primary)'};">(${diffText})</span>` : ''}</td><td class="combined-difference-cell ${diffClass.replace('difference','combined-difference') || 'combined-difference-zero'}" data-code="${item.code}">${diff}<br><span style="font-size: 14px;">${diff === 0 ? (item.actualCount ? 'الجرد مطابق' : 'لم يتم جرد الصنف') : (diff < 0 ? 'عجز' : 'زيادة')}</span></td>`;
+                        row.innerHTML = `<tr>${rowIndex + 1}</td><td>${item.name}</td><td>${item.vendorUOM}</td><td>${item.stockQty}</td><td class="count-cell">${item.smallestUnitQty}</td><td><input type="number" class="actual-count-input" data-code="${item.code}" value="${item.actualCount || ''}" placeholder="0"></td><td class="difference-cell ${diffClass}" data-code="${item.code}" style="font-size: 18px; font-weight: bold;">${diff} ${diffText ? `<span class="difference-text" style="color: ${diff < 0 ? 'var(--accent-red)' : diff > 0 ? 'var(--accent-green)' : 'var(--primary)'};">(${diffText})</span>` : ''}</td><td class="combined-difference-cell" data-code="${item.code}"></td>`;
                         applyRowColoring(row, diff);
                         tbody.appendChild(row);
                         processedItems.add(item.code);
@@ -1385,40 +1408,13 @@
             else if (sectionType === 'veg') restaurantInput = document.getElementById('veg-restaurant-search').value;
             else if (sectionType === 'appetizers') restaurantInput = document.getElementById('appetizers-restaurant-search').value;
             else if (sectionType === 'misc') restaurantInput = document.getElementById('misc-restaurant-search').value;
-            
             if (!restaurantInput.trim()) { alert('الرجاء إدخال اسم المطعم قبل تصدير PDF'); focusRestaurantInput(); return; }
-            
             try {
                 let items = [], restaurantName = restaurantInput, responsibleName = '', areaManager = '', operationsManager = '', title = '', dateTimeValue = '';
-                if (sectionType === 'meat') {
-                    items = selectedItems.filter(item => item.group === 'meat');
-                    responsibleName = document.getElementById('meat-responsible').value;
-                    areaManager = document.getElementById('meat-area-manager').textContent;
-                    operationsManager = document.getElementById('meat-operations-manager').textContent;
-                    dateTimeValue = document.getElementById('meat-datetime').value;
-                    title = 'جرد أصناف اللحوم';
-                } else if (sectionType === 'veg') {
-                    items = selectedItems.filter(item => item.group === 'vegetables');
-                    responsibleName = document.getElementById('veg-responsible').value;
-                    areaManager = document.getElementById('veg-area-manager').textContent;
-                    operationsManager = document.getElementById('veg-operations-manager').textContent;
-                    dateTimeValue = document.getElementById('veg-datetime').value;
-                    title = 'جرد أصناف الخضروات';
-                } else if (sectionType === 'appetizers') {
-                    items = selectedItems.filter(item => item.group === 'appetizers');
-                    responsibleName = document.getElementById('appetizers-responsible').value;
-                    areaManager = document.getElementById('appetizers-area-manager').textContent;
-                    operationsManager = document.getElementById('appetizers-operations-manager').textContent;
-                    dateTimeValue = document.getElementById('appetizers-datetime').value;
-                    title = 'جرد أصناف المقبلات';
-                } else {
-                    items = selectedItems.filter(item => item.group === 'other');
-                    responsibleName = document.getElementById('misc-responsible').value;
-                    areaManager = document.getElementById('misc-area-manager').textContent;
-                    operationsManager = document.getElementById('misc-operations-manager').textContent;
-                    dateTimeValue = document.getElementById('misc-datetime').value;
-                    title = 'جرد أصناف أخرى';
-                }
+                if (sectionType === 'meat') { items = selectedItems.filter(item => item.group === 'meat'); responsibleName = document.getElementById('meat-responsible').value; areaManager = document.getElementById('meat-area-manager').textContent; operationsManager = document.getElementById('meat-operations-manager').textContent; dateTimeValue = document.getElementById('meat-datetime').value; title = 'جرد أصناف اللحوم'; }
+                else if (sectionType === 'veg') { items = selectedItems.filter(item => item.group === 'vegetables'); responsibleName = document.getElementById('veg-responsible').value; areaManager = document.getElementById('veg-area-manager').textContent; operationsManager = document.getElementById('veg-operations-manager').textContent; dateTimeValue = document.getElementById('veg-datetime').value; title = 'جرد أصناف الخضروات'; }
+                else if (sectionType === 'appetizers') { items = selectedItems.filter(item => item.group === 'appetizers'); responsibleName = document.getElementById('appetizers-responsible').value; areaManager = document.getElementById('appetizers-area-manager').textContent; operationsManager = document.getElementById('appetizers-operations-manager').textContent; dateTimeValue = document.getElementById('appetizers-datetime').value; title = 'جرد أصناف المقبلات'; }
+                else { items = selectedItems.filter(item => item.group === 'other'); responsibleName = document.getElementById('misc-responsible').value; areaManager = document.getElementById('misc-area-manager').textContent; operationsManager = document.getElementById('misc-operations-manager').textContent; dateTimeValue = document.getElementById('misc-datetime').value; title = 'جرد أصناف أخرى'; }
                 if (items.length === 0) { showNotification('لا توجد بيانات'); return; }
                 const formattedDateTime = formatDateTimeEn(dateTimeValue);
                 const template = document.getElementById('pdf-template');
@@ -1443,31 +1439,22 @@
                 let contentHTML = '';
                 let totalDifference = 0;
                 let processedItems = new Set();
-                // تحديد ما إذا كان سيتم إظهار عمود الفروقات المجمعة
-                const hasCombinedColumn = (sectionType === 'meat') || (sectionType === 'appetizers' && items.some(item => (item.name && (item.name.includes('سلطة') || item.name.includes('كول سلو')))));
-                // عدد الأعمدة الفعلية: 7 أعمدة أساسية + 1 للفروقات المجمعة إذا وجد
-                const colSpan = hasCombinedColumn ? 8 : 7;
-                
-                contentHTML += `<table style="width: 100%; border-collapse: collapse; font-size: 9px; margin-bottom: 5px;"><thead><tr style="background: #EFF6FF;">`;
-                contentHTML += `<th style="border: 1px solid #ddd; padding: 2px; text-align: center; width: 4%; font-size: 9px; font-weight: bold;">م</th>`;
-                contentHTML += `<th style="border: 1px solid #ddd; padding: 2px; text-align: right; width: 30%; font-size: 9px; font-weight: bold;">اسم الصنف</th>`;
-                contentHTML += `<th style="border: 1px solid #ddd; padding: 2px; text-align: center; width: 10%; font-size: 9px; font-weight: bold;">الشد</th>`;
-                contentHTML += `<th style="border: 1px solid #ddd; padding: 2px; text-align: center; width: 9%; font-size: 9px; font-weight: bold;">جرد البرنامج</th>`;
+                const hasCombinedColumn = true; // always show combined column in PDF for consistency
+                contentHTML += `<table style="width: 100%; border-collapse: collapse; font-size: 9px; margin-bottom: 5px; table-layout: fixed;"><thead><tr style="background: #EFF6FF;">`;
+                contentHTML += `<th style="border: 1px solid #ddd; padding: 2px; text-align: center; width: 5%; font-size: 9px; font-weight: bold;">م</th>`;
+                contentHTML += `<th style="border: 1px solid #ddd; padding: 2px; text-align: right; width: 27%; font-size: 9px; font-weight: bold;">اسم الصنف</th>`;
+                contentHTML += `<th style="border: 1px solid #ddd; padding: 2px; text-align: center; width: 8%; font-size: 9px; font-weight: bold;">الشد</th>`;
+                contentHTML += `<th style="border: 1px solid #ddd; padding: 2px; text-align: center; width: 8%; font-size: 9px; font-weight: bold;">جرد البرنامج</th>`;
                 contentHTML += `<th style="border: 1px solid #ddd; padding: 2px; text-align: center; width: 9%; font-size: 9px; font-weight: bold;">جرد الوحدة الصغرى</th>`;
-                contentHTML += `<th style="border: 1px solid #ddd; padding: 2px; text-align: center; width: 9%; font-size: 9px; font-weight: bold;">الجرد الفعلي</th>`;
+                contentHTML += `<th style="border: 1px solid #ddd; padding: 2px; text-align: center; width: 10%; font-size: 9px; font-weight: bold;">الجرد الفعلي</th>`;
                 contentHTML += `<th style="border: 1px solid #ddd; padding: 2px; text-align: center; width: 12%; font-size: 9px; font-weight: bold;">العجز/الزيادة</th>`;
-                if (hasCombinedColumn) {
-                    contentHTML += `<th style="border: 1px solid #ddd; padding: 2px; text-align: center; width: 12%; font-size: 9px; font-weight: bold;">الفروقات المجمعة</th>`;
-                }
+                contentHTML += `<th style="border: 1px solid #ddd; padding: 2px; text-align: center; width: 21%; font-size: 9px; font-weight: bold;">الفروقات المجمعة</th>`;
                 contentHTML += `</tr></thead><tbody>`;
                 
                 let rowIndex = 0;
-                // تصنيف الأصناف إلى مجموعات متشابهة (لأصناف اللحوم والمقبلات)
                 let similarGroups = {};
-                if (sectionType === 'meat') {
-                    similarGroups = findSimilarItems(items);
-                } else if (sectionType === 'appetizers') {
-                    // تجميع السلطات مع بعضها والكول سلو مع بعضها
+                if (sectionType === 'meat') similarGroups = findSimilarItems(items);
+                else if (sectionType === 'appetizers') {
                     const salads = items.filter(i => i.name.includes('سلطة') || i.name.includes('فتوش') || i.name.includes('تبولة') || i.name.includes('جرجير') || i.name.includes('خضراء'));
                     const coleslaws = items.filter(i => i.name.includes('كول سلو') || i.name.includes('Cole Slaw'));
                     if (salads.length > 1) similarGroups['سلطات'] = salads;
@@ -1477,24 +1464,17 @@
                 for (const item of items) {
                     if (processedItems.has(item.code)) continue;
                     let similarItems = [];
-                    // البحث عن مجموعة متشابهة تحتوي على هذا العنصر
                     for (const groupName in similarGroups) {
                         const grp = similarGroups[groupName];
-                        if (grp.find(i => i.code === item.code)) {
-                            similarItems = grp;
-                            break;
-                        }
+                        if (grp.find(i => i.code === item.code)) { similarItems = grp; break; }
                     }
-                    
                     if (similarItems.length > 1) {
-                        // معالجة المجموعة المتشابهة
                         for (let si = 0; si < similarItems.length; si++) {
                             const sim = similarItems[si];
                             if (processedItems.has(sim.code)) continue;
                             const diff = sim.difference || 0;
                             const diffText = diff < 0 ? 'عجز' : diff > 0 ? 'زيادة' : '';
                             const lightBg = diff < 0 ? '#FFE5E5' : diff > 0 ? '#E5FFE5' : 'transparent';
-                            
                             contentHTML += `<tr style="height:18px;">`;
                             contentHTML += `<td style="border:1px solid #ddd; padding:1px; text-align:center; font-size:9px; vertical-align:middle; background-color:${lightBg};">${rowIndex+1}</td>`;
                             contentHTML += `<td style="border:1px solid #ddd; padding:1px; text-align:right; font-size:9px; vertical-align:middle; background-color:${lightBg};">${sim.name}</td>`;
@@ -1503,17 +1483,15 @@
                             contentHTML += `<td style="border:1px solid #ddd; padding:1px; text-align:center; font-size:9px; font-weight:bold; vertical-align:middle; background-color:${lightBg};">${sim.smallestUnitQty}</td>`;
                             contentHTML += `<td style="border:1px solid #ddd; padding:1px; text-align:center; font-size:9.9px; font-weight:bold; vertical-align:middle; background-color:${lightBg};">${sim.actualCount || 0}</td>`;
                             contentHTML += `<td style="border:1px solid #ddd; padding:1px; text-align:center; font-size:9px; font-weight:bold; color:${diff<0?'red':diff>0?'green':'#333'}; vertical-align:middle; background-color:${lightBg};"><span style="display:block; margin-bottom:1px;">${diff}</span><span style="display:block; font-size:8px; opacity:0.9;">${diffText||''}</span></td>`;
-                            
-                            // إضافة الخلية المجمعة للصف الأول فقط
-                            if (si === 0 && hasCombinedColumn) {
+                            if (si === 0) {
                                 const combinedDiff = similarItems.reduce((s, i) => s + (i.difference || 0), 0);
                                 const hasActual = similarItems.some(i => i.actualCount && i.actualCount !== 0);
                                 let cText = '';
                                 if (!hasActual) cText = 'لم يتم جرد الصنف';
                                 else if (combinedDiff === 0) cText = 'الجرد مطابق';
                                 else cText = combinedDiff < 0 ? 'عجز' : 'زيادة';
-                                const darkBg = (!hasActual) ? '#f0f9ff' : (combinedDiff < 0 ? '#FF0000' : (combinedDiff > 0 ? '#4CC552' : '#f0f9ff'));
-                                const textColor = (combinedDiff !== 0 && hasActual) ? 'white' : '#333';
+                                const darkBg = (!hasActual) ? '#cbd5e1' : (combinedDiff < 0 ? '#FF0000' : (combinedDiff > 0 ? '#4CC552' : '#1E3A8A'));
+                                const textColor = (combinedDiff !== 0 && hasActual) ? 'white' : (combinedDiff === 0 && hasActual) ? 'white' : '#1e293b';
                                 contentHTML += `<td style="border:1px solid #ddd; padding:1px; text-align:center; font-size:12px; font-weight:900; vertical-align:middle; background-color:${darkBg}; color:${textColor};" rowspan="${similarItems.length}">`;
                                 contentHTML += `<span style="display:block; margin-bottom:1px;">${combinedDiff}</span>`;
                                 contentHTML += `<span style="display:block; font-size:10px; opacity:0.9;">${cText}</span></td>`;
@@ -1524,7 +1502,6 @@
                             rowIndex++;
                         }
                     } else {
-                        // صنف فردي
                         const diff = item.difference || 0;
                         const diffText = diff < 0 ? 'عجز' : diff > 0 ? 'زيادة' : '';
                         const lightBg = diff < 0 ? '#FFE5E5' : diff > 0 ? '#E5FFE5' : 'transparent';
@@ -1536,18 +1513,16 @@
                         contentHTML += `<td style="border:1px solid #ddd; padding:1px; text-align:center; font-size:9px; font-weight:bold; vertical-align:middle; background-color:${lightBg};">${item.smallestUnitQty}</td>`;
                         contentHTML += `<td style="border:1px solid #ddd; padding:1px; text-align:center; font-size:9.9px; font-weight:bold; vertical-align:middle; background-color:${lightBg};">${item.actualCount || 0}</td>`;
                         contentHTML += `<td style="border:1px solid #ddd; padding:1px; text-align:center; font-size:9px; font-weight:bold; color:${diff<0?'red':diff>0?'green':'#333'}; vertical-align:middle; background-color:${lightBg};"><span style="display:block; margin-bottom:1px;">${diff}</span><span style="display:block; font-size:8px; opacity:0.9;">${diffText||''}</span></td>`;
-                        if (hasCombinedColumn) {
-                            const hasActual = (item.actualCount && item.actualCount !== 0);
-                            let cText = '';
-                            if (!hasActual) cText = 'لم يتم جرد الصنف';
-                            else if (diff === 0) cText = 'الجرد مطابق';
-                            else cText = diff < 0 ? 'عجز' : 'زيادة';
-                            const darkBg = (!hasActual) ? '#f0f9ff' : (diff < 0 ? '#FF0000' : (diff > 0 ? '#4CC552' : '#f0f9ff'));
-                            const textColor = (diff !== 0 && hasActual) ? 'white' : '#333';
-                            contentHTML += `<td style="border:1px solid #ddd; padding:1px; text-align:center; font-size:10px; font-weight:900; background-color:${darkBg}; color:${textColor}; vertical-align:middle;">`;
-                            contentHTML += `<span style="display:block; margin-bottom:1px;">${diff}</span>`;
-                            contentHTML += `<span style="display:block; font-size:10px; opacity:0.9;">${cText}</span></td>`;
-                        }
+                        const hasActual = (item.actualCount && item.actualCount !== 0);
+                        let cText = '';
+                        if (!hasActual) cText = 'لم يتم جرد الصنف';
+                        else if (diff === 0) cText = 'الجرد مطابق';
+                        else cText = diff < 0 ? 'عجز' : 'زيادة';
+                        const darkBg = (!hasActual) ? '#cbd5e1' : (diff < 0 ? '#FF0000' : (diff > 0 ? '#4CC552' : '#1E3A8A'));
+                        const textColor = (diff !== 0 && hasActual) ? 'white' : (diff === 0 && hasActual) ? 'white' : '#1e293b';
+                        contentHTML += `<td style="border:1px solid #ddd; padding:1px; text-align:center; font-size:10px; font-weight:900; background-color:${darkBg}; color:${textColor}; vertical-align:middle;">`;
+                        contentHTML += `<span style="display:block; margin-bottom:1px;">${diff}</span>`;
+                        contentHTML += `<span style="display:block; font-size:10px; opacity:0.9;">${cText}</span></td>`;
                         contentHTML += `</tr>`;
                         processedItems.add(item.code);
                         totalDifference += diff;
@@ -1564,21 +1539,7 @@
                 clone.querySelector('#pdf-print-date').textContent = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
                 await new Promise(resolve => setTimeout(resolve, 300));
                 try {
-                    const originalDisplay = clone.style.display;
-                    const originalPosition = clone.style.position;
-                    const originalLeft = clone.style.left;
-                    const originalTop = clone.style.top;
-                    clone.style.display = 'block';
-                    clone.style.position = 'fixed';
-                    clone.style.left = '0';
-                    clone.style.top = '0';
-                    clone.style.zIndex = '10000';
-                    clone.style.background = 'white';
                     const canvas = await html2canvas(clone, { scale: 2, useCORS: true, logging: false, backgroundColor: '#FFFFFF', windowWidth: clone.scrollWidth, windowHeight: clone.scrollHeight });
-                    clone.style.display = originalDisplay;
-                    clone.style.position = originalPosition;
-                    clone.style.left = originalLeft;
-                    clone.style.top = originalTop;
                     const imgData = canvas.toDataURL('image/jpeg', 0.95);
                     const { jsPDF } = window.jspdf;
                     const pdf = new jsPDF({ orientation: 'portrait', unit: 'px', format: 'a4' });
@@ -1699,19 +1660,16 @@
                 tab.addEventListener('click', function() {
                     document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
                     document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-                    
                     this.classList.add('active');
                     const targetId = this.getAttribute('data-target');
                     const targetSection = document.getElementById(targetId);
                     if (targetSection) targetSection.classList.add('active');
-                    
                     if (targetId === 'meat-section') updateMeatInventory();
                     else if (targetId === 'veg-section') updateVegInventory();
                     else if (targetId === 'appetizers-section') updateAppetizersInventory();
                     else if (targetId === 'misc-section') updateMiscInventory();
                 });
             });
-
             setDefaultDateTime();
             updateStats();
             updateRestaurantsTable();
