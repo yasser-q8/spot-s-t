@@ -24,8 +24,8 @@
             --dark-green: #4CC552;
             --light-red: #FFE5E5;
             --light-green: #E5FFE5;
-            --table-header-bg: #4EE2EC;  /* اللون الجديد لرؤوس الجداول */
-            --table-header-text: #1F2937; /* لون النص الداكن للتباين */
+            --table-header-bg: #4EE2EC;
+            --table-header-text: #1F2937;
         }
 
         * {
@@ -229,13 +229,12 @@
             font-size: 12px;
         }
 
-        /* تعديل لون رأس الجدول والخلفية */
         .inventory-table th, .inventory-table thead th {
             background-color: var(--table-header-bg);
             color: var(--table-header-text);
             font-size: 11px;
             font-weight: bold;
-            border: 1px solid #bbb; /* حدود أوضح قليلاً */
+            border: 1px solid #bbb;
         }
 
         .inventory-table td {
@@ -322,7 +321,7 @@
 
         .inventory-category { margin-bottom: 20px; }
         .category-title {
-            background-color: var(--table-header-bg);  /* اللون الجديد */
+            background-color: var(--table-header-bg);
             color: var(--table-header-text);
             padding: 10px;
             border-radius: 6px;
@@ -1114,15 +1113,54 @@
             }
         }
 
+        function getCombinedCellTextAndClass(similarItems, combinedDifference) {
+            const hasAnyActualCount = similarItems.some(item => {
+                let val = item.actualCount;
+                return val !== undefined && val !== null && val !== 0 && val !== '';
+            });
+            if (!hasAnyActualCount) {
+                return { text: 'لم يتم جرد الصنف', statusClass: 'combined-difference-zero' };
+            }
+            if (combinedDifference === 0) {
+                return { text: 'الجرد مطابق', statusClass: 'combined-difference-zero' };
+            }
+            if (combinedDifference < 0) {
+                return { text: 'عجز', statusClass: 'combined-difference-negative' };
+            } else {
+                return { text: 'زيادة', statusClass: 'combined-difference-positive' };
+            }
+        }
+
         function updateCombinedDifferenceCell(similarItems) {
             const combinedDifference = similarItems.reduce((sum, item) => sum + (item.difference || 0), 0);
-            const combinedClass = combinedDifference < 0 ? 'combined-difference-negative' : combinedDifference > 0 ? 'combined-difference-positive' : 'combined-difference-zero';
-            const combinedText = combinedDifference < 0 ? 'عجز' : combinedDifference > 0 ? 'زيادة' : 'متساوي';
+            const { text, statusClass } = getCombinedCellTextAndClass(similarItems, combinedDifference);
             const combinedCell = document.querySelector(`.combined-difference-cell[data-similar-group="${similarItems.map(i => i.code).join(',')}"]`);
             if (combinedCell) {
-                combinedCell.className = `combined-difference-cell ${combinedClass}`;
-                combinedCell.innerHTML = `${combinedDifference}<br><span style="font-size: 14px;">(${combinedText})</span>`;
+                combinedCell.className = `combined-difference-cell ${statusClass}`;
+                combinedCell.innerHTML = `${combinedDifference}<br><span style="font-size: 14px;">(${text})</span>`;
             }
+        }
+
+        function updateSingleCombinedCell(item, combinedCell) {
+            const diff = item.difference || 0;
+            const hasActual = (item.actualCount !== undefined && item.actualCount !== null && item.actualCount !== 0 && item.actualCount !== '');
+            let text = '';
+            let statusClass = '';
+            if (!hasActual) {
+                text = 'لم يتم جرد الصنف';
+                statusClass = 'combined-difference-zero';
+            } else if (diff === 0) {
+                text = 'الجرد مطابق';
+                statusClass = 'combined-difference-zero';
+            } else if (diff < 0) {
+                text = 'عجز';
+                statusClass = 'combined-difference-negative';
+            } else {
+                text = 'زيادة';
+                statusClass = 'combined-difference-positive';
+            }
+            combinedCell.className = `combined-difference-cell ${statusClass}`;
+            combinedCell.innerHTML = `${diff}<br><span style="font-size: 14px;">(${text})</span>`;
         }
 
         function applyRowColoring(row, diff) {
@@ -1162,12 +1200,11 @@
                             applyRowColoring(row, diff);
                             if (similarIndex === 0) {
                                 const combinedDiff = similarItems.reduce((s, i) => s + (i.difference || 0), 0);
-                                const combinedClass = combinedDiff < 0 ? 'combined-difference-negative' : combinedDiff > 0 ? 'combined-difference-positive' : 'combined-difference-zero';
-                                const combinedText = combinedDiff < 0 ? 'عجز' : combinedDiff > 0 ? 'زيادة' : 'متساوي';
+                                const { text, statusClass } = getCombinedCellTextAndClass(similarItems, combinedDiff);
                                 const combinedCell = document.createElement('td');
-                                combinedCell.className = `combined-difference-cell ${combinedClass}`;
+                                combinedCell.className = `combined-difference-cell ${statusClass}`;
                                 combinedCell.rowSpan = similarItems.length;
-                                combinedCell.innerHTML = `${combinedDiff}<br><span style="font-size: 14px;">(${combinedText})</span>`;
+                                combinedCell.innerHTML = `${combinedDiff}<br><span style="font-size: 14px;">(${text})</span>`;
                                 combinedCell.setAttribute('data-similar-group', similarItems.map(i => i.code).join(','));
                                 row.appendChild(combinedCell);
                             }
@@ -1194,28 +1231,27 @@
                         const diff = item.difference || 0;
                         const diffClass = diff < 0 ? 'difference-negative' : diff > 0 ? 'difference-positive' : '';
                         const diffText = diff < 0 ? 'عجز' : diff > 0 ? 'زيادة' : '';
-                        row.innerHTML = `<td>${rowIndex + 1}</td><td>${item.name}</td><td>${item.vendorUOM}</td><td>${item.stockQty}</td><td class="count-cell">${item.smallestUnitQty}</td><td><input type="number" class="actual-count-input" data-code="${item.code}" value="${item.actualCount || ''}" placeholder="0"></td><td class="difference-cell ${diffClass}" data-code="${item.code}" style="font-size: 18px; font-weight: bold;">${diff} ${diffText ? `<span class="difference-text" style="color: ${diff < 0 ? 'var(--accent-red)' : diff > 0 ? 'var(--accent-green)' : 'var(--primary)'};">(${diffText})</span>` : ''}</td><td class="combined-difference-cell ${diffClass.replace('difference','combined-difference') || 'combined-difference-zero'}" data-code="${item.code}">${diff}<br><span style="font-size: 14px;">(${diffText || 'متساوي'})</span></td>`;
+                        row.innerHTML = `<td>${rowIndex + 1}</td><td>${item.name}</td><td>${item.vendorUOM}</td><td>${item.stockQty}</td><td class="count-cell">${item.smallestUnitQty}</td><td><input type="number" class="actual-count-input" data-code="${item.code}" value="${item.actualCount || ''}" placeholder="0"></td><td class="difference-cell ${diffClass}" data-code="${item.code}" style="font-size: 18px; font-weight: bold;">${diff} ${diffText ? `<span class="difference-text" style="color: ${diff < 0 ? 'var(--accent-red)' : diff > 0 ? 'var(--accent-green)' : 'var(--primary)'};">(${diffText})</span>` : ''}</td><td class="combined-difference-cell ${diffClass.replace('difference','combined-difference') || 'combined-difference-zero'}" data-code="${item.code}">${diff}<br><span style="font-size: 14px;">${diff === 0 ? (item.actualCount ? 'الجرد مطابق' : 'لم يتم جرد الصنف') : (diff < 0 ? 'عجز' : 'زيادة')}</span></td>`;
                         applyRowColoring(row, diff);
                         tbody.appendChild(row);
                         processedItems.add(item.code);
                         rowIndex++;
                         const input = row.querySelector('.actual-count-input');
-                        input.addEventListener('input', (function(it, rw) { return function() {
+                        const combinedCell = row.querySelector('.combined-difference-cell');
+                        updateSingleCombinedCell(item, combinedCell);
+                        input.addEventListener('input', (function(it, rw, combCell) { return function() {
                             const actual = parseFloat(this.value) || 0;
                             const newDiff = actual - it.smallestUnitQty;
                             const newDiffText = newDiff < 0 ? 'عجز' : newDiff > 0 ? 'زيادة' : '';
                             const diffCell = document.querySelector(`.difference-cell[data-code="${it.code}"]`);
                             diffCell.innerHTML = `${Math.round(newDiff)} ${newDiffText ? `<span class="difference-text" style="color: ${newDiff < 0 ? 'var(--accent-red)' : newDiff > 0 ? 'var(--accent-green)' : 'var(--primary)'};">(${newDiffText})</span>` : ''}`;
                             diffCell.className = `difference-cell ${newDiff < 0 ? 'difference-negative' : newDiff > 0 ? 'difference-positive' : ''}`;
-                            const combinedCell = rw.querySelector('.combined-difference-cell');
-                            const combinedClass = newDiff < 0 ? 'combined-difference-negative' : newDiff > 0 ? 'combined-difference-positive' : 'combined-difference-zero';
-                            combinedCell.className = `combined-difference-cell ${combinedClass}`;
-                            combinedCell.innerHTML = `${Math.round(newDiff)}<br><span style="font-size: 14px;">(${newDiffText || 'متساوي'})</span>`;
                             it.actualCount = actual;
                             it.difference = Math.round(newDiff);
                             applyRowColoring(rw, newDiff);
+                            updateSingleCombinedCell(it, combCell);
                             updateGroupTotal(group, groupedItems[group]);
-                        }; })(item, row));
+                        }; })(item, row, combinedCell));
                     }
                 });
                 table.appendChild(tbody);
@@ -1269,7 +1305,6 @@
             renderGroupedItems(container, groupedItems, similarGroups);
         }
 
-        // دالة محدثة لشاشة المقبلات مع ترتيب المجموعات
         function updateAppetizersInventory() {
             const container = document.getElementById('appetizers-inventory-container');
             container.innerHTML = '';
@@ -1279,7 +1314,6 @@
                 return;
             }
 
-            // تصنيف الأصناف إلى مجموعات فرعية محددة
             const subGroups = {
                 'السلطات': [],
                 'الكول سلو': [],
@@ -1303,17 +1337,14 @@
                 }
             });
 
-            // حذف المجموعات الفارغة
             const finalGroups = {};
             for (const [groupName, items] of Object.entries(subGroups)) {
                 if (items.length > 0) {
-                    // ترتيب العناصر داخل المجموعة حسب الاسم
                     items.sort((a, b) => a.name.localeCompare(b.name));
                     finalGroups[groupName] = items;
                 }
             }
 
-            // ترتيب عرض المجموعات حسب الأولوية: سلطات، كول سلو، حمص/متبل، ألبان/حلويات، أخرى
             const orderedGroups = {};
             const order = ['السلطات', 'الكول سلو', 'الحمص والمتبل', 'الألبان والحلويات', 'أخرى'];
             for (const key of order) {
@@ -1412,57 +1443,123 @@
                 let contentHTML = '';
                 let totalDifference = 0;
                 let processedItems = new Set();
-                const hasCombinedColumn = sectionType === 'meat' || (sectionType === 'appetizers' && items.some(item => (item.name && (item.name.includes('سلطة') || item.name.includes('كول سلو')))));
-                contentHTML += `<table style="width: 100%; border-collapse: collapse; font-size: 9px; margin-bottom: 5px;"><thead><tr style="background: #EFF6FF;"><th style="border: 1px solid #ddd; padding: 2px; text-align: center; width: 4%; font-size: 9px; font-weight: bold;">م</th><th style="border: 1px solid #ddd; padding: 2px; text-align: right; width: 30%; font-size: 9px; font-weight: bold;">اسم الصنف</th><th style="border: 1px solid #ddd; padding: 2px; text-align: center; width: 10%; font-size: 9px; font-weight: bold;">الشد</th><th style="border: 1px solid #ddd; padding: 2px; text-align: center; width: 9%; font-size: 9px; font-weight: bold;">جرد البرنامج</th><th style="border: 1px solid #ddd; padding: 2px; text-align: center; width: 9%; font-size: 9px; font-weight: bold;">جرد الوحدة الصغرى</th><th style="border: 1px solid #ddd; padding: 2px; text-align: center; width: 9%; font-size: 9px; font-weight: bold;">الجرد الفعلي</th><th style="border: 1px solid #ddd; padding: 2px; text-align: center; width: 12%; font-size: 9px; font-weight: bold;">العجز/الزيادة</th>${hasCombinedColumn ? '<th style="border: 1px solid #ddd; padding: 2px; text-align: center; width: 12%; font-size: 9px; font-weight: bold;">الفروقات المجمعة</th>' : ''}</tr></thead><tbody>`;
+                // تحديد ما إذا كان سيتم إظهار عمود الفروقات المجمعة
+                const hasCombinedColumn = (sectionType === 'meat') || (sectionType === 'appetizers' && items.some(item => (item.name && (item.name.includes('سلطة') || item.name.includes('كول سلو')))));
+                // عدد الأعمدة الفعلية: 7 أعمدة أساسية + 1 للفروقات المجمعة إذا وجد
+                const colSpan = hasCombinedColumn ? 8 : 7;
+                
+                contentHTML += `<table style="width: 100%; border-collapse: collapse; font-size: 9px; margin-bottom: 5px;"><thead><tr style="background: #EFF6FF;">`;
+                contentHTML += `<th style="border: 1px solid #ddd; padding: 2px; text-align: center; width: 4%; font-size: 9px; font-weight: bold;">م</th>`;
+                contentHTML += `<th style="border: 1px solid #ddd; padding: 2px; text-align: right; width: 30%; font-size: 9px; font-weight: bold;">اسم الصنف</th>`;
+                contentHTML += `<th style="border: 1px solid #ddd; padding: 2px; text-align: center; width: 10%; font-size: 9px; font-weight: bold;">الشد</th>`;
+                contentHTML += `<th style="border: 1px solid #ddd; padding: 2px; text-align: center; width: 9%; font-size: 9px; font-weight: bold;">جرد البرنامج</th>`;
+                contentHTML += `<th style="border: 1px solid #ddd; padding: 2px; text-align: center; width: 9%; font-size: 9px; font-weight: bold;">جرد الوحدة الصغرى</th>`;
+                contentHTML += `<th style="border: 1px solid #ddd; padding: 2px; text-align: center; width: 9%; font-size: 9px; font-weight: bold;">الجرد الفعلي</th>`;
+                contentHTML += `<th style="border: 1px solid #ddd; padding: 2px; text-align: center; width: 12%; font-size: 9px; font-weight: bold;">العجز/الزيادة</th>`;
+                if (hasCombinedColumn) {
+                    contentHTML += `<th style="border: 1px solid #ddd; padding: 2px; text-align: center; width: 12%; font-size: 9px; font-weight: bold;">الفروقات المجمعة</th>`;
+                }
+                contentHTML += `</tr></thead><tbody>`;
+                
                 let rowIndex = 0;
+                // تصنيف الأصناف إلى مجموعات متشابهة (لأصناف اللحوم والمقبلات)
+                let similarGroups = {};
+                if (sectionType === 'meat') {
+                    similarGroups = findSimilarItems(items);
+                } else if (sectionType === 'appetizers') {
+                    // تجميع السلطات مع بعضها والكول سلو مع بعضها
+                    const salads = items.filter(i => i.name.includes('سلطة') || i.name.includes('فتوش') || i.name.includes('تبولة') || i.name.includes('جرجير') || i.name.includes('خضراء'));
+                    const coleslaws = items.filter(i => i.name.includes('كول سلو') || i.name.includes('Cole Slaw'));
+                    if (salads.length > 1) similarGroups['سلطات'] = salads;
+                    if (coleslaws.length > 1) similarGroups['كول سلو'] = coleslaws;
+                }
+                
                 for (const item of items) {
                     if (processedItems.has(item.code)) continue;
                     let similarItems = [];
-                    if (sectionType === 'meat') {
-                        const sg = findSimilarItems(items);
-                        for (const bn in sg) { if (sg[bn].find(i => i.code === item.code)) { similarItems = sg[bn]; break; } }
-                    } else if (sectionType === 'appetizers' && (item.name.includes('سلطة') || item.name.includes('كول سلو'))) {
-                        if (item.name.includes('كول سلو')) similarItems = items.filter(i => i.name.includes('كول سلو'));
-                        else similarItems = items.filter(i => i.name.includes('سلطة') && !i.name.includes('كول سلو'));
+                    // البحث عن مجموعة متشابهة تحتوي على هذا العنصر
+                    for (const groupName in similarGroups) {
+                        const grp = similarGroups[groupName];
+                        if (grp.find(i => i.code === item.code)) {
+                            similarItems = grp;
+                            break;
+                        }
                     }
+                    
                     if (similarItems.length > 1) {
+                        // معالجة المجموعة المتشابهة
                         for (let si = 0; si < similarItems.length; si++) {
                             const sim = similarItems[si];
                             if (processedItems.has(sim.code)) continue;
                             const diff = sim.difference || 0;
                             const diffText = diff < 0 ? 'عجز' : diff > 0 ? 'زيادة' : '';
                             const lightBg = diff < 0 ? '#FFE5E5' : diff > 0 ? '#E5FFE5' : 'transparent';
-                            let combinedHtml = '';
-                            if (si === 0) {
-                                const cDiff = similarItems.reduce((s,i) => s + (i.difference||0),0);
-                                const cText = cDiff < 0 ? 'عجز' : cDiff > 0 ? 'زيادة' : 'متساوي';
-                                const darkBg = cDiff < 0 ? '#FF0000' : cDiff > 0 ? '#4CC552' : '#f0f9ff';
-                                const textColor = (cDiff !== 0) ? 'white' : '#333';
-                                combinedHtml = `<td style="border:1px solid #ddd; padding:1px; text-align:center; font-size:12px; font-weight:900; vertical-align:middle; background-color:${darkBg}; color:${textColor};" rowspan="${similarItems.length}"><span style="display:block; margin-bottom:1px;">${cDiff}</span><span style="display:block; font-size:10px; opacity:0.9;">${cText}</span></td>`;
+                            
+                            contentHTML += `<tr style="height:18px;">`;
+                            contentHTML += `<td style="border:1px solid #ddd; padding:1px; text-align:center; font-size:9px; vertical-align:middle; background-color:${lightBg};">${rowIndex+1}</td>`;
+                            contentHTML += `<td style="border:1px solid #ddd; padding:1px; text-align:right; font-size:9px; vertical-align:middle; background-color:${lightBg};">${sim.name}</td>`;
+                            contentHTML += `<td style="border:1px solid #ddd; padding:1px; text-align:center; font-size:9px; vertical-align:middle; background-color:${lightBg};">${sim.vendorUOM}</td>`;
+                            contentHTML += `<td style="border:1px solid #ddd; padding:1px; text-align:center; font-size:9px; vertical-align:middle; background-color:${lightBg};">${sim.stockQty}</td>`;
+                            contentHTML += `<td style="border:1px solid #ddd; padding:1px; text-align:center; font-size:9px; font-weight:bold; vertical-align:middle; background-color:${lightBg};">${sim.smallestUnitQty}</td>`;
+                            contentHTML += `<td style="border:1px solid #ddd; padding:1px; text-align:center; font-size:9.9px; font-weight:bold; vertical-align:middle; background-color:${lightBg};">${sim.actualCount || 0}</td>`;
+                            contentHTML += `<td style="border:1px solid #ddd; padding:1px; text-align:center; font-size:9px; font-weight:bold; color:${diff<0?'red':diff>0?'green':'#333'}; vertical-align:middle; background-color:${lightBg};"><span style="display:block; margin-bottom:1px;">${diff}</span><span style="display:block; font-size:8px; opacity:0.9;">${diffText||''}</span></td>`;
+                            
+                            // إضافة الخلية المجمعة للصف الأول فقط
+                            if (si === 0 && hasCombinedColumn) {
+                                const combinedDiff = similarItems.reduce((s, i) => s + (i.difference || 0), 0);
+                                const hasActual = similarItems.some(i => i.actualCount && i.actualCount !== 0);
+                                let cText = '';
+                                if (!hasActual) cText = 'لم يتم جرد الصنف';
+                                else if (combinedDiff === 0) cText = 'الجرد مطابق';
+                                else cText = combinedDiff < 0 ? 'عجز' : 'زيادة';
+                                const darkBg = (!hasActual) ? '#f0f9ff' : (combinedDiff < 0 ? '#FF0000' : (combinedDiff > 0 ? '#4CC552' : '#f0f9ff'));
+                                const textColor = (combinedDiff !== 0 && hasActual) ? 'white' : '#333';
+                                contentHTML += `<td style="border:1px solid #ddd; padding:1px; text-align:center; font-size:12px; font-weight:900; vertical-align:middle; background-color:${darkBg}; color:${textColor};" rowspan="${similarItems.length}">`;
+                                contentHTML += `<span style="display:block; margin-bottom:1px;">${combinedDiff}</span>`;
+                                contentHTML += `<span style="display:block; font-size:10px; opacity:0.9;">${cText}</span></td>`;
                             }
-                            contentHTML += `<tr style="height:18px;"><td style="border:1px solid #ddd; padding:1px; text-align:center; font-size:9px; vertical-align:middle; background-color:${lightBg};">${rowIndex+1}</td><td style="border:1px solid #ddd; padding:1px; text-align:right; font-size:9px; vertical-align:middle; background-color:${lightBg};">${sim.name}</td><td style="border:1px solid #ddd; padding:1px; text-align:center; font-size:9px; vertical-align:middle; background-color:${lightBg};">${sim.vendorUOM}</td><td style="border:1px solid #ddd; padding:1px; text-align:center; font-size:9px; vertical-align:middle; background-color:${lightBg};">${sim.stockQty}</td><td style="border:1px solid #ddd; padding:1px; text-align:center; font-size:9px; font-weight:bold; vertical-align:middle; background-color:${lightBg};">${sim.smallestUnitQty}</td><td style="border:1px solid #ddd; padding:1px; text-align:center; font-size:9.9px; font-weight:bold; vertical-align:middle; background-color:${lightBg};">${sim.actualCount||0}</td><td style="border:1px solid #ddd; padding:1px; text-align:center; font-size:9px; font-weight:bold; color:${diff<0?'red':diff>0?'green':'#333'}; vertical-align:middle; background-color:${lightBg};"><span style="display:block; margin-bottom:1px;">${diff}</span><span style="display:block; font-size:8px; opacity:0.9;">${diffText||''}</span></td>${si===0?combinedHtml:''}</tr>`;
+                            contentHTML += `</tr>`;
                             processedItems.add(sim.code);
                             totalDifference += diff;
                             rowIndex++;
                         }
                     } else {
+                        // صنف فردي
                         const diff = item.difference || 0;
                         const diffText = diff < 0 ? 'عجز' : diff > 0 ? 'زيادة' : '';
                         const lightBg = diff < 0 ? '#FFE5E5' : diff > 0 ? '#E5FFE5' : 'transparent';
-                        let combinedHtml = '';
-                        if (hasCombinedColumn && !item.name.includes('سلطة') && !item.name.includes('كول سلو')) {
-                            const darkBg = diff < 0 ? '#FF0000' : diff > 0 ? '#4CC552' : '#f0f9ff';
-                            const textColor = (diff !== 0) ? 'white' : '#333';
-                            combinedHtml = `<td style="border:1px solid #ddd; padding:1px; text-align:center; font-size:10px; font-weight:900; background-color:${darkBg}; color:${textColor}; vertical-align:middle;"><span style="display:block; margin-bottom:1px;">${diff}</span><span style="display:block; font-size:10px; opacity:0.9;">${diffText||'متساوي'}</span></td>`;
+                        contentHTML += `<tr style="height:18px;">`;
+                        contentHTML += `<td style="border:1px solid #ddd; padding:1px; text-align:center; font-size:9px; vertical-align:middle; background-color:${lightBg};">${rowIndex+1}</td>`;
+                        contentHTML += `<td style="border:1px solid #ddd; padding:1px; text-align:right; font-size:9px; vertical-align:middle; background-color:${lightBg};">${item.name}</td>`;
+                        contentHTML += `<td style="border:1px solid #ddd; padding:1px; text-align:center; font-size:9px; vertical-align:middle; background-color:${lightBg};">${item.vendorUOM}</td>`;
+                        contentHTML += `<td style="border:1px solid #ddd; padding:1px; text-align:center; font-size:9px; vertical-align:middle; background-color:${lightBg};">${item.stockQty}</td>`;
+                        contentHTML += `<td style="border:1px solid #ddd; padding:1px; text-align:center; font-size:9px; font-weight:bold; vertical-align:middle; background-color:${lightBg};">${item.smallestUnitQty}</td>`;
+                        contentHTML += `<td style="border:1px solid #ddd; padding:1px; text-align:center; font-size:9.9px; font-weight:bold; vertical-align:middle; background-color:${lightBg};">${item.actualCount || 0}</td>`;
+                        contentHTML += `<td style="border:1px solid #ddd; padding:1px; text-align:center; font-size:9px; font-weight:bold; color:${diff<0?'red':diff>0?'green':'#333'}; vertical-align:middle; background-color:${lightBg};"><span style="display:block; margin-bottom:1px;">${diff}</span><span style="display:block; font-size:8px; opacity:0.9;">${diffText||''}</span></td>`;
+                        if (hasCombinedColumn) {
+                            const hasActual = (item.actualCount && item.actualCount !== 0);
+                            let cText = '';
+                            if (!hasActual) cText = 'لم يتم جرد الصنف';
+                            else if (diff === 0) cText = 'الجرد مطابق';
+                            else cText = diff < 0 ? 'عجز' : 'زيادة';
+                            const darkBg = (!hasActual) ? '#f0f9ff' : (diff < 0 ? '#FF0000' : (diff > 0 ? '#4CC552' : '#f0f9ff'));
+                            const textColor = (diff !== 0 && hasActual) ? 'white' : '#333';
+                            contentHTML += `<td style="border:1px solid #ddd; padding:1px; text-align:center; font-size:10px; font-weight:900; background-color:${darkBg}; color:${textColor}; vertical-align:middle;">`;
+                            contentHTML += `<span style="display:block; margin-bottom:1px;">${diff}</span>`;
+                            contentHTML += `<span style="display:block; font-size:10px; opacity:0.9;">${cText}</span></td>`;
                         }
-                        contentHTML += `<tr style="height:18px;"><td style="border:1px solid #ddd; padding:1px; text-align:center; font-size:9px; vertical-align:middle; background-color:${lightBg};">${rowIndex+1}</td><td style="border:1px solid #ddd; padding:1px; text-align:right; font-size:9px; vertical-align:middle; background-color:${lightBg};">${item.name}</td><td style="border:1px solid #ddd; padding:1px; text-align:center; font-size:9px; vertical-align:middle; background-color:${lightBg};">${item.vendorUOM}</td><td style="border:1px solid #ddd; padding:1px; text-align:center; font-size:9px; vertical-align:middle; background-color:${lightBg};">${item.stockQty}</td><td style="border:1px solid #ddd; padding:1px; text-align:center; font-size:9px; font-weight:bold; vertical-align:middle; background-color:${lightBg};">${item.smallestUnitQty}</td><td style="border:1px solid #ddd; padding:1px; text-align:center; font-size:9.9px; font-weight:bold; vertical-align:middle; background-color:${lightBg};">${item.actualCount||0}</td><td style="border:1px solid #ddd; padding:1px; text-align:center; font-size:9px; font-weight:bold; color:${diff<0?'red':diff>0?'green':'#333'}; vertical-align:middle; background-color:${lightBg};"><span style="display:block; margin-bottom:1px;">${diff}</span><span style="display:block; font-size:8px; opacity:0.9;">${diffText||''}</span></td>${combinedHtml}</tr>`;
+                        contentHTML += `</tr>`;
                         processedItems.add(item.code);
                         totalDifference += diff;
                         rowIndex++;
                     }
                 }
-                contentHTML += `</tbody></table><div style="margin-top:10px; padding:8px; background:#EFF6FF; border-radius:4px; text-align:center; font-weight:bold; border:1px solid var(--primary);"><div style="font-size:10px;">الإجمالي الكلي: <span style="color:${totalDifference<0?'red':totalDifference>0?'green':'var(--primary)'}; font-size:12px; font-weight:bold;">${totalDifference} ${totalDifference<0?'(عجز)':totalDifference>0?'(زيادة)':''}</span></div><div style="font-size:9px; margin-top:3px; color:#666;">(عدد الأصناف: ${items.length} صنف)</div></div>`;
+                contentHTML += `</tbody></table>`;
+                contentHTML += `<div style="margin-top:10px; padding:8px; background:#EFF6FF; border-radius:4px; text-align:center; font-weight:bold; border:1px solid var(--primary);">`;
+                contentHTML += `<div style="font-size:10px;">الإجمالي الكلي: <span style="color:${totalDifference<0?'red':totalDifference>0?'green':'var(--primary)'}; font-size:12px; font-weight:bold;">${totalDifference} ${totalDifference<0?'(عجز)':totalDifference>0?'(زيادة)':''}</span></div>`;
+                contentHTML += `<div style="font-size:9px; margin-top:3px; color:#666;">(عدد الأصناف: ${items.length} صنف)</div></div>`;
                 pdfContent.innerHTML = contentHTML;
+                
                 const now = new Date();
                 clone.querySelector('#pdf-print-date').textContent = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
                 await new Promise(resolve => setTimeout(resolve, 300));
