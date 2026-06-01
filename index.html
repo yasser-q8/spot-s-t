@@ -119,6 +119,7 @@
             overflow: hidden;
             margin-bottom: 20px;
             box-shadow: 0 2px 8px var(--shadow);
+            flex-wrap: wrap;
         }
 
         .nav-tab {
@@ -465,6 +466,7 @@
         <div class="nav-tabs">
             <div class="nav-tab active" data-target="upload-section">تحميل البيانات</div>
             <div class="nav-tab" data-target="meat-section">جرد اللحوم</div>
+            <div class="nav-tab" data-target="store-section">جرد أصناف المخازن(تحت التطوير)</div>
             <div class="nav-tab" data-target="veg-section">جرد الخضروات</div>
             <div class="nav-tab" data-target="appetizers-section">جرد المقبلات</div>
             <div class="nav-tab" data-target="misc-section">جرد أصناف أخرى</div>
@@ -537,6 +539,37 @@
                 <button class="btn btn-primary" id="generate-meat-pdf">تصدير إلى PDF</button>
                 <button class="btn btn-primary" id="generate-meat-excel">تصدير إلى Excel</button>
                 <button class="btn btn-secondary" id="send-meat-whatsapp">إرسال إلى واتساب</button>
+            </div>
+        </section>
+
+        <!-- قسم جرد أصناف المخازن الجديد -->
+        <section id="store-section" class="section">
+            <h2 style="color: var(--primary); margin-bottom: 20px;">جرد أصناف المخازن</h2>
+            <div class="restaurant-info">
+                <div class="info-row-compact">
+                    <div class="info-item">
+                        <div class="info-label">اسم المطعم:</div>
+                        <div class="info-value">
+                            <div class="restaurant-autocomplete">
+                                <input type="text" class="restaurant-search-input" id="store-restaurant-search" placeholder="اكتب اسم المطعم...">
+                                <div class="restaurant-suggestions" id="store-restaurant-suggestions"></div>
+                            </div>
+                            <input type="hidden" id="store-restaurant-name">
+                        </div>
+                    </div>
+                    <div class="info-item"><div class="info-label">مسئول المطعم:</div><div class="info-value"><input type="text" id="store-responsible" placeholder="اسم المسئول"></div></div>
+                    <div class="info-item"><div class="info-label">تاريخ ووقت الجرد:</div><div class="info-value"><input type="datetime-local" id="store-datetime" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;"></div></div>
+                </div>
+                <div class="manager-info">
+                    <div class="manager-box"><div class="manager-label">مدير المنطقة</div><div class="manager-name" id="store-area-manager">-</div></div>
+                    <div class="manager-box"><div class="manager-label">مدير التشغيل</div><div class="manager-name" id="store-operations-manager">-</div></div>
+                </div>
+            </div>
+            <div id="store-inventory-container"></div>
+            <div class="action-buttons">
+                <button class="btn btn-primary" id="generate-store-pdf">تصدير إلى PDF</button>
+                <button class="btn btn-primary" id="generate-store-excel">تصدير إلى Excel</button>
+                <button class="btn btn-secondary" id="send-store-whatsapp">إرسال إلى واتساب</button>
             </div>
         </section>
 
@@ -767,7 +800,34 @@
             { code: "K2033", name: "Rocca Salad Big  ( سلطة جرجيركبيرة)", group: "appetizers", vendorUOM: "علبة", stockQty: 0, uuom: "علبة", smallestUnitQty: 0 },
             { code: "K2034", name: "Taboulla Salad Big  ( سلطة تبولة كبيرة)", group: "appetizers", vendorUOM: "علبة", stockQty: 0, uuom: "علبة", smallestUnitQty: 0 },
             { code: "K2036", name: "Vegitable Salad Big  ( سلطة خضراء كبيرة)", group: "appetizers", vendorUOM: "علبة", stockQty: 0, uuom: "علبة", smallestUnitQty: 0 },
-            { code: "K2022", name: "Mutabbal Large ( ماعون متبل كبير)", group: "appetizers", vendorUOM: "كيلو", stockQty: 0, uuom: "جرام", smallestUnitQty: 0 }
+            { code: "K2022", name: "Mutabbal Large ( ماعون متبل كبير)", group: "appetizers", vendorUOM: "كيلو", stockQty: 0, uuom: "جرام", smallestUnitQty: 0 },
+            // أضف أصناف المخازن الجديدة هنا
+            { code: "A1009", name: "Butter Finger (زبدة اصابع)", group: "store", vendorUOM: "كيس", stockQty: 0, uuom: "قطعة", smallestUnitQty: 0 },
+            { code: "A1010", name: "Butter Portion ( زبدة بورشن)", group: "store", vendorUOM: "كرتون", stockQty: 0, uuom: "قطعة", smallestUnitQty: 0 },
+            { code: "L1041", name: "Cheese Cake Snickers (تشيز كيك سنيكرز)", group: "store", vendorUOM: "قطعة", stockQty: 0, uuom: "قطعة", smallestUnitQty: 0 },
+            { code: "A1016", name: "Cheese Cake Strawberry (تشيز كيك فراولة)", group: "store", vendorUOM: "قطعة", stockQty: 0, uuom: "قطعة", smallestUnitQty: 0 },
+            { code: "L1040", name: "Cheese Cake Lotus (تشيز كيك لوتس)", group: "store", vendorUOM: "قطعة", stockQty: 0, uuom: "قطعة", smallestUnitQty: 0 },
+            { code: "L1043", name: "Cheese Cake Oreo (تشيز كيك اوريو)", group: "store", vendorUOM: "قطعة", stockQty: 0, uuom: "قطعة", smallestUnitQty: 0 },
+            { code: "L1042", name: "Cheese Cake Red Velvet (تشيز كيك ريد فالفيت)", group: "store", vendorUOM: "قطعة", stockQty: 0, uuom: "قطعة", smallestUnitQty: 0 },
+            { code: "A1006", name: "Chicken Nuggets ( ناجيت تمبورا)", group: "store", vendorUOM: "كيلو", stockQty: 0, uuom: "كيلو", smallestUnitQty: 0 },
+            { code: "A1001", name: "French Fries 6×6 LW ( شبس لامب وستون)", group: "store", vendorUOM: "كيس", stockQty: 0, uuom: "كيلو", smallestUnitQty: 0 },
+            { code: "A1011", name: "FRZ Paratha ( شباتي براتا)", group: "store", vendorUOM: "علبة", stockQty: 0, uuom: "قطعة", smallestUnitQty: 0 },
+            { code: "A1020", name: "McCain Hashbrown (بطاط هاش براون مثلث)", group: "store", vendorUOM: "كيس", stockQty: 0, uuom: "قطعة", smallestUnitQty: 0 },
+            { code: "A1003", name: "Mozzarella Stick (اصابع مودزريلا)", group: "store", vendorUOM: "كيس", stockQty: 0, uuom: "قطعة", smallestUnitQty: 0 },
+            { code: "A1002", name: "Onion Rings ( حلقات بصل)", group: "store", vendorUOM: "كيس", stockQty: 0, uuom: "قطعة", smallestUnitQty: 0 },
+            { code: "A1014", name: "Twister Fries LW (بطاط حلزونية تويستر)", group: "store", vendorUOM: "كيس", stockQty: 0, uuom: "قطعة", smallestUnitQty: 0 },
+            { code: "B1007", name: "Basmati Rice ( ارزبسمتى)", group: "store", vendorUOM: "كيس", stockQty: 0, uuom: "كيلو", smallestUnitQty: 0 },
+            { code: "B1002", name: "Cheese slice ( جبنة شرائح)", group: "store", vendorUOM: "علبة", stockQty: 0, uuom: "شريحة", smallestUnitQty: 0 },
+            { code: "B1024", name: "Swiss Cheese slices (جبنة سويسرية ابيض شرائح)", group: "store", vendorUOM: "علبة", stockQty: 0, uuom: "شريحة", smallestUnitQty: 0 },
+            { code: "A1013", name: "Mozzarella shd cheese (جبنة موزريلا)", group: "store", vendorUOM: "كيس", stockQty: 0, uuom: "جرام", smallestUnitQty: 0 },
+            { code: "B1008", name: "Corn Oil (زيت ذرة)", group: "store", vendorUOM: "زجاجة", stockQty: 0, uuom: "لتر", smallestUnitQty: 0 },
+            { code: "B2054", name: "sweet corn ( ذرة حب )", group: "store", vendorUOM: "علبة", stockQty: 0, uuom: "علبة", smallestUnitQty: 0 },
+            { code: "C1005", name: "Aquafina Water 600ml ( مياة أكوافينا صغير)", group: "store", vendorUOM: "زجاجة", stockQty: 0, uuom: "زجاجة", smallestUnitQty: 0 },
+            { code: "C1003", name: "Pepsi 1.25 Ltr ( بيبسى عائلى)", group: "store", vendorUOM: "زجاجة", stockQty: 0, uuom: "زجاجة", smallestUnitQty: 0 },
+            { code: "C1004", name: "Pepsi 2.25 Ltr ( بيبسى عائلى)", group: "store", vendorUOM: "زجاجة", stockQty: 0, uuom: "زجاجة", smallestUnitQty: 0 },
+            { code: "C1001", name: "Pepsi BIB Syrup ( بيبسي ماكينة)", group: "store", vendorUOM: "علبة", stockQty: 0, uuom: "لتر", smallestUnitQty: 0 },
+            { code: "C1002", name: "Pepsi Can 250ml (بيبسى علب250 م)", group: "store", vendorUOM: "علبة", stockQty: 0, uuom: "علبة", smallestUnitQty: 0 },
+            { code: "C1006", name: "Shireen Juice (عصيرشيرين)", group: "store", vendorUOM: "زجاجة", stockQty: 0, uuom: "زجاجة", smallestUnitQty: 0 }
         ];
 
         const restaurants = [
@@ -857,6 +917,7 @@
             if (item.group && item.group.includes('MEAT')) return 'meat';
             else if (item.group && (item.group.includes('VEG') || item.group.includes('SALAD'))) return 'vegetables';
             else if (item.group && item.group.includes('APPETIZERS')) return 'appetizers';
+            else if (item.group && item.group === 'store') return 'store';
             else if (item.name && (item.name.includes('لحم') || item.name.includes('دجاج') || item.name.includes('برجر') || item.name.includes('فيليه') || item.name.includes('شاورما') || item.name.includes('كباب') || item.name.includes('تيكا') || item.name.includes('فرايد'))) return 'meat';
             else if (item.name && (item.name.includes('خض') || item.name.includes('خيار') || item.name.includes('طماطم') || item.name.includes('بصل') || item.name.includes('جزر') || item.name.includes('فلفل') || item.name.includes('بقدونس') || item.name.includes('ليمون') || item.name.includes('برتقال') || item.name.includes('خس'))) return 'vegetables';
             else if (item.name && (item.name.includes('حمص') || item.name.includes('متبل') || item.name.includes('فتوش') || item.name.includes('تبولة') || item.name.includes('سلطة') || item.name.includes('جرجير') || item.name.includes('كول سلو') || item.name.includes('لبن') || item.name.includes('لبنة') || item.name.includes('بيض') || item.name.includes('أرز') || item.name.includes('بوري') || item.name.includes('صوص') || item.name.includes('صلصة') || item.name.includes('مايونيز') || item.name.includes('كاتشب') || item.name.includes('بهارات') || item.name.includes('ملح') || item.name.includes('سكر') || item.name.includes('زيت'))) return 'appetizers';
@@ -1073,6 +1134,7 @@
 
         function refreshActiveInventory() {
             if (document.getElementById('meat-section').classList.contains('active')) updateMeatInventory();
+            else if (document.getElementById('store-section').classList.contains('active')) updateStoreInventory();
             else if (document.getElementById('veg-section').classList.contains('active')) updateVegInventory();
             else if (document.getElementById('appetizers-section').classList.contains('active')) updateAppetizersInventory();
             else if (document.getElementById('misc-section').classList.contains('active')) updateMiscInventory();
@@ -1313,6 +1375,40 @@
             renderGroupedItems(container, groupedItems, similarGroups);
         }
 
+        // دالة جديدة لجرد المخازن
+        function updateStoreInventory() {
+            const container = document.getElementById('store-inventory-container');
+            container.innerHTML = '';
+            let storeItems = selectedItems.filter(item => item.group === 'store');
+            if (storeItems.length === 0) { container.innerHTML = '<p style="text-align: center; padding: 20px; color: var(--primary); font-weight: bold;">لم يتم اختيار أي أصناف مخازن للجرد</p>'; return; }
+            const similarGroups = findSimilarItems(storeItems);
+            storeItems.sort((a, b) => a.name.localeCompare(b.name));
+            const groupedItems = {
+                'زبدة ومعجنات': [],
+                'تشيز كيك': [],
+                'بطاطس ومقبلات': [],
+                'أرز وجبن': [],
+                'زيوت وذرة': [],
+                'مشروبات': []
+            };
+            storeItems.forEach(item => {
+                const name = item.name;
+                if (name.includes('Butter') || name.includes('Paratha')) groupedItems['زبدة ومعجنات'].push(item);
+                else if (name.includes('Cheese Cake')) groupedItems['تشيز كيك'].push(item);
+                else if (name.includes('French Fries') || name.includes('Hashbrown') || name.includes('Twister') || name.includes('Onion Rings') || name.includes('Mozzarella Stick') || name.includes('Chicken Nuggets')) groupedItems['بطاطس ومقبلات'].push(item);
+                else if (name.includes('Rice') || name.includes('Cheese slice') || name.includes('Swiss Cheese') || name.includes('Mozzarella shd')) groupedItems['أرز وجبن'].push(item);
+                else if (name.includes('Corn Oil') || name.includes('sweet corn')) groupedItems['زيوت وذرة'].push(item);
+                else if (name.includes('Water') || name.includes('Pepsi') || name.includes('Shireen Juice')) groupedItems['مشروبات'].push(item);
+                else groupedItems['مشروبات'].push(item); // fallback
+            });
+            // إزالة الفئات الفارغة
+            const finalGroups = {};
+            for (const [cat, items] of Object.entries(groupedItems)) {
+                if (items.length > 0) finalGroups[cat] = items;
+            }
+            renderGroupedItems(container, finalGroups, similarGroups);
+        }
+
         function updateVegInventory() {
             const container = document.getElementById('veg-inventory-container');
             container.innerHTML = '';
@@ -1392,6 +1488,7 @@
             if (!activeSection) return;
             let restaurantInput = null;
             if (activeSection.id === 'meat-section') restaurantInput = document.getElementById('meat-restaurant-search');
+            else if (activeSection.id === 'store-section') restaurantInput = document.getElementById('store-restaurant-search');
             else if (activeSection.id === 'veg-section') restaurantInput = document.getElementById('veg-restaurant-search');
             else if (activeSection.id === 'appetizers-section') restaurantInput = document.getElementById('appetizers-restaurant-search');
             else if (activeSection.id === 'misc-section') restaurantInput = document.getElementById('misc-restaurant-search');
@@ -1401,6 +1498,7 @@
         async function generatePDF(sectionType) {
             let restaurantInput = '';
             if (sectionType === 'meat') restaurantInput = document.getElementById('meat-restaurant-search').value;
+            else if (sectionType === 'store') restaurantInput = document.getElementById('store-restaurant-search').value;
             else if (sectionType === 'veg') restaurantInput = document.getElementById('veg-restaurant-search').value;
             else if (sectionType === 'appetizers') restaurantInput = document.getElementById('appetizers-restaurant-search').value;
             else if (sectionType === 'misc') restaurantInput = document.getElementById('misc-restaurant-search').value;
@@ -1408,6 +1506,7 @@
             try {
                 let items = [], restaurantName = restaurantInput, responsibleName = '', areaManager = '', operationsManager = '', title = '', dateTimeValue = '';
                 if (sectionType === 'meat') { items = selectedItems.filter(item => item.group === 'meat'); responsibleName = document.getElementById('meat-responsible').value; areaManager = document.getElementById('meat-area-manager').textContent; operationsManager = document.getElementById('meat-operations-manager').textContent; dateTimeValue = document.getElementById('meat-datetime').value; title = 'جرد أصناف اللحوم'; }
+                else if (sectionType === 'store') { items = selectedItems.filter(item => item.group === 'store'); responsibleName = document.getElementById('store-responsible').value; areaManager = document.getElementById('store-area-manager').textContent; operationsManager = document.getElementById('store-operations-manager').textContent; dateTimeValue = document.getElementById('store-datetime').value; title = 'جرد أصناف المخازن'; }
                 else if (sectionType === 'veg') { items = selectedItems.filter(item => item.group === 'vegetables'); responsibleName = document.getElementById('veg-responsible').value; areaManager = document.getElementById('veg-area-manager').textContent; operationsManager = document.getElementById('veg-operations-manager').textContent; dateTimeValue = document.getElementById('veg-datetime').value; title = 'جرد أصناف الخضروات'; }
                 else if (sectionType === 'appetizers') { items = selectedItems.filter(item => item.group === 'appetizers'); responsibleName = document.getElementById('appetizers-responsible').value; areaManager = document.getElementById('appetizers-area-manager').textContent; operationsManager = document.getElementById('appetizers-operations-manager').textContent; dateTimeValue = document.getElementById('appetizers-datetime').value; title = 'جرد أصناف المقبلات'; }
                 else { items = selectedItems.filter(item => item.group === 'other'); responsibleName = document.getElementById('misc-responsible').value; areaManager = document.getElementById('misc-area-manager').textContent; operationsManager = document.getElementById('misc-operations-manager').textContent; dateTimeValue = document.getElementById('misc-datetime').value; title = 'جرد أصناف أخرى'; }
@@ -1547,7 +1646,7 @@
                     const width = imgWidth * ratio;
                     const height = imgHeight * ratio;
                     pdf.addImage(imgData, 'JPEG', (pdfWidth - width) / 2, 0, width, height);
-                    const fileName = `جرد_${sectionType === 'meat' ? 'اللحوم' : sectionType === 'veg' ? 'الخضروات' : sectionType === 'appetizers' ? 'المقبلات' : 'أخرى'}_${restaurantName.replace(/[^\w\u0600-\u06FF\s]/g, '')}.pdf`;
+                    const fileName = `جرد_${sectionType === 'meat' ? 'اللحوم' : sectionType === 'store' ? 'المخازن' : sectionType === 'veg' ? 'الخضروات' : sectionType === 'appetizers' ? 'المقبلات' : 'أخرى'}_${restaurantName.replace(/[^\w\u0600-\u06FF\s]/g, '')}.pdf`;
                     pdf.save(fileName);
                     showNotification('تم إنشاء PDF بنجاح');
                 } catch (error) { console.error(error); showNotification('حدث خطأ أثناء إنشاء PDF'); }
@@ -1555,9 +1654,8 @@
             } catch (error) { console.error(error); showNotification('خطأ في PDF'); }
         }
 
-        // ======================= وظيفة تصدير Excel (تم تفعيلها بالكامل) =======================
+        // وظيفة تصدير Excel للمخازن
         function generateExcel(sectionType) {
-            // التحقق من وجود اسم المطعم
             let restaurantName = '';
             let responsibleName = '';
             let areaManager = '';
@@ -1574,6 +1672,14 @@
                 dateTimeValue = document.getElementById('meat-datetime').value;
                 items = selectedItems.filter(item => item.group === 'meat');
                 sectionTitle = 'جرد أصناف اللحوم';
+            } else if (sectionType === 'store') {
+                restaurantName = document.getElementById('store-restaurant-search').value;
+                responsibleName = document.getElementById('store-responsible').value;
+                areaManager = document.getElementById('store-area-manager').textContent;
+                operationsManager = document.getElementById('store-operations-manager').textContent;
+                dateTimeValue = document.getElementById('store-datetime').value;
+                items = selectedItems.filter(item => item.group === 'store');
+                sectionTitle = 'جرد أصناف المخازن';
             } else if (sectionType === 'veg') {
                 restaurantName = document.getElementById('veg-restaurant-search').value;
                 responsibleName = document.getElementById('veg-responsible').value;
@@ -1611,10 +1717,8 @@
             }
 
             const formattedDateTime = formatDateTimeEn(dateTimeValue);
-            // بناء البيانات للتصدير (مصفوفة من الصفوف)
             let excelRows = [];
 
-            // إضافة معلومات المطعم والعنوان
             excelRows.push(['شركة نايف للأغذية', '', '', '', '', '', '', '']);
             excelRows.push([sectionTitle, '', '', '', '', '', '', '']);
             excelRows.push([]);
@@ -1622,7 +1726,6 @@
             excelRows.push(['مدير المنطقة:', areaManager, 'مدير التشغيل:', operationsManager, '', '', '', '']);
             excelRows.push(['تاريخ ووقت الجرد:', formattedDateTime, '', '', '', '', '', '']);
             excelRows.push([]);
-            // رؤوس الأعمدة
             excelRows.push(['م', 'اسم الصنف', 'الشد', 'الجرد من البرنامج', 'الجرد بالوحدة الصغرى', 'الجرد الفعلي', 'العجز/الزيادة', 'الفروقات المجمعة']);
             
             let totalDifference = 0;
@@ -1682,28 +1785,24 @@
                     rowIndex++;
                 }
             }
-            // إجمالي الفروقات
             excelRows.push([]);
             excelRows.push(['الإجمالي الكلي:', '', '', '', '', '', `${totalDifference} ${totalDifference<0?'(عجز)':totalDifference>0?'(زيادة)':''}`, '']);
             excelRows.push([`عدد الأصناف: ${items.length}`, '', '', '', '', '', '', '']);
             
-            // إنشاء ورقة عمل من البيانات
             const wsData = excelRows;
             const ws = XLSX.utils.aoa_to_sheet(wsData);
-            // ضبط عرض الأعمدة
             ws['!cols'] = [{wch:5},{wch:35},{wch:10},{wch:12},{wch:15},{wch:12},{wch:15},{wch:18}];
             const wb = XLSX.utils.book_new();
             XLSX.utils.book_append_sheet(wb, ws, sectionTitle);
-            // تصدير الملف
-            const fileName = `جرد_${sectionType === 'meat' ? 'اللحوم' : sectionType === 'veg' ? 'الخضروات' : sectionType === 'appetizers' ? 'المقبلات' : 'أخرى'}_${restaurantName.replace(/[^\w\u0600-\u06FF\s]/g, '')}.xlsx`;
+            const fileName = `جرد_${sectionType === 'meat' ? 'اللحوم' : sectionType === 'store' ? 'المخازن' : sectionType === 'veg' ? 'الخضروات' : sectionType === 'appetizers' ? 'المقبلات' : 'أخرى'}_${restaurantName.replace(/[^\w\u0600-\u06FF\s]/g, '')}.xlsx`;
             XLSX.writeFile(wb, fileName);
             showNotification('تم تصدير Excel بنجاح');
         }
-        // ======================================================================
 
         function sendWhatsapp(type) {
             let restaurantInput = '';
             if (type === 'meat') restaurantInput = document.getElementById('meat-restaurant-search').value;
+            else if (type === 'store') restaurantInput = document.getElementById('store-restaurant-search').value;
             else if (type === 'veg') restaurantInput = document.getElementById('veg-restaurant-search').value;
             else if (type === 'appetizers') restaurantInput = document.getElementById('appetizers-restaurant-search').value;
             else if (type === 'misc') restaurantInput = document.getElementById('misc-restaurant-search').value;
@@ -1715,14 +1814,17 @@
         }
 
         document.getElementById('generate-meat-pdf').addEventListener('click', () => generatePDF('meat'));
+        document.getElementById('generate-store-pdf').addEventListener('click', () => generatePDF('store'));
         document.getElementById('generate-veg-pdf').addEventListener('click', () => generatePDF('veg'));
         document.getElementById('generate-appetizers-pdf').addEventListener('click', () => generatePDF('appetizers'));
         document.getElementById('generate-misc-pdf').addEventListener('click', () => generatePDF('misc'));
         document.getElementById('generate-meat-excel').addEventListener('click', () => generateExcel('meat'));
+        document.getElementById('generate-store-excel').addEventListener('click', () => generateExcel('store'));
         document.getElementById('generate-veg-excel').addEventListener('click', () => generateExcel('veg'));
         document.getElementById('generate-appetizers-excel').addEventListener('click', () => generateExcel('appetizers'));
         document.getElementById('generate-misc-excel').addEventListener('click', () => generateExcel('misc'));
         document.getElementById('send-meat-whatsapp').addEventListener('click', () => sendWhatsapp('meat'));
+        document.getElementById('send-store-whatsapp').addEventListener('click', () => sendWhatsapp('store'));
         document.getElementById('send-veg-whatsapp').addEventListener('click', () => sendWhatsapp('veg'));
         document.getElementById('send-appetizers-whatsapp').addEventListener('click', () => sendWhatsapp('appetizers'));
         document.getElementById('send-misc-whatsapp').addEventListener('click', () => sendWhatsapp('misc'));
@@ -1730,79 +1832,81 @@
         document.getElementById('close-whatsapp-modal').addEventListener('click', () => document.getElementById('whatsapp-modal').style.display = 'none');
         document.getElementById('close-movement-modal').addEventListener('click', () => document.getElementById('movement-modal').style.display = 'none');
 
+        document.getElementById('confirm-whatsapp-send').addEventListener('click', () => {
+            const phone = document.getElementById('whatsapp-number').value.trim();
+            if (!phone) {
+                showNotification('الرجاء إدخال رقم الهاتف');
+                return;
+            }
 
-// إرسال رسالة واتساب (يعمل الآن)
-document.getElementById('confirm-whatsapp-send').addEventListener('click', () => {
-    const phone = document.getElementById('whatsapp-number').value.trim();
-    if (!phone) {
-        showNotification('الرجاء إدخال رقم الهاتف');
-        return;
-    }
+            let activeSection = document.querySelector('.section.active');
+            let sectionType = '';
+            let items = [];
+            let restaurantName = '';
+            let responsibleName = '';
+            let dateTimeValue = '';
 
-    let activeSection = document.querySelector('.section.active');
-    let sectionType = '';
-    let items = [];
-    let restaurantName = '';
-    let responsibleName = '';
-    let dateTimeValue = '';
+            if (activeSection.id === 'meat-section') {
+                sectionType = 'اللحوم';
+                items = selectedItems.filter(item => item.group === 'meat');
+                restaurantName = document.getElementById('meat-restaurant-search').value;
+                responsibleName = document.getElementById('meat-responsible').value;
+                dateTimeValue = document.getElementById('meat-datetime').value;
+            } else if (activeSection.id === 'store-section') {
+                sectionType = 'المخازن';
+                items = selectedItems.filter(item => item.group === 'store');
+                restaurantName = document.getElementById('store-restaurant-search').value;
+                responsibleName = document.getElementById('store-responsible').value;
+                dateTimeValue = document.getElementById('store-datetime').value;
+            } else if (activeSection.id === 'veg-section') {
+                sectionType = 'الخضروات';
+                items = selectedItems.filter(item => item.group === 'vegetables');
+                restaurantName = document.getElementById('veg-restaurant-search').value;
+                responsibleName = document.getElementById('veg-responsible').value;
+                dateTimeValue = document.getElementById('veg-datetime').value;
+            } else if (activeSection.id === 'appetizers-section') {
+                sectionType = 'المقبلات';
+                items = selectedItems.filter(item => item.group === 'appetizers');
+                restaurantName = document.getElementById('appetizers-restaurant-search').value;
+                responsibleName = document.getElementById('appetizers-responsible').value;
+                dateTimeValue = document.getElementById('appetizers-datetime').value;
+            } else if (activeSection.id === 'misc-section') {
+                sectionType = 'أخرى';
+                items = selectedItems.filter(item => item.group === 'other');
+                restaurantName = document.getElementById('misc-restaurant-search').value;
+                responsibleName = document.getElementById('misc-responsible').value;
+                dateTimeValue = document.getElementById('misc-datetime').value;
+            } else {
+                showNotification('الرجاء فتح قسم الجرد المطلوب أولاً');
+                return;
+            }
 
-    if (activeSection.id === 'meat-section') {
-        sectionType = 'اللحوم';
-        items = selectedItems.filter(item => item.group === 'meat');
-        restaurantName = document.getElementById('meat-restaurant-search').value;
-        responsibleName = document.getElementById('meat-responsible').value;
-        dateTimeValue = document.getElementById('meat-datetime').value;
-    } else if (activeSection.id === 'veg-section') {
-        sectionType = 'الخضروات';
-        items = selectedItems.filter(item => item.group === 'vegetables');
-        restaurantName = document.getElementById('veg-restaurant-search').value;
-        responsibleName = document.getElementById('veg-responsible').value;
-        dateTimeValue = document.getElementById('veg-datetime').value;
-    } else if (activeSection.id === 'appetizers-section') {
-        sectionType = 'المقبلات';
-        items = selectedItems.filter(item => item.group === 'appetizers');
-        restaurantName = document.getElementById('appetizers-restaurant-search').value;
-        responsibleName = document.getElementById('appetizers-responsible').value;
-        dateTimeValue = document.getElementById('appetizers-datetime').value;
-    } else if (activeSection.id === 'misc-section') {
-        sectionType = 'أخرى';
-        items = selectedItems.filter(item => item.group === 'other');
-        restaurantName = document.getElementById('misc-restaurant-search').value;
-        responsibleName = document.getElementById('misc-responsible').value;
-        dateTimeValue = document.getElementById('misc-datetime').value;
-    } else {
-        showNotification('الرجاء فتح قسم الجرد المطلوب أولاً');
-        return;
-    }
+            if (items.length === 0) {
+                showNotification('لا توجد أصناف محددة للجرد في هذا القسم');
+                return;
+            }
 
-    if (items.length === 0) {
-        showNotification('لا توجد أصناف محددة للجرد في هذا القسم');
-        return;
-    }
+            let totalDiff = items.reduce((sum, item) => sum + (item.difference || 0), 0);
+            let diffText = totalDiff === 0 ? 'مطابق' : (totalDiff < 0 ? `عجز ${Math.abs(totalDiff)}` : `زيادة ${totalDiff}`);
 
-    let totalDiff = items.reduce((sum, item) => sum + (item.difference || 0), 0);
-    let diffText = totalDiff === 0 ? 'مطابق' : (totalDiff < 0 ? `عجز ${Math.abs(totalDiff)}` : `زيادة ${totalDiff}`);
+            const formattedDate = formatDateTimeEn(dateTimeValue);
 
-    const formattedDate = formatDateTimeEn(dateTimeValue);
+            let message = `📊 *تقرير جرد ${sectionType}* 📊\n\n`;
+            message += `🏢 المطعم: ${restaurantName || 'غير محدد'}\n`;
+            message += `👤 المسؤول: ${responsibleName || 'غير محدد'}\n`;
+            message += `📅 التاريخ: ${formattedDate}\n`;
+            message += `📦 عدد الأصناف: ${items.length}\n`;
+            message += `⚖️ إجمالي الفروقات: ${diffText}\n\n`;
+            message += `🔹 تم إنشاء هذا التقرير بواسطة نظام جرد شركة نايف للأغذية.\n`;
+            message += `📎 يمكنك إرفاق ملف PDF الخاص بالتقرير (من زر تصدير PDF) بشكل منفصل.`;
 
-    let message = `📊 *تقرير جرد ${sectionType}* 📊\n\n`;
-    message += `🏢 المطعم: ${restaurantName || 'غير محدد'}\n`;
-    message += `👤 المسؤول: ${responsibleName || 'غير محدد'}\n`;
-    message += `📅 التاريخ: ${formattedDate}\n`;
-    message += `📦 عدد الأصناف: ${items.length}\n`;
-    message += `⚖️ إجمالي الفروقات: ${diffText}\n\n`;
-    message += `🔹 تم إنشاء هذا التقرير بواسطة نظام جرد شركة نايف للأغذية.\n`;
-    message += `📎 يمكنك إرفاق ملف PDF الخاص بالتقرير (من زر تصدير PDF) بشكل منفصل.`;
+            const encodedMessage = encodeURIComponent(message);
+            const whatsappUrl = `https://wa.me/${phone}?text=${encodedMessage}`;
 
-    const encodedMessage = encodeURIComponent(message);
-    const whatsappUrl = `https://wa.me/${phone}?text=${encodedMessage}`;
-
-    window.open(whatsappUrl, '_blank');
-    document.getElementById('whatsapp-modal').style.display = 'none';
-    showNotification('تم فتح واتساب بنجاح');
-});
-
-
+            window.open(whatsappUrl, '_blank');
+            document.getElementById('whatsapp-modal').style.display = 'none';
+            showNotification('تم فتح واتساب بنجاح');
+        });
         
         document.getElementById('scroll-down-btn').addEventListener('click', function() {
             window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
@@ -1823,6 +1927,7 @@ document.getElementById('confirm-whatsapp-send').addEventListener('click', () =>
             const now = new Date();
             const defaultValue = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}T${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
             document.getElementById('meat-datetime').value = defaultValue;
+            document.getElementById('store-datetime').value = defaultValue;
             document.getElementById('veg-datetime').value = defaultValue;
             document.getElementById('appetizers-datetime').value = defaultValue;
             document.getElementById('misc-datetime').value = defaultValue;
@@ -1871,6 +1976,7 @@ document.getElementById('confirm-whatsapp-send').addEventListener('click', () =>
                     const targetSection = document.getElementById(targetId);
                     if (targetSection) targetSection.classList.add('active');
                     if (targetId === 'meat-section') updateMeatInventory();
+                    else if (targetId === 'store-section') updateStoreInventory();
                     else if (targetId === 'veg-section') updateVegInventory();
                     else if (targetId === 'appetizers-section') updateAppetizersInventory();
                     else if (targetId === 'misc-section') updateMiscInventory();
@@ -1880,6 +1986,7 @@ document.getElementById('confirm-whatsapp-send').addEventListener('click', () =>
             updateStats();
             updateRestaurantsTable();
             setupRestaurantAutocomplete('meat-restaurant-search', 'meat-restaurant-suggestions', { restaurantName: 'meat-restaurant-name', areaManager: 'meat-area-manager', operationsManager: 'meat-operations-manager' });
+            setupRestaurantAutocomplete('store-restaurant-search', 'store-restaurant-suggestions', { restaurantName: 'store-restaurant-name', areaManager: 'store-area-manager', operationsManager: 'store-operations-manager' });
             setupRestaurantAutocomplete('veg-restaurant-search', 'veg-restaurant-suggestions', { restaurantName: 'veg-restaurant-name', areaManager: 'veg-area-manager', operationsManager: 'veg-operations-manager' });
             setupRestaurantAutocomplete('appetizers-restaurant-search', 'appetizers-restaurant-suggestions', { restaurantName: 'appetizers-restaurant-name', areaManager: 'appetizers-area-manager', operationsManager: 'appetizers-operations-manager' });
             setupRestaurantAutocomplete('misc-restaurant-search', 'misc-restaurant-suggestions', { restaurantName: 'misc-restaurant-name', areaManager: 'misc-area-manager', operationsManager: 'misc-operations-manager' });
