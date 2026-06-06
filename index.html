@@ -783,9 +783,9 @@
             { code: "K1007", name: "Chicken Drum Stick ( درام ستيك)", group: "meat", vendorUOM: "KG", stockQty: 0, uuom: "جرام", smallestUnitQty: 0 },
             { code: "K1039", name: "Drumstic whole Fried  ( وصلة دجاج عادي)", group: "meat", vendorUOM: "KG", stockQty: 0, uuom: "جرام", smallestUnitQty: 0 },
             { code: "K1040", name: "Drumstick whole Fried spicy  ( وصلة دجاج فلفل)", group: "meat", vendorUOM: "KG", stockQty: 0, uuom: "جرام", smallestUnitQty: 0 },
-            { code: "K1044", name: "Chicken Strips K1044 ( strips دجاج)", group: "meat", vendorUOM: "KG", stockQty: 0, uuom: "كيلو", smallestUnitQty: 0 },
+            { code: "K1044", name: "Grill Chicken Pc -Multi Taste ( قطع دجاج جرل صغير)", group: "meat", vendorUOM: "KG", stockQty: 0, uuom: "كيلو", smallestUnitQty: 0 },
             { code: "K1042", name: "Happy Chicken Pc ( قطع دجاج فرايد صغير عادي)", group: "meat", vendorUOM: "KG", stockQty: 0, uuom: "كيلو", smallestUnitQty: 0 },
-            { code: "K1043", name: "Chicken Piece K1043 ( قطعة دجاج)", group: "meat", vendorUOM: "KG", stockQty: 0, uuom: "كيلو", smallestUnitQty: 0 },
+            { code: "K1043", name: "Happy Chicken Pc-Spicy ( قطع دجاج فرايد صغير فلفل)", group: "meat", vendorUOM: "KG", stockQty: 0, uuom: "كيلو", smallestUnitQty: 0 },
             { code: "K1002", name: "Chicken Kabab ( كباب دجاج)", group: "meat", vendorUOM: "KG", stockQty: 0, uuom: "كيلو", smallestUnitQty: 0 },
             { code: "K1003", name: "Sish Tawouk ( شيش طاووق)", group: "meat", vendorUOM: "KG", stockQty: 0, uuom: "كيلو", smallestUnitQty: 0 },
             { code: "K1076", name: "Grilled Chicken Pc / قطع دجاج مشويه", group: "meat", vendorUOM: "KG", stockQty: 0, uuom: "جرام", smallestUnitQty: 0 },
@@ -801,7 +801,6 @@
             { code: "K2034", name: "Taboulla Salad Big  ( سلطة تبولة كبيرة)", group: "appetizers", vendorUOM: "علبة", stockQty: 0, uuom: "علبة", smallestUnitQty: 0 },
             { code: "K2036", name: "Vegitable Salad Big  ( سلطة خضراء كبيرة)", group: "appetizers", vendorUOM: "علبة", stockQty: 0, uuom: "علبة", smallestUnitQty: 0 },
             { code: "K2022", name: "Mutabbal Large ( ماعون متبل كبير)", group: "appetizers", vendorUOM: "كيلو", stockQty: 0, uuom: "جرام", smallestUnitQty: 0 },
-            // أضف أصناف المخازن الجديدة هنا
             { code: "A1009", name: "Butter Finger (زبدة اصابع)", group: "store", vendorUOM: "كيس", stockQty: 0, uuom: "قطعة", smallestUnitQty: 0 },
             { code: "A1010", name: "Butter Portion ( زبدة بورشن)", group: "store", vendorUOM: "كرتون", stockQty: 0, uuom: "قطعة", smallestUnitQty: 0 },
             { code: "L1041", name: "Cheese Cake Snickers (تشيز كيك سنيكرز)", group: "store", vendorUOM: "قطعة", stockQty: 0, uuom: "قطعة", smallestUnitQty: 0 },
@@ -925,7 +924,8 @@
         }
 
         function convertToSmallestUnit(quantity, vendorUOM, uuom, itemCode = '') {
-            if (itemCode === 'K1002' || itemCode === 'K1003') return Math.round(quantity * 2 * 100) / 100;
+            if (itemCode === 'K1003') return Math.round(quantity * 60 * 100) / 100; // خاص لشيش طاووق
+            if (itemCode === 'K1002') return Math.round(quantity * 2 * 100) / 100;
             if (!vendorUOM || !quantity) return Math.round(quantity);
             if (itemCode === 'A1001') return Math.round(quantity * 10 * 100) / 100;
             if (itemCode === 'A1013') return Math.round(quantity * 2 * 100) / 100;
@@ -989,6 +989,7 @@
                     else if (vendorUOM.toUpperCase().includes('LTR') || vendorUOM.includes('لتر')) multiplier *= 1000;
                 }
             }
+            // تقريب إلى منزلتين عشريتين
             return Math.round((quantity * multiplier) * 100) / 100;
         }
 
@@ -999,14 +1000,14 @@
                 if (combinedMap.has(item.code)) {
                     const existing = combinedMap.get(item.code);
                     existing.stockQty = (existing.stockQty || 0) + (item.stockQty || 0);
-                    existing.smallestUnitQty = (existing.smallestUnitQty || 0) + (item.smallestUnitQty || 0);
-                    existing.startQty = (existing.startQty || 0) + (item.startQty || 0);
-                    existing.receivedQty = (existing.receivedQty || 0) + (item.receivedQty || 0);
-                    existing.transferInQty = (existing.transferInQty || 0) + (item.transferInQty || 0);
-                    existing.transferOutQty = (existing.transferOutQty || 0) + (item.transferOutQty || 0);
-                    existing.wastageQty = (existing.wastageQty || 0) + (item.wastageQty || 0);
-                    existing.usageQty = (existing.usageQty || 0) + (item.usageQty || 0);
-                    existing.notConOrders = (existing.notConOrders || 0) + (item.notConOrders || 0);
+                    existing.smallestUnitQty = parseFloat(((existing.smallestUnitQty || 0) + (item.smallestUnitQty || 0)).toFixed(2));
+                    existing.startQty = parseFloat(((existing.startQty || 0) + (item.startQty || 0)).toFixed(2));
+                    existing.receivedQty = parseFloat(((existing.receivedQty || 0) + (item.receivedQty || 0)).toFixed(2));
+                    existing.transferInQty = parseFloat(((existing.transferInQty || 0) + (item.transferInQty || 0)).toFixed(2));
+                    existing.transferOutQty = parseFloat(((existing.transferOutQty || 0) + (item.transferOutQty || 0)).toFixed(2));
+                    existing.wastageQty = parseFloat(((existing.wastageQty || 0) + (item.wastageQty || 0)).toFixed(2));
+                    existing.usageQty = parseFloat(((existing.usageQty || 0) + (item.usageQty || 0)).toFixed(2));
+                    existing.notConOrders = parseFloat(((existing.notConOrders || 0) + (item.notConOrders || 0)).toFixed(2));
                     existing.selected = existing.selected || item.selected || false;
                 } else {
                     combinedMap.set(item.code, { ...item });
@@ -1157,11 +1158,16 @@
             document.getElementById('movement-modal').style.display = 'flex';
         }
 
+        // تجميع الأصناف المتشابهة (مع دمج K1042 و K1043 فقط)
         function findSimilarItems(items) {
             const similarGroups = {};
             items.forEach(item => {
                 let baseName = item.name.replace(/\(.*?\)/g, '').trim();
-                if (baseName.includes("Chicken Big Fillet")) baseName = "Chicken Big Fillet";
+                // تجميع خاص لـ K1042 و K1043 فقط
+                if (item.code === 'K1042' || item.code === 'K1043') {
+                    baseName = "Happy Chicken Pc Group";
+                }
+                else if (baseName.includes("Chicken Big Fillet")) baseName = "Chicken Big Fillet";
                 else if (baseName.includes("Chicken Fillet") && !baseName.includes("Finger") && !baseName.includes("Grilled")) baseName = "Chicken Fillet";
                 else if (baseName.includes("Chicken Finger Fillet") || baseName.includes("Ch.Finger Fillet")) baseName = "Chicken Finger Fillet";
                 else if (baseName.includes("Chicken Tikka")) baseName = "Chicken Tikka";
@@ -1180,7 +1186,9 @@
                 similarGroups[baseName].push(item);
             });
             const filteredGroups = {};
-            for (const group in similarGroups) if (similarGroups[group].length > 1) filteredGroups[group] = similarGroups[group];
+            for (const group in similarGroups) {
+                if (similarGroups[group].length > 1) filteredGroups[group] = similarGroups[group];
+            }
             return filteredGroups;
         }
 
@@ -1189,7 +1197,7 @@
             const totalCell = document.querySelector(`.group-total-cell[data-group="${groupKey}"]`);
             if (totalCell) {
                 const totalText = total < 0 ? 'عجز' : total > 0 ? 'زيادة' : '';
-                totalCell.innerHTML = `${Math.round(total)} ${totalText ? `<span class="difference-text" style="color: ${total < 0 ? 'var(--accent-red)' : total > 0 ? 'var(--accent-green)' : 'var(--primary)'};">(${totalText})</span>` : ''}`;
+                totalCell.innerHTML = `${total.toFixed(2)} ${totalText ? `<span class="difference-text" style="color: ${total < 0 ? 'var(--accent-red)' : total > 0 ? 'var(--accent-green)' : 'var(--primary)'};">(${totalText})</span>` : ''}`;
                 totalCell.className = `group-total-cell ${total < 0 ? 'difference-negative' : total > 0 ? 'difference-positive' : ''}`;
             }
         }
@@ -1218,7 +1226,7 @@
             const combinedCell = document.querySelector(`.combined-difference-cell[data-similar-group="${similarItems.map(i => i.code).join(',')}"]`);
             if (combinedCell) {
                 combinedCell.className = `combined-difference-cell ${statusClass}`;
-                combinedCell.innerHTML = `${combinedDifference}<br><span style="font-size: 14px;">(${text})</span>`;
+                combinedCell.innerHTML = `${combinedDifference.toFixed(2)}<br><span style="font-size: 14px;">(${text})</span>`;
             }
         }
 
@@ -1241,7 +1249,7 @@
                 statusClass = 'combined-difference-positive';
             }
             combinedCell.className = `combined-difference-cell ${statusClass}`;
-            combinedCell.innerHTML = `${diff}<br><span style="font-size: 14px;">(${text})</span>`;
+            combinedCell.innerHTML = `${diff.toFixed(2)}<br><span style="font-size: 14px;">(${text})</span>`;
         }
 
         function applyRowColoring(row, diff) {
@@ -1277,7 +1285,7 @@
                             const diff = similarItem.difference || 0;
                             const diffClass = diff < 0 ? 'difference-negative' : diff > 0 ? 'difference-positive' : '';
                             const diffText = diff < 0 ? 'عجز' : diff > 0 ? 'زيادة' : '';
-                            row.innerHTML = `<td>${rowIndex + 1}</td><td>${similarItem.name}</td><td>${similarItem.vendorUOM}</td><td>${similarItem.stockQty}</td><td class="count-cell">${similarItem.smallestUnitQty}</td><td><input type="number" class="actual-count-input" data-code="${similarItem.code}" value="${similarItem.actualCount || ''}" placeholder="0"></td><td class="difference-cell ${diffClass}" data-code="${similarItem.code}" style="font-size: 18px; font-weight: bold;">${diff} ${diffText ? `<span class="difference-text" style="color: ${diff < 0 ? 'var(--accent-red)' : diff > 0 ? 'var(--accent-green)' : 'var(--primary)'};">(${diffText})</span>` : ''}</td>`;
+                            row.innerHTML = `<td>${rowIndex + 1}</td><td>${similarItem.name}</td><td>${similarItem.vendorUOM}</td><td>${similarItem.stockQty}</td><td class="count-cell">${similarItem.smallestUnitQty}</td><td><input type="number" class="actual-count-input" data-code="${similarItem.code}" value="${similarItem.actualCount || ''}" placeholder="0"></td><td class="difference-cell ${diffClass}" data-code="${similarItem.code}" style="font-size: 18px; font-weight: bold;">${diff.toFixed(2)} ${diffText ? `<span class="difference-text" style="color: ${diff < 0 ? 'var(--accent-red)' : diff > 0 ? 'var(--accent-green)' : 'var(--primary)'};">(${diffText})</span>` : ''}</td>`;
                             applyRowColoring(row, diff);
                             if (similarIndex === 0) {
                                 const combinedDiff = similarItems.reduce((s, i) => s + (i.difference || 0), 0);
@@ -1285,7 +1293,7 @@
                                 const combinedCell = document.createElement('td');
                                 combinedCell.className = `combined-difference-cell ${statusClass}`;
                                 combinedCell.rowSpan = similarItems.length;
-                                combinedCell.innerHTML = `${combinedDiff}<br><span style="font-size: 14px;">(${text})</span>`;
+                                combinedCell.innerHTML = `${combinedDiff.toFixed(2)}<br><span style="font-size: 14px;">(${text})</span>`;
                                 combinedCell.setAttribute('data-similar-group', similarItems.map(i => i.code).join(','));
                                 row.appendChild(combinedCell);
                             }
@@ -1295,13 +1303,14 @@
                             const input = row.querySelector('.actual-count-input');
                             input.addEventListener('input', (function(sItem, sItems, r) { return function() {
                                 const actual = parseFloat(this.value) || 0;
+                                // حساب الفرق بدون تقريب لإظهار الكسور كاملة
                                 const newDiff = actual - sItem.smallestUnitQty;
                                 const newDiffText = newDiff < 0 ? 'عجز' : newDiff > 0 ? 'زيادة' : '';
                                 const diffCell = document.querySelector(`.difference-cell[data-code="${sItem.code}"]`);
-                                diffCell.innerHTML = `${Math.round(newDiff)} ${newDiffText ? `<span class="difference-text" style="color: ${newDiff < 0 ? 'var(--accent-red)' : newDiff > 0 ? 'var(--accent-green)' : 'var(--primary)'};">(${newDiffText})</span>` : ''}`;
+                                diffCell.innerHTML = `${newDiff.toFixed(2)} ${newDiffText ? `<span class="difference-text" style="color: ${newDiff < 0 ? 'var(--accent-red)' : newDiff > 0 ? 'var(--accent-green)' : 'var(--primary)'};">(${newDiffText})</span>` : ''}`;
                                 diffCell.className = `difference-cell ${newDiff < 0 ? 'difference-negative' : newDiff > 0 ? 'difference-positive' : ''}`;
                                 sItem.actualCount = actual;
-                                sItem.difference = Math.round(newDiff);
+                                sItem.difference = parseFloat(newDiff.toFixed(2));
                                 applyRowColoring(r, newDiff);
                                 updateCombinedDifferenceCell(sItems);
                                 updateGroupTotal(group, groupedItems[group]);
@@ -1312,7 +1321,7 @@
                         const diff = item.difference || 0;
                         const diffClass = diff < 0 ? 'difference-negative' : diff > 0 ? 'difference-positive' : '';
                         const diffText = diff < 0 ? 'عجز' : diff > 0 ? 'زيادة' : '';
-                        row.innerHTML = `<td>${rowIndex + 1}</td><td>${item.name}</td><td>${item.vendorUOM}</td><td>${item.stockQty}</td><td class="count-cell">${item.smallestUnitQty}</td><td><input type="number" class="actual-count-input" data-code="${item.code}" value="${item.actualCount || ''}" placeholder="0"></td><td class="difference-cell ${diffClass}" data-code="${item.code}" style="font-size: 18px; font-weight: bold;">${diff} ${diffText ? `<span class="difference-text" style="color: ${diff < 0 ? 'var(--accent-red)' : diff > 0 ? 'var(--accent-green)' : 'var(--primary)'};">(${diffText})</span>` : ''}</td><td class="combined-difference-cell" data-code="${item.code}"></td>`;
+                        row.innerHTML = `<td>${rowIndex + 1}</td><td>${item.name}</td><td>${item.vendorUOM}</td><td>${item.stockQty}</td><td class="count-cell">${item.smallestUnitQty}</td><td><input type="number" class="actual-count-input" data-code="${item.code}" value="${item.actualCount || ''}" placeholder="0"></td><td class="difference-cell ${diffClass}" data-code="${item.code}" style="font-size: 18px; font-weight: bold;">${diff.toFixed(2)} ${diffText ? `<span class="difference-text" style="color: ${diff < 0 ? 'var(--accent-red)' : diff > 0 ? 'var(--accent-green)' : 'var(--primary)'};">(${diffText})</span>` : ''}</td><td class="combined-difference-cell" data-code="${item.code}"></td>`;
                         applyRowColoring(row, diff);
                         tbody.appendChild(row);
                         processedItems.add(item.code);
@@ -1325,10 +1334,10 @@
                             const newDiff = actual - it.smallestUnitQty;
                             const newDiffText = newDiff < 0 ? 'عجز' : newDiff > 0 ? 'زيادة' : '';
                             const diffCell = document.querySelector(`.difference-cell[data-code="${it.code}"]`);
-                            diffCell.innerHTML = `${Math.round(newDiff)} ${newDiffText ? `<span class="difference-text" style="color: ${newDiff < 0 ? 'var(--accent-red)' : newDiff > 0 ? 'var(--accent-green)' : 'var(--primary)'};">(${newDiffText})</span>` : ''}`;
+                            diffCell.innerHTML = `${newDiff.toFixed(2)} ${newDiffText ? `<span class="difference-text" style="color: ${newDiff < 0 ? 'var(--accent-red)' : newDiff > 0 ? 'var(--accent-green)' : 'var(--primary)'};">(${newDiffText})</span>` : ''}`;
                             diffCell.className = `difference-cell ${newDiff < 0 ? 'difference-negative' : newDiff > 0 ? 'difference-positive' : ''}`;
                             it.actualCount = actual;
-                            it.difference = Math.round(newDiff);
+                            it.difference = parseFloat(newDiff.toFixed(2));
                             applyRowColoring(rw, newDiff);
                             updateSingleCombinedCell(it, combCell);
                             updateGroupTotal(group, groupedItems[group]);
@@ -1340,7 +1349,7 @@
                 const groupTotalValue = groupedItems[group].reduce((s, i) => s + (i.difference || 0), 0);
                 const groupTotalClass = groupTotalValue < 0 ? 'difference-negative' : groupTotalValue > 0 ? 'difference-positive' : '';
                 const groupTotalText = groupTotalValue < 0 ? 'عجز' : groupTotalValue > 0 ? 'زيادة' : '';
-                totalRow.innerHTML = `<td colspan="7">إجمالي ${group}</td><td class="group-total-cell ${groupTotalClass}" data-group="${group}" style="font-size: 18px; font-weight: bold;">${groupTotalValue} ${groupTotalText ? `<span class="difference-text" style="color: ${groupTotalClass.includes('negative') ? 'var(--accent-red)' : 'var(--accent-green)'};">(${groupTotalText})</span>` : ''}</td>`;
+                totalRow.innerHTML = `<td colspan="7">إجمالي ${group}</td><td class="group-total-cell ${groupTotalClass}" data-group="${group}" style="font-size: 18px; font-weight: bold;">${groupTotalValue.toFixed(2)} ${groupTotalText ? `<span class="difference-text" style="color: ${groupTotalClass.includes('negative') ? 'var(--accent-red)' : 'var(--accent-green)'};">(${groupTotalText})</span>` : ''}</td>`;
                 table.appendChild(totalRow);
                 categoryDiv.appendChild(table);
                 container.appendChild(categoryDiv);
@@ -1355,9 +1364,17 @@
             const similarGroups = findSimilarItems(meatItems);
             meatItems.sort((a, b) => a.name.localeCompare(b.name));
             const groupedItems = {};
+            
             meatItems.forEach(item => {
                 let subGroup = 'أخرى';
-                if (item.name.includes('Big Fillet')) subGroup = 'بيج فيليه';
+                // تجميع K1042, K1043, K1044 في مجموعة واحدة
+                if (item.code === 'K1042' || item.code === 'K1043' || item.code === 'K1044') {
+                    subGroup = 'قطع دجاج صغير';
+                }
+                else if (item.code === 'K1002' || item.code === 'K1003') {
+                    subGroup = 'أسياخ دجاج';
+                }
+                else if (item.name.includes('Big Fillet')) subGroup = 'بيج فيليه';
                 else if (item.name.includes('Finger Fillet')) subGroup = 'أصابع فيليه';
                 else if (item.name.includes('Grilled Chicken Fillet') || (item.name.includes('Chicken Fillet') && !item.name.includes('Finger') && !item.name.includes('Big'))) subGroup = 'فيليه دجاج';
                 else if (item.name.includes('Tikka')) subGroup = 'تيكا';
@@ -1372,10 +1389,24 @@
                 if (!groupedItems[subGroup]) groupedItems[subGroup] = [];
                 groupedItems[subGroup].push(item);
             });
-            renderGroupedItems(container, groupedItems, similarGroups);
+            
+            // ترتيب المجموعات كما في الملف الأصلي (مع إضافة المجموعتين الجديدتين في النهاية)
+            const orderedGroups = {};
+            const orderOriginal = ['بيج فيليه', 'أصابع فيليه', 'فيليه دجاج', 'تيكا', 'فرايد', 'برجر', 'برجر طازج', 'جناح', 'درام ستيك/وصلة', 'فري', 'فروج/بنت الديك', 'ملكي', 'أخرى'];
+            const newGroups = ['قطع دجاج صغير', 'أسياخ دجاج'];
+            const fullOrder = [...orderOriginal, ...newGroups];
+            for (const key of fullOrder) {
+                if (groupedItems[key]) {
+                    orderedGroups[key] = groupedItems[key];
+                }
+            }
+            for (const key in groupedItems) {
+                if (!orderedGroups[key]) orderedGroups[key] = groupedItems[key];
+            }
+            
+            renderGroupedItems(container, orderedGroups, similarGroups);
         }
 
-        // دالة جديدة لجرد المخازن
         function updateStoreInventory() {
             const container = document.getElementById('store-inventory-container');
             container.innerHTML = '';
@@ -1399,9 +1430,8 @@
                 else if (name.includes('Rice') || name.includes('Cheese slice') || name.includes('Swiss Cheese') || name.includes('Mozzarella shd')) groupedItems['أرز وجبن'].push(item);
                 else if (name.includes('Corn Oil') || name.includes('sweet corn')) groupedItems['زيوت وذرة'].push(item);
                 else if (name.includes('Water') || name.includes('Pepsi') || name.includes('Shireen Juice')) groupedItems['مشروبات'].push(item);
-                else groupedItems['مشروبات'].push(item); // fallback
+                else groupedItems['مشروبات'].push(item);
             });
-            // إزالة الفئات الفارغة
             const finalGroups = {};
             for (const [cat, items] of Object.entries(groupedItems)) {
                 if (items.length > 0) finalGroups[cat] = items;
@@ -1547,14 +1577,7 @@
                 contentHTML += `</tr></thead><tbody>`;
                 
                 let rowIndex = 0;
-                let similarGroups = {};
-                if (sectionType === 'meat') similarGroups = findSimilarItems(items);
-                else if (sectionType === 'appetizers') {
-                    const salads = items.filter(i => i.name.includes('سلطة') || i.name.includes('فتوش') || i.name.includes('تبولة') || i.name.includes('جرجير') || i.name.includes('خضراء'));
-                    const coleslaws = items.filter(i => i.name.includes('كول سلو') || i.name.includes('Cole Slaw'));
-                    if (salads.length > 1) similarGroups['سلطات'] = salads;
-                    if (coleslaws.length > 1) similarGroups['كول سلو'] = coleslaws;
-                }
+                let similarGroups = findSimilarItems(items);
                 
                 for (const item of items) {
                     if (processedItems.has(item.code)) continue;
@@ -1577,7 +1600,7 @@
                             contentHTML += `<td style="border:1px solid #ddd; padding:1px; text-align:center; font-size:9px; vertical-align:middle; background-color:${lightBg};">${sim.stockQty}</td>`;
                             contentHTML += `<td style="border:1px solid #ddd; padding:1px; text-align:center; font-size:9px; font-weight:bold; vertical-align:middle; background-color:${lightBg};">${sim.smallestUnitQty}</td>`;
                             contentHTML += `<td style="border:1px solid #ddd; padding:1px; text-align:center; font-size:9.9px; font-weight:bold; vertical-align:middle; background-color:${lightBg};">${sim.actualCount || 0}</td>`;
-                            contentHTML += `<td style="border:1px solid #ddd; padding:1px; text-align:center; font-size:9px; font-weight:bold; color:${diff<0?'red':diff>0?'green':'#333'}; vertical-align:middle; background-color:${lightBg};"><span style="display:block; margin-bottom:1px;">${diff}</span><span style="display:block; font-size:8px; opacity:0.9;">${diffText||''}</span></td>`;
+                            contentHTML += `<td style="border:1px solid #ddd; padding:1px; text-align:center; font-size:9px; font-weight:bold; color:${diff<0?'red':diff>0?'green':'#333'}; vertical-align:middle; background-color:${lightBg};"><span style="display:block; margin-bottom:1px;">${diff.toFixed(2)}</span><span style="display:block; font-size:8px; opacity:0.9;">${diffText||''}</span></td>`;
                             if (si === 0) {
                                 const combinedDiff = similarItems.reduce((s, i) => s + (i.difference || 0), 0);
                                 const hasActual = similarItems.some(i => i.actualCount && i.actualCount !== 0);
@@ -1588,7 +1611,7 @@
                                 const darkBg = (!hasActual) ? '#cbd5e1' : (combinedDiff < 0 ? '#FF0000' : (combinedDiff > 0 ? '#4CC552' : '#1E3A8A'));
                                 const textColor = (combinedDiff !== 0 && hasActual) ? 'white' : (combinedDiff === 0 && hasActual) ? 'white' : '#1e293b';
                                 contentHTML += `<td style="border:1px solid #ddd; padding:1px; text-align:center; font-size:12px; font-weight:900; vertical-align:middle; background-color:${darkBg}; color:${textColor};" rowspan="${similarItems.length}">`;
-                                contentHTML += `<span style="display:block; margin-bottom:1px;">${combinedDiff}</span>`;
+                                contentHTML += `<span style="display:block; margin-bottom:1px;">${combinedDiff.toFixed(2)}</span>`;
                                 contentHTML += `<span style="display:block; font-size:10px; opacity:0.9;">${cText}</span></td>`;
                             }
                             contentHTML += `</tr>`;
@@ -1607,7 +1630,7 @@
                         contentHTML += `<td style="border:1px solid #ddd; padding:1px; text-align:center; font-size:9px; vertical-align:middle; background-color:${lightBg};">${item.stockQty}</td>`;
                         contentHTML += `<td style="border:1px solid #ddd; padding:1px; text-align:center; font-size:9px; font-weight:bold; vertical-align:middle; background-color:${lightBg};">${item.smallestUnitQty}</td>`;
                         contentHTML += `<td style="border:1px solid #ddd; padding:1px; text-align:center; font-size:9.9px; font-weight:bold; vertical-align:middle; background-color:${lightBg};">${item.actualCount || 0}</td>`;
-                        contentHTML += `<td style="border:1px solid #ddd; padding:1px; text-align:center; font-size:9px; font-weight:bold; color:${diff<0?'red':diff>0?'green':'#333'}; vertical-align:middle; background-color:${lightBg};"><span style="display:block; margin-bottom:1px;">${diff}</span><span style="display:block; font-size:8px; opacity:0.9;">${diffText||''}</span></td>`;
+                        contentHTML += `<td style="border:1px solid #ddd; padding:1px; text-align:center; font-size:9px; font-weight:bold; color:${diff<0?'red':diff>0?'green':'#333'}; vertical-align:middle; background-color:${lightBg};"><span style="display:block; margin-bottom:1px;">${diff.toFixed(2)}</span><span style="display:block; font-size:8px; opacity:0.9;">${diffText||''}</span></td>`;
                         const hasActual = (item.actualCount && item.actualCount !== 0);
                         let cText = '';
                         if (!hasActual) cText = 'لم يتم جرد الصنف';
@@ -1616,7 +1639,7 @@
                         const darkBg = (!hasActual) ? '#cbd5e1' : (diff < 0 ? '#FF0000' : (diff > 0 ? '#4CC552' : '#1E3A8A'));
                         const textColor = (diff !== 0 && hasActual) ? 'white' : (diff === 0 && hasActual) ? 'white' : '#1e293b';
                         contentHTML += `<td style="border:1px solid #ddd; padding:1px; text-align:center; font-size:10px; font-weight:900; background-color:${darkBg}; color:${textColor}; vertical-align:middle;">`;
-                        contentHTML += `<span style="display:block; margin-bottom:1px;">${diff}</span>`;
+                        contentHTML += `<span style="display:block; margin-bottom:1px;">${diff.toFixed(2)}</span>`;
                         contentHTML += `<span style="display:block; font-size:10px; opacity:0.9;">${cText}</span></td>`;
                         contentHTML += `</tr>`;
                         processedItems.add(item.code);
@@ -1626,7 +1649,7 @@
                 }
                 contentHTML += `</tbody></table>`;
                 contentHTML += `<div style="margin-top:10px; padding:8px; background:#EFF6FF; border-radius:4px; text-align:center; font-weight:bold; border:1px solid var(--primary);">`;
-                contentHTML += `<div style="font-size:10px;">الإجمالي الكلي: <span style="color:${totalDifference<0?'red':totalDifference>0?'green':'var(--primary)'}; font-size:12px; font-weight:bold;">${totalDifference} ${totalDifference<0?'(عجز)':totalDifference>0?'(زيادة)':''}</span></div>`;
+                contentHTML += `<div style="font-size:10px;">الإجمالي الكلي: <span style="color:${totalDifference<0?'red':totalDifference>0?'green':'var(--primary)'}; font-size:12px; font-weight:bold;">${totalDifference.toFixed(2)} ${totalDifference<0?'(عجز)':totalDifference>0?'(زيادة)':''}</span></div>`;
                 contentHTML += `<div style="font-size:9px; margin-top:3px; color:#666;">(عدد الأصناف: ${items.length} صنف)</div></div>`;
                 pdfContent.innerHTML = contentHTML;
                 
@@ -1654,7 +1677,6 @@
             } catch (error) { console.error(error); showNotification('خطأ في PDF'); }
         }
 
-        // وظيفة تصدير Excel للمخازن
         function generateExcel(sectionType) {
             let restaurantName = '';
             let responsibleName = '';
@@ -1730,14 +1752,7 @@
             
             let totalDifference = 0;
             let processedItems = new Set();
-            let similarGroups = {};
-            if (sectionType === 'meat') similarGroups = findSimilarItems(items);
-            else if (sectionType === 'appetizers') {
-                const salads = items.filter(i => i.name.includes('سلطة') || i.name.includes('فتوش') || i.name.includes('تبولة') || i.name.includes('جرجير') || i.name.includes('خضراء'));
-                const coleslaws = items.filter(i => i.name.includes('كول سلو') || i.name.includes('Cole Slaw'));
-                if (salads.length > 1) similarGroups['سلطات'] = salads;
-                if (coleslaws.length > 1) similarGroups['كول سلو'] = coleslaws;
-            }
+            let similarGroups = findSimilarItems(items);
 
             let rowIndex = 1;
             for (const item of items) {
@@ -1754,7 +1769,7 @@
                         const diff = sim.difference || 0;
                         const diffText = diff < 0 ? 'عجز' : diff > 0 ? 'زيادة' : '';
                         const combinedRow = [];
-                        combinedRow.push(rowIndex, sim.name, sim.vendorUOM, sim.stockQty, sim.smallestUnitQty, sim.actualCount || 0, `${diff} ${diffText}`);
+                        combinedRow.push(rowIndex, sim.name, sim.vendorUOM, sim.stockQty, sim.smallestUnitQty, sim.actualCount || 0, `${diff.toFixed(2)} ${diffText}`);
                         if (si === 0) {
                             const combinedDiff = similarItems.reduce((s, i) => s + (i.difference || 0), 0);
                             const hasActual = similarItems.some(i => i.actualCount && i.actualCount !== 0);
@@ -1762,7 +1777,7 @@
                             if (!hasActual) cText = 'لم يتم جرد الصنف';
                             else if (combinedDiff === 0) cText = 'الجرد مطابق';
                             else cText = combinedDiff < 0 ? 'عجز' : 'زيادة';
-                            combinedRow.push(`${combinedDiff} (${cText})`);
+                            combinedRow.push(`${combinedDiff.toFixed(2)} (${cText})`);
                         } else {
                             combinedRow.push('');
                         }
@@ -1779,14 +1794,14 @@
                     if (!hasActual) cText = 'لم يتم جرد الصنف';
                     else if (diff === 0) cText = 'الجرد مطابق';
                     else cText = diff < 0 ? 'عجز' : 'زيادة';
-                    excelRows.push([rowIndex, item.name, item.vendorUOM, item.stockQty, item.smallestUnitQty, item.actualCount || 0, `${diff} ${diffText}`, `${diff} (${cText})`]);
+                    excelRows.push([rowIndex, item.name, item.vendorUOM, item.stockQty, item.smallestUnitQty, item.actualCount || 0, `${diff.toFixed(2)} ${diffText}`, `${diff.toFixed(2)} (${cText})`]);
                     processedItems.add(item.code);
                     totalDifference += diff;
                     rowIndex++;
                 }
             }
             excelRows.push([]);
-            excelRows.push(['الإجمالي الكلي:', '', '', '', '', '', `${totalDifference} ${totalDifference<0?'(عجز)':totalDifference>0?'(زيادة)':''}`, '']);
+            excelRows.push(['الإجمالي الكلي:', '', '', '', '', '', `${totalDifference.toFixed(2)} ${totalDifference<0?'(عجز)':totalDifference>0?'(زيادة)':''}`, '']);
             excelRows.push([`عدد الأصناف: ${items.length}`, '', '', '', '', '', '', '']);
             
             const wsData = excelRows;
@@ -1887,7 +1902,7 @@
             }
 
             let totalDiff = items.reduce((sum, item) => sum + (item.difference || 0), 0);
-            let diffText = totalDiff === 0 ? 'مطابق' : (totalDiff < 0 ? `عجز ${Math.abs(totalDiff)}` : `زيادة ${totalDiff}`);
+            let diffText = totalDiff === 0 ? 'مطابق' : (totalDiff < 0 ? `عجز ${Math.abs(totalDiff.toFixed(2))}` : `زيادة ${totalDiff.toFixed(2)}`);
 
             const formattedDate = formatDateTimeEn(dateTimeValue);
 
