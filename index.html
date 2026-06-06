@@ -1226,7 +1226,7 @@
             const combinedCell = document.querySelector(`.combined-difference-cell[data-similar-group="${similarItems.map(i => i.code).join(',')}"]`);
             if (combinedCell) {
                 combinedCell.className = `combined-difference-cell ${statusClass}`;
-                combinedCell.innerHTML = `${combinedDifference.toFixed(2)}<br><span style="font-size: 14px;">(${text})</span>`;
+                combinedCell.innerHTML = `${combinedDifference.toFixed(3)}<br><span style="font-size: 14px;">(${text})</span>`;
             }
         }
 
@@ -1249,7 +1249,7 @@
                 statusClass = 'combined-difference-positive';
             }
             combinedCell.className = `combined-difference-cell ${statusClass}`;
-            combinedCell.innerHTML = `${diff.toFixed(2)}<br><span style="font-size: 14px;">(${text})</span>`;
+            combinedCell.innerHTML = `${diff.toFixed(3)}<br><span style="font-size: 14px;">(${text})</span>`;
         }
 
         function applyRowColoring(row, diff) {
