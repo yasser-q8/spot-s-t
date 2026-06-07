@@ -737,7 +737,7 @@
         <div id="pdf-restaurant-info" style="margin-bottom: 15px; padding: 10px; background: #EFF6FF; border-radius: 4px; font-size: 16px; border: 1px solid var(--primary);"></div>
         <div id="pdf-content" style="font-size: 11px;"></div>
         <div id="pdf-footer" style="margin-top: 20px; padding-top: 10px; border-top: 1px solid #ddd; text-align: center; font-size: 10px; color: #666;">
-            <div style="margin-bottom: 5px;">تم إنشاء هذا التقرير بواسطة نظام جرد أصناف المطاعم في شركة نايف للأغذية</div>
+            <div style="margin-bottom: 5px;">تم إنشاء هذا التقرير بواسطة نظام جرد أصناف المطاعم</div>
             <div>تاريخ الطباعة: <span id="pdf-print-date"></span></div>
         </div>
     </div>
@@ -809,6 +809,7 @@
 
  if (code === 'A1001') return Math.round(stockQty * 10);          
 if (code === 'A1002') return Math.round(stockQty * 580); 
+
 if (code === 'K1070') return stockQty;
             if (code === 'K1003') return Math.round(stockQty * 60 );
             if (code === 'K1002') return Math.round(stockQty * 2 * 100) / 100;
@@ -1378,6 +1379,10 @@ if (code === 'K1070') return stockQty;
             const groupedItems = {};
             meatItems.forEach(item => {
                 let subGroup = 'أخرى';
+
+if (item.code === 'K1076' || item.code === 'K1055') {
+    subGroup = 'فرايد';   // أو أي اسم مجموعة تريدها
+}
                 if (item.code === 'K1042' || item.code === 'K1043' || item.code === 'K1044') subGroup = 'قطع دجاج صغير';
                 else if (item.code === 'K1002' || item.code === 'K1003') subGroup = 'أسياخ دجاج';
                 else if (item.name.includes('Big Fillet')) subGroup = 'بيج فيليه';
