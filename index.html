@@ -807,7 +807,7 @@
             let uuom = item.uuom || '';
             let code = item.code || '';
 	if (code === 'K1070') return stockQty;
-            if (code === 'K1003') return Math.round(stockQty * 60 * 100) / 100;
+            if (code === 'K1003') return Math.round(stockQty * 60);
             if (code === 'K1002') return Math.round(stockQty * 2 * 100) / 100;
             if (!vendorUOM || !stockQty) return Math.round(stockQty);
             let multiplier = 1;
