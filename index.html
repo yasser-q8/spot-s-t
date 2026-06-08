@@ -807,7 +807,7 @@
             let uuom = item.uuom || '';
             let code = item.code || '';
 
- if (code === 'A1001') return Math.round(stockQty * 10);          
+if (code === 'A1001') return Math.round(stockQty * 10);          
 if (code === 'A1002') return Math.round(stockQty * 580); 
 if (code === 'A1003') return Math.round(stockQty * 168); 
 if (code === 'B1002') return Math.round(stockQty * 1600); 
@@ -817,6 +817,9 @@ if (code === 'C1003') return Math.round(stockQty * 6);
 if (code === 'C1004') return Math.round(stockQty * 6); 
 if (code === 'C1002') return Math.round(stockQty * 30); 
 if (code === 'C1005') return Math.round(stockQty * 24); 
+if (code === 'B1007') return Math.round(stockQty * 20 * 100) / 100; 
+if (code === 'A1013') return Math.round(stockQty * 20 * 100) / 100; 
+
 
 
 if (code === 'K1070') return stockQty;
