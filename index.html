@@ -871,7 +871,7 @@ if (code === 'K1070') return stockQty;
                     }
                 }
             }
-            return Math.round((stockQty * multiplier) * 100) / 100;
+            return Math.round((stockQty * multiplier) * 1000) / 1000;
         }
 
         let inventoryDataMain = [];
@@ -1042,6 +1042,7 @@ if (code === 'K1070') return stockQty;
             return jsonData.map(item => {
                 const code = item['RM Code'] || '';
                 let stockQty = item.StockQty || 0;
+                 stockQty = Math.round(stockQty * 1000) / 1000;
                 const vendorUOM = item.VendorUOM || '';
                 let uuom = item.UUom || '';
                 const group = getItemGroup({ group: item.Group, name: item.RMName });
@@ -1161,7 +1162,7 @@ if (code === 'K1070') return stockQty;
             if (searchTerm) filteredData = inventoryData.filter(item => (item.name && item.name.toLowerCase().includes(searchTerm)) || (item.code && item.code.toLowerCase().includes(searchTerm)));
             filteredData.forEach((item) => {
                 const row = document.createElement('tr');
-                row.innerHTML = `<td>${item.code || ''}</td><td style="text-align:right;">${item.name || ''}</td><td>${item.vendorUOM || ''}</td><td>${item.stockQty || 0}</td><td>${item.uuom || ''}</td><td>${formatNumberSmart(item.smallestUnitQty)}</td><td><input type="checkbox" class="item-select" data-code="${item.code}" ${item.selected ? 'checked' : ''}></td><td><button class="btn btn-small btn-secondary show-movement" data-code="${item.code}">عرض الحركة</button></td>`;
+                row.innerHTML = `<td>${item.code || ''}</td><td style="text-align:right;">${item.name || ''}</td><td>${item.vendorUOM || ''}</td><td>${formatNumberSmart(item.stockQty)}</td><td>${item.uuom || ''}</td><td>${formatNumberSmart(item.smallestUnitQty)}</td><td><input type="checkbox" class="item-select" data-code="${item.code}" ${item.selected ? 'checked' : ''}></td><td><button class="btn btn-small btn-secondary show-movement" data-code="${item.code}">عرض الحركة</button></td>`;
                 tableBody.appendChild(row);
             });
             document.querySelectorAll('.item-select').forEach(cb => {
@@ -1356,7 +1357,8 @@ if (code === 'K1070') return stockQty;
                         const combinedCell = row.querySelector('.combined-difference-cell');
                         updateSingleCombinedCell(item, combinedCell);
                         input.addEventListener('input', (function(it, rw, combCell) { return function() {
-                            const actual = parseFloat(this.value) || 0;
+                           const actual = parseFloat(this.value) || 0;
+
                             const newDiff = actual - it.smallestUnitQty;
                             const newDiffText = newDiff < 0 ? 'عجز' : newDiff > 0 ? 'زيادة' : '';
                             const diffCell = document.querySelector(`.difference-cell[data-code="${it.code}"]`);
