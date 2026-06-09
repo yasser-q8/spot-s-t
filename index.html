@@ -466,7 +466,7 @@
         <div class="nav-tabs">
             <div class="nav-tab active" data-target="upload-section">تحميل البيانات</div>
             <div class="nav-tab" data-target="meat-section">جرد اللحوم</div>
-            <div class="nav-tab" data-target="store-section">جرد أصناف المخازن</div>
+            <div class="nav-tab" data-target="store-section">جرد أصناف المخازن(تحت التطوير)</div>
             <div class="nav-tab" data-target="veg-section">جرد الخضروات</div>
             <div class="nav-tab" data-target="appetizers-section">جرد المقبلات</div>
             <div class="nav-tab" data-target="misc-section">جرد أصناف أخرى</div>
@@ -856,7 +856,20 @@ if (code === 'K1005') return Math.round(stockQty * 8);
 if (code === 'K1006') return Math.round(stockQty * 8);
 if (code === 'A1020') return Math.round(stockQty * 225);
 if (code === 'K1055') return Math.round(stockQty * 16);
+if (code === 'A1007') return Math.round(stockQty * 10);
+if (code === 'A1008') return Math.round(stockQty * 20);
+if (code === 'A1004') return Math.round(stockQty * 20);
+if (code === 'E1003') return Math.round(stockQty * 20);
+if (code === 'E1002') return Math.round(stockQty * 24);
+if (code === 'E1007') return Math.round(stockQty * 4);
+if (code === 'K1014') return Math.round(stockQty * 5);
+if (code === 'K1011') return Math.round(stockQty * 5);
+if (code === 'K1020') return Math.round(stockQty * 5 * 100) / 100;
 
+if (code === 'kkkkkk') return Math.round(stockQty * 50);
+if (code === 'kkkkkk') return Math.round(stockQty * 50);
+if (code === 'kkkkkk') return Math.round(stockQty * 50);
+if (code === 'kkkkkk') return Math.round(stockQty * 50);
 if (code === 'kkkkkk') return Math.round(stockQty * 50);
 if (code === 'kkkkkk') return Math.round(stockQty * 50);
 if (code === 'kkkkkk') return Math.round(stockQty * 50);
