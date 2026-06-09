@@ -864,20 +864,21 @@ if (code === 'E1002') return Math.round(stockQty * 24);
 if (code === 'E1007') return Math.round(stockQty * 4);
 if (code === 'K1014') return Math.round(stockQty * 5);
 if (code === 'K1011') return Math.round(stockQty * 5);
-if (code === 'K1020') return Math.round(stockQty * 5 * 100) / 100;
-
-if (code === 'kkkkkk') return Math.round(stockQty * 50);
-if (code === 'kkkkkk') return Math.round(stockQty * 50);
-if (code === 'kkkkkk') return Math.round(stockQty * 50);
-if (code === 'kkkkkk') return Math.round(stockQty * 50);
-if (code === 'kkkkkk') return Math.round(stockQty * 50);
-if (code === 'kkkkkk') return Math.round(stockQty * 50);
-if (code === 'kkkkkk') return Math.round(stockQty * 50);
-if (code === 'kkkkkk') return Math.round(stockQty * 50);
+if (code === 'K1020') return Math.round(stockQty * 5 * 10) / 10;
+if (code === 'K1070') return Math.round(stockQty * 1 * 10) / 10;
 
 
+if (code === 'kkkkkk') return Math.round(stockQty * 50);
+if (code === 'kkkkkk') return Math.round(stockQty * 50);
+if (code === 'kkkkkk') return Math.round(stockQty * 50);
+if (code === 'kkkkkk') return Math.round(stockQty * 50);
+if (code === 'kkkkkk') return Math.round(stockQty * 50);
+if (code === 'kkkkkk') return Math.round(stockQty * 50);
+if (code === 'kkkkkk') return Math.round(stockQty * 50);
+if (code === 'kkkkkk') return Math.round(stockQty * 50);
 
-if (code === 'K1070') return stockQty;
+
+
             if (code === 'K1003') return Math.round(stockQty * 60 );
             if (code === 'K1002') return Math.round(stockQty * 2 * 100) / 100;
             if (!vendorUOM || !stockQty) return Math.round(stockQty);
