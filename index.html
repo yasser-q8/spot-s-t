@@ -1154,6 +1154,8 @@
             if (code === 'K1070') return Math.round(stockQty * 1 * 10) / 10;
             if (code === 'A1015') return Math.round(stockQty * 10);
             if (code === 'K1003') return Math.round(stockQty * 60);
+            if (code === 'K1059') return Math.round(stockQty * 15);
+            if (code === 'K1060') return Math.round(stockQty * 15);
             if (code === 'K1002') return Math.round(stockQty * 2 * 100) / 100;
             if (!vendorUOM || !stockQty) return Math.round(stockQty);
             let multiplier = 1;
