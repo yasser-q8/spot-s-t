@@ -730,7 +730,7 @@
                 <img src="https://i.postimg.cc/NM2zJWZD/NAIF-LOGO.jpg" alt="شعار شركة نايف للأغذية" style="width: 60px; height: 60px; margin-left: 15px; border-radius: 50%;">
                 <div>
                     <h1 style="color: var(--primary); margin: 0; font-size: 22px; font-weight: bold;">شركة نايف للأغذية</h1>
-                    <h2 style="color: #333; margin: 5px 0 0 0; font-size: 18px;">نظام جرد أصناف المطاعم</h2>
+                    <h2 style="color: #333; margin: 5px 0 0 0; font-size: 18px;">نظام جرد أصناف المطاعم- للاستفسار اتصل 67011143</h2>
                 </div>
             </div>
         </div>
@@ -940,6 +940,8 @@ if (code === 'kkkkkk') return Math.round(stockQty * 50);
         const defaultItems = [
             { code: "K1035", name: "Chicken Big Fillet  ( بيج فيلية)", group: "meat", vendorUOM: "KG", stockQty: 0, uuom: "جرام", smallestUnitQty: 0 },
             { code: "K1036", name: "Chicken Big Fillet Spicy  ( بيج فيلية فلفل)", group: "meat", vendorUOM: "KG", stockQty: 0, uuom: "جرام", smallestUnitQty: 0 },
+{ code: "K1059", name: "Deluxe Chi Fillet /ديلوكس فيلية عادي", group: "meat", vendorUOM: "KG", stockQty: 0, uuom: "جرام", smallestUnitQty: 0 },
+{ code: "K1060", name: "Deluxe Chi Fillet Spicy /ديلوكس فيلية فلفل", group: "meat", vendorUOM: "KG", stockQty: 0, uuom: "جرام", smallestUnitQty: 0 },
             { code: "K1008", name: "Chicken Fillet  ( فيليه عادي)", group: "meat", vendorUOM: "KG", stockQty: 0, uuom: "جرام", smallestUnitQty: 0 },
             { code: "K1009", name: "Chicken Fillet Spicy  ( فيليه فلفل)", group: "meat", vendorUOM: "KG", stockQty: 0, uuom: "جرام", smallestUnitQty: 0 },
             { code: "K1016", name: "Ch.Finger Fillet Spicy  ( اصابع فيليه فلفل)", group: "meat", vendorUOM: "KG", stockQty: 0, uuom: "جرام", smallestUnitQty: 0 },
@@ -978,6 +980,7 @@ if (code === 'kkkkkk') return Math.round(stockQty * 50);
             { code: "K2020", name: "Hummus large ( ماعون حمص كبير)", group: "appetizers", vendorUOM: "كيلو", stockQty: 0, uuom: "جرام", smallestUnitQty: 0 },
             { code: "K2009", name: "Laban Naif Small (لبن نايف صغير )", group: "appetizers", vendorUOM: "علبة", stockQty: 0, uuom: "علبة", smallestUnitQty: 0 },
             { code: "K2008", name: "Rice&Milk Pudding ( أرز بالحليب)", group: "appetizers", vendorUOM: "علبة", stockQty: 0, uuom: "علبة", smallestUnitQty: 0 },
+{ code: "K2039", name: "Fresh Orange Juice ( عصير برتقال طازج-خالي من السكر والمواد الحاف)", group: "store", vendorUOM: "علبة", stockQty: 0, uuom: "علبة", smallestUnitQty: 0 },
             { code: "K2033", name: "Rocca Salad Big  ( سلطة جرجيركبيرة)", group: "appetizers", vendorUOM: "علبة", stockQty: 0, uuom: "علبة", smallestUnitQty: 0 },
             { code: "K2034", name: "Taboulla Salad Big  ( سلطة تبولة كبيرة)", group: "appetizers", vendorUOM: "علبة", stockQty: 0, uuom: "علبة", smallestUnitQty: 0 },
             { code: "K2036", name: "Vegitable Salad Big  ( سلطة خضراء كبيرة)", group: "appetizers", vendorUOM: "علبة", stockQty: 0, uuom: "علبة", smallestUnitQty: 0 },
@@ -1008,7 +1011,6 @@ if (code === 'kkkkkk') return Math.round(stockQty * 50);
             { code: "C1004", name: "Pepsi 2.25 Ltr ( بيبسى عائلى)", group: "store", vendorUOM: "زجاجة", stockQty: 0, uuom: "زجاجة", smallestUnitQty: 0 },
             { code: "C1001", name: "Pepsi BIB Syrup ( بيبسي ماكينة)", group: "store", vendorUOM: "علبة", stockQty: 0, uuom: "لتر", smallestUnitQty: 0 },
             { code: "C1002", name: "Pepsi Can 250ml (بيبسى علب250 م)", group: "store", vendorUOM: "علبة", stockQty: 0, uuom: "علبة", smallestUnitQty: 0 },
-            { code: "K2039", name: "Fresh Orange Juice ( عصير برتقال طازج-خالي من السكر والمواد الحاف)", group: "store", vendorUOM: "علبة", stockQty: 0, uuom: "علبة", smallestUnitQty: 0 },
             { code: "C1006", name: "Shireen Juice (عصيرشيرين)", group: "store", vendorUOM: "زجاجة", stockQty: 0, uuom: "زجاجة", smallestUnitQty: 0 }
         ];
 
@@ -1272,6 +1274,7 @@ if (code === 'kkkkkk') return Math.round(stockQty * 50);
                 let baseName = item.name.replace(/\(.*?\)/g, '').trim();
                 if (item.code === 'K1042' || item.code === 'K1043') baseName = "Happy Chicken Pc Group";
                 else if (baseName.includes("Chicken Big Fillet")) baseName = "Chicken Big Fillet";
+		else if (baseName.includes("Deluxe Chi Fillet")) baseName = "Deluxe Chi Fillet";
                 else if (baseName.includes("Chicken Fillet") && !baseName.includes("Finger") && !baseName.includes("Grilled")) baseName = "Chicken Fillet";
                 else if (baseName.includes("Chicken Finger Fillet") || baseName.includes("Ch.Finger Fillet")) baseName = "Chicken Finger Fillet";
                 else if (baseName.includes("Chicken Tikka")) baseName = "Chicken Tikka";
@@ -1457,7 +1460,7 @@ if (item.code === 'K1076' || item.code === 'K1055') {
 }
                 if (item.code === 'K1042' || item.code === 'K1043' || item.code === 'K1044') subGroup = 'قطع دجاج صغير';
                 else if (item.code === 'K1002' || item.code === 'K1003') subGroup = 'أسياخ دجاج';
-                else if (item.name.includes('Big Fillet')) subGroup = 'بيج فيليه';
+                else if (item.name.includes('Big Fillet') || item.name.includes('Deluxe Chi Fillet')) subGroup = 'بيج فيليه';
                 else if (item.name.includes('Finger Fillet')) subGroup = 'أصابع فيليه';
                 else if (item.name.includes('Grilled Chicken Fillet') || (item.name.includes('Chicken Fillet') && !item.name.includes('Finger') && !item.name.includes('Big'))) subGroup = 'فيليه دجاج';
                 else if (item.name.includes('Tikka')) subGroup = 'تيكا';
@@ -1523,7 +1526,7 @@ if (item.code === 'K1076' || item.code === 'K1055') {
                 if (name.includes('سلطة') || name.includes('فتوش') || name.includes('تبولة') || name.includes('جرجير') || name.includes('خضراء')) subGroups['السلطات'].push(item);
                 else if (name.includes('كول سلو') || name.includes('Cole Slaw')) subGroups['الكول سلو'].push(item);
                 else if (name.includes('حمص') || name.includes('متبل') || name.includes('Hummus') || name.includes('Mutabbal')) subGroups['الحمص والمتبل'].push(item);
-                else if (name.includes('لبن') || name.includes('أرز بالحليب') || name.includes('Rice&Milk') || name.includes('Laban')) subGroups['الألبان والحلويات'].push(item);
+                else if (name.includes('لبن') || name.includes('أرز بالحليب') || name.includes('عصير برتقال طازج') || name.includes('Rice&Milk') || name.includes('Fresh Orange Juice') || name.includes('Laban')) subGroups['الألبان والحلويات'].push(item);
                 else subGroups['أخرى'].push(item);
             });
             const finalGroups = {};
