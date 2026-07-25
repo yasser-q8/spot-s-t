@@ -2438,234 +2438,217 @@
             return orderedItems;
         }
 
-        // دوال PDF و Excel و WhatsApp مع دعم الترجمة وأسماء المطاعم المترجمة
+        // دوال PDF و Excel و WhatsApp مع دعم الترجمة وأسماء المطاعم المترجمة*******************************************************************************************************************************
         async function generatePDF(sectionType) {
-            let restaurantInput = '';
-            if (sectionType === 'meat') restaurantInput = document.getElementById('meat-restaurant-search').value;
-            else if (sectionType === 'store') restaurantInput = document.getElementById('store-restaurant-search')
-            .value;
-            else if (sectionType === 'appetizers') restaurantInput = document.getElementById(
-                'appetizers-restaurant-search').value;
-            else if (sectionType === 'misc') restaurantInput = document.getElementById('misc-restaurant-search')
-            .value;
-            if (!restaurantInput.trim()) { alert(translations[currentLang]['enter restaurant'] ||
-                    'الرجاء إدخال اسم المطعم');
-                focusRestaurantInput(); return; }
-            try {
-                let items = [],
-                    restaurantName = restaurantInput,
-                    responsibleName = '',
-                    areaManager = '',
-                    operationsManager = '',
-                    title = '',
-                    dateTimeValue = '';
-                const matchedRest = restaurants.find(r => r.name === restaurantName || r.nameEn === restaurantName);
-                if (matchedRest) {
-                    restaurantName = getRestaurantDisplayName(matchedRest, currentLang);
-                }
-                if (sectionType === 'meat') { items = selectedItems.filter(item => item.group === 'meat');
-                    responsibleName = document.getElementById('meat-responsible').value;
-                    areaManager = document.getElementById('meat-area-manager').textContent;
-                    operationsManager = document.getElementById('meat-operations-manager').textContent;
-                    dateTimeValue = document.getElementById('meat-datetime').value;
-                    title = translations[currentLang]['meatTitle'] || 'جرد أصناف اللحوم'; } else if (sectionType ===
-                    'store') { items = selectedItems.filter(item => item.group === 'store');
-                    responsibleName = document.getElementById('store-responsible').value;
-                    areaManager = document.getElementById('store-area-manager').textContent;
-                    operationsManager = document.getElementById('store-operations-manager').textContent;
-                    dateTimeValue = document.getElementById('store-datetime').value;
-                    title = translations[currentLang]['storeTitle'] || 'جرد أصناف المخازن'; } else if (sectionType ===
-                    'appetizers') { items = selectedItems.filter(item => item.group === 'appetizers');
-                    responsibleName = document.getElementById('appetizers-responsible').value;
-                    areaManager = document.getElementById('appetizers-area-manager').textContent;
-                    operationsManager = document.getElementById('appetizers-operations-manager').textContent;
-                    dateTimeValue = document.getElementById('appetizers-datetime').value;
-                    title = translations[currentLang]['appetizersTitle'] || 'جرد أصناف المقبلات'; } else { items =
-                        selectedItems.filter(item => item.group === 'other');
-                    responsibleName = document.getElementById('misc-responsible').value;
-                    areaManager = document.getElementById('misc-area-manager').textContent;
-                    operationsManager = document.getElementById('misc-operations-manager').textContent;
-                    dateTimeValue = document.getElementById('misc-datetime').value;
-                    title = translations[currentLang]['miscTitle'] || 'جرد أصناف أخرى'; }
-                items = getOrderedItemsFromDOM(sectionType, items);
-                if (items.length === 0) { showNotification(translations[currentLang]['no items'] ||
-                    'لا توجد بيانات'); return; }
-                const formattedDateTime = formatDateTimeEn(dateTimeValue);
-                const template = document.getElementById('pdf-template');
-                const clone = template.cloneNode(true);
-                clone.id = 'pdf-clone-' + Date.now();
-                clone.style.display = 'block';
-                clone.style.position = 'absolute';
-                clone.style.left = '0';
-                clone.style.top = '0';
-                clone.style.zIndex = '10000';
-                clone.style.background = 'white';
-                clone.style.width = '794px';
-                clone.style.margin = '0';
-                document.body.appendChild(clone);
-                const restaurantInfoDiv = clone.querySelector('#pdf-restaurant-info');
-                const dict = translations[currentLang];
-                restaurantInfoDiv.innerHTML =
-                    `<div style="display: flex; justify-content: space-between; margin-bottom: 10px;"><div><strong>${dict['restaurantName'] || 'المطعم:'}</strong> ${restaurantName || 'غير محدد'}</div><div><strong>${dict['responsible'] || 'مسئول المطعم:'}</strong> ${responsibleName || 'غير محدد'}</div></div><div style="display: flex; justify-content: space-between; margin-bottom: 10px;"><div><strong>${dict['areaManager'] || 'مدير المنطقة:'}</strong> ${areaManager}</div><div><strong>${dict['opsManager'] || 'مدير التشغيل:'}</strong> ${operationsManager}</div></div><div style="display: flex; justify-content: center;"><div><strong>${dict['datetime'] || 'تاريخ ووقت الجرد:'}</strong> ${formattedDateTime}</div></div>`;
-                const pdfHeader = clone.querySelector('.pdf-header');
-                const existingTitle = pdfHeader.querySelector('h2');
-                if (existingTitle) existingTitle.textContent = title;
-                const pdfContent = clone.querySelector('#pdf-content');
-                let contentHTML = '';
-                let totalDifference = 0;
-                let processedItems = new Set();
-                contentHTML +=
-                    `<table style="width: 100%; border-collapse: collapse; font-size: 9px; margin-bottom: 5px; table-layout: fixed;"><thead><tr style="background: #EFF6FF;">`;
-                contentHTML +=
-                    `<th style="border: 1px solid #ddd; padding: 2px; text-align: center; width: 5%; font-size: 9px; font-weight: bold;">${dict['index'] || 'م'}</th>`;
-                contentHTML +=
-                    `<th style="border: 1px solid #ddd; padding: 2px; text-align: right; width: 27%; font-size: 9px; font-weight: bold;">${dict['colName'] || 'اسم الصنف'}</th>`;
-                contentHTML +=
-                    `<th style="border: 1px solid #ddd; padding: 2px; text-align: center; width: 8%; font-size: 9px; font-weight: bold;">${dict['colUnit'] || 'الشد'}</th>`;
-                contentHTML +=
-                    `<th style="border: 1px solid #ddd; padding: 2px; text-align: center; width: 8%; font-size: 9px; font-weight: bold;">${dict['program inventory'] || 'جرد البرنامج'}</th>`;
-                contentHTML +=
-                    `<th style="border: 1px solid #ddd; padding: 2px; text-align: center; width: 9%; font-size: 9px; font-weight: bold;">${dict['sub unit inventory'] || 'جرد الوحدة الصغرى'}</th>`;
-                contentHTML +=
-                    `<th style="border: 1px solid #ddd; padding: 2px; text-align: center; width: 10%; font-size: 9px; font-weight: bold;">${dict['actual inventory'] || 'الجرد الفعلي'}</th>`;
-                contentHTML +=
-                    `<th style="border: 1px solid #ddd; padding: 2px; text-align: center; width: 12%; font-size: 9px; font-weight: bold;">${dict['diff'] || 'العجز/الزيادة'}</th>`;
-                contentHTML +=
-                    `<th style="border: 1px solid #ddd; padding: 2px; text-align: center; width: 21%; font-size: 9px; font-weight: bold;">${dict['grouped diff'] || 'الفروقات المجمعة'}</th>`;
-                contentHTML += `</tr></thead><tbody>`;
-                let rowIndex = 0;
-                let similarGroupsPDF = findSimilarItems(items);
-                for (const item of items) {
-                    if (processedItems.has(item.code)) continue;
-                    let similarItems = [];
-                    for (const groupName in similarGroupsPDF) {
-                        const grp = similarGroupsPDF[groupName];
-                        if (grp.find(i => i.code === item.code)) { similarItems = grp; break; }
-                    }
-                    if (similarItems.length > 1) {
-                        for (let si = 0; si < similarItems.length; si++) {
-                            const sim = similarItems[si];
-                            if (processedItems.has(sim.code)) continue;
-                            const diff = sim.difference || 0;
-                            const diffText = diff < 0 ? (dict['shortage'] || 'عجز') : diff > 0 ? (dict[
-                                'surplus'] || 'زيادة') : '';
-                            const lightBg = diff < 0 ? '#FFE5E5' : diff > 0 ? '#E5FFE5' : 'transparent';
-                            contentHTML += `<tr style="height:18px;">`;
-                            contentHTML +=
-                                `<td style="border:1px solid #ddd; padding:1px; text-align:center; font-size:9px; vertical-align:middle; background-color:${lightBg};">${rowIndex+1}</td>`;
-                            contentHTML +=
-                                `<td style="border:1px solid #ddd; padding:1px; text-align:right; font-size:9px; vertical-align:middle; background-color:${lightBg};">${sim.name}</td>`;
-                            contentHTML +=
-                                `<td style="border:1px solid #ddd; padding:1px; text-align:center; font-size:9px; vertical-align:middle; background-color:${lightBg};">${sim.vendorUOM}</td>`;
-                            contentHTML +=
-                                `<td style="border:1px solid #ddd; padding:1px; text-align:center; font-size:9px; vertical-align:middle; background-color:${lightBg};">${sim.stockQty}</td>`;
-                            contentHTML +=
-                                `<td style="border:1px solid #ddd; padding:1px; text-align:center; font-size:9px; font-weight:bold; vertical-align:middle; background-color:${lightBg};">${formatNumberSmart(sim.smallestUnitQty)}</td>`;
-                            contentHTML +=
-                                `<td style="border:1px solid #ddd; padding:1px; text-align:center; font-size:9.9px; font-weight:bold; vertical-align:middle; background-color:${lightBg};">${sim.actualCount || 0}</td>`;
-                            contentHTML +=
-                                `<td style="border:1px solid #ddd; padding:1px; text-align:center; font-size:9px; font-weight:bold; color:${diff<0?'red':diff>0?'green':'#333'}; vertical-align:middle; background-color:${lightBg};"><span style="display:block; margin-bottom:1px;">${formatNumberSmart(diff)}</span><span style="display:block; font-size:8px; opacity:0.9;">${diffText||''}</span></td>`;
-                            if (si === 0) {
-                                const combinedDiff = similarItems.reduce((s, i) => s + (i.difference || 0),
-                                0);
-                                const hasActual = similarItems.some(i => i.actualCount && i.actualCount !==
-                                    0);
-                                let cText = '';
-                                if (!hasActual) cText = dict['not inventoried'] || 'لم يتم جرد الصنف';
-                                else if (combinedDiff === 0) cText = dict['matched'] || 'الجرد مطابق';
-                                else cText = combinedDiff < 0 ? (dict['shortage'] || 'عجز') : (dict[
-                                    'surplus'] || 'زيادة');
-                                const darkBg = (!hasActual) ? '#cbd5e1' : (combinedDiff < 0 ? '#FF0000' : (
-                                    combinedDiff > 0 ? '#4CC552' : '#1E3A8A'));
-                                const textColor = (combinedDiff !== 0 && hasActual) ? 'white' : (
-                                    combinedDiff === 0 && hasActual) ? 'white' : '#1e293b';
-                                contentHTML +=
-                                    `<td style="border:1px solid #ddd; padding:1px; text-align:center; font-size:12px; font-weight:900; vertical-align:middle; background-color:${darkBg}; color:${textColor};" rowspan="${similarItems.length}">`;
-                                contentHTML +=
-                                    `<span style="display:block; margin-bottom:1px;">${formatNumberSmart(combinedDiff)}</span>`;
-                                contentHTML +=
-                                    `<span style="display:block; font-size:10px; opacity:0.9;">${cText}</span></td>`;
-                            }
-                            contentHTML += `</tr>`;
-                            processedItems.add(sim.code);
-                            totalDifference += diff;
-                            rowIndex++;
-                        }
-                    } else {
-                        const diff = item.difference || 0;
-                        const diffText = diff < 0 ? (dict['shortage'] || 'عجز') : diff > 0 ? (dict[
-                            'surplus'] || 'زيادة') : '';
-                        const lightBg = diff < 0 ? '#FFE5E5' : diff > 0 ? '#E5FFE5' : 'transparent';
-                        contentHTML += `<tr style="height:18px;">`;
-                        contentHTML +=
-                            `<td style="border:1px solid #ddd; padding:1px; text-align:center; font-size:9px; vertical-align:middle; background-color:${lightBg};">${rowIndex+1}</td>`;
-                        contentHTML +=
-                            `<td style="border:1px solid #ddd; padding:1px; text-align:right; font-size:9px; vertical-align:middle; background-color:${lightBg};">${item.name}</td>`;
-                        contentHTML +=
-                            `<td style="border:1px solid #ddd; padding:1px; text-align:center; font-size:9px; vertical-align:middle; background-color:${lightBg};">${item.vendorUOM}</td>`;
-                        contentHTML +=
-                            `<td style="border:1px solid #ddd; padding:1px; text-align:center; font-size:9px; vertical-align:middle; background-color:${lightBg};">${item.stockQty}</td>`;
-                        contentHTML +=
-                            `<td style="border:1px solid #ddd; padding:1px; text-align:center; font-size:9px; font-weight:bold; vertical-align:middle; background-color:${lightBg};">${formatNumberSmart(item.smallestUnitQty)}</td>`;
-                        contentHTML +=
-                            `<td style="border:1px solid #ddd; padding:1px; text-align:center; font-size:9.9px; font-weight:bold; vertical-align:middle; background-color:${lightBg};">${item.actualCount || 0}</td>`;
-                        contentHTML +=
-                            `<td style="border:1px solid #ddd; padding:1px; text-align:center; font-size:9px; font-weight:bold; color:${diff<0?'red':diff>0?'green':'#333'}; vertical-align:middle; background-color:${lightBg};"><span style="display:block; margin-bottom:1px;">${formatNumberSmart(diff)}</span><span style="display:block; font-size:8px; opacity:0.9;">${diffText||''}</span></td>`;
-                        const hasActual = (item.actualCount && item.actualCount !== 0);
+    let restaurantInput = '';
+    if (sectionType === 'meat') restaurantInput = document.getElementById('meat-restaurant-search').value;
+    else if (sectionType === 'store') restaurantInput = document.getElementById('store-restaurant-search').value;
+    else if (sectionType === 'appetizers') restaurantInput = document.getElementById('appetizers-restaurant-search').value;
+    else if (sectionType === 'misc') restaurantInput = document.getElementById('misc-restaurant-search').value;
+    if (!restaurantInput.trim()) { alert(translations[currentLang]['enter restaurant'] || 'الرجاء إدخال اسم المطعم');
+        focusRestaurantInput(); return; }
+    try {
+        let items = [],
+            restaurantName = restaurantInput,
+            responsibleName = '',
+            areaManager = '',
+            operationsManager = '',
+            title = '',
+            dateTimeValue = '';
+        const matchedRest = restaurants.find(r => r.name === restaurantName || r.nameEn === restaurantName);
+        if (matchedRest) {
+            restaurantName = getRestaurantDisplayName(matchedRest, currentLang);
+        }
+        if (sectionType === 'meat') { items = selectedItems.filter(item => item.group === 'meat');
+            responsibleName = document.getElementById('meat-responsible').value;
+            areaManager = document.getElementById('meat-area-manager').textContent;
+            operationsManager = document.getElementById('meat-operations-manager').textContent;
+            dateTimeValue = document.getElementById('meat-datetime').value;
+            title = translations[currentLang]['meatTitle'] || 'جرد أصناف اللحوم'; } else if (sectionType === 'store') { items = selectedItems.filter(item => item.group === 'store');
+            responsibleName = document.getElementById('store-responsible').value;
+            areaManager = document.getElementById('store-area-manager').textContent;
+            operationsManager = document.getElementById('store-operations-manager').textContent;
+            dateTimeValue = document.getElementById('store-datetime').value;
+            title = translations[currentLang]['storeTitle'] || 'جرد أصناف المخازن'; } else if (sectionType === 'appetizers') { items = selectedItems.filter(item => item.group === 'appetizers');
+            responsibleName = document.getElementById('appetizers-responsible').value;
+            areaManager = document.getElementById('appetizers-area-manager').textContent;
+            operationsManager = document.getElementById('appetizers-operations-manager').textContent;
+            dateTimeValue = document.getElementById('appetizers-datetime').value;
+            title = translations[currentLang]['appetizersTitle'] || 'جرد أصناف المقبلات'; } else { items = selectedItems.filter(item => item.group === 'other');
+            responsibleName = document.getElementById('misc-responsible').value;
+            areaManager = document.getElementById('misc-area-manager').textContent;
+            operationsManager = document.getElementById('misc-operations-manager').textContent;
+            dateTimeValue = document.getElementById('misc-datetime').value;
+            title = translations[currentLang]['miscTitle'] || 'جرد أصناف أخرى'; }
+        items = getOrderedItemsFromDOM(sectionType, items);
+        if (items.length === 0) { showNotification(translations[currentLang]['no items'] || 'لا توجد بيانات'); return; }
+        const formattedDateTime = formatDateTimeEn(dateTimeValue);
+        const template = document.getElementById('pdf-template');
+        const clone = template.cloneNode(true);
+        clone.id = 'pdf-clone-' + Date.now();
+        clone.style.display = 'block';
+        clone.style.position = 'absolute';
+        clone.style.left = '0';
+        clone.style.top = '0';
+        clone.style.zIndex = '10000';
+        clone.style.background = 'white';
+        clone.style.width = '794px';
+        clone.style.margin = '0';
+        document.body.appendChild(clone);
+        const restaurantInfoDiv = clone.querySelector('#pdf-restaurant-info');
+        const dict = translations[currentLang];
+        restaurantInfoDiv.innerHTML =
+            `<div style="display: flex; justify-content: space-between; margin-bottom: 10px;"><div><strong>${dict['restaurantName'] || 'المطعم:'}</strong> ${restaurantName || 'غير محدد'}</div><div><strong>${dict['responsible'] || 'مسئول المطعم:'}</strong> ${responsibleName || 'غير محدد'}</div></div><div style="display: flex; justify-content: space-between; margin-bottom: 10px;"><div><strong>${dict['areaManager'] || 'مدير المنطقة:'}</strong> ${areaManager}</div><div><strong>${dict['opsManager'] || 'مدير التشغيل:'}</strong> ${operationsManager}</div></div><div style="display: flex; justify-content: center;"><div><strong>${dict['datetime'] || 'تاريخ ووقت الجرد:'}</strong> ${formattedDateTime}</div></div>`;
+        const pdfHeader = clone.querySelector('.pdf-header');
+        const existingTitle = pdfHeader.querySelector('h2');
+        if (existingTitle) existingTitle.textContent = title;
+        const pdfContent = clone.querySelector('#pdf-content');
+        let contentHTML = '';
+        let totalDifference = 0;
+        let processedItems = new Set();
+        contentHTML +=
+            `<table style="width: 100%; border-collapse: collapse; font-size: 9px; margin-bottom: 5px; table-layout: fixed;"><thead><tr style="background: #EFF6FF;">`;
+        contentHTML +=
+            `<th style="border: 1px solid #ddd; padding: 2px; text-align: center; width: 5%; font-size: 9px; font-weight: bold;">${dict['index'] || 'م'}</th>`;
+        contentHTML +=
+            `<th style="border: 1px solid #ddd; padding: 2px; text-align: right; width: 27%; font-size: 9px; font-weight: bold;">${dict['colName'] || 'اسم الصنف'}</th>`;
+        contentHTML +=
+            `<th style="border: 1px solid #ddd; padding: 2px; text-align: center; width: 8%; font-size: 9px; font-weight: bold;">${dict['colUnit'] || 'الشد'}</th>`;
+        contentHTML +=
+            `<th style="border: 1px solid #ddd; padding: 2px; text-align: center; width: 8%; font-size: 9px; font-weight: bold;">${dict['program inventory'] || 'جرد البرنامج'}</th>`;
+        contentHTML +=
+            `<th style="border: 1px solid #ddd; padding: 2px; text-align: center; width: 9%; font-size: 9px; font-weight: bold;">${dict['sub unit inventory'] || 'جرد الوحدة الصغرى'}</th>`;
+        contentHTML +=
+            `<th style="border: 1px solid #ddd; padding: 2px; text-align: center; width: 10%; font-size: 9px; font-weight: bold;">${dict['actual inventory'] || 'الجرد الفعلي'}</th>`;
+        contentHTML +=
+            `<th style="border: 1px solid #ddd; padding: 2px; text-align: center; width: 12%; font-size: 9px; font-weight: bold;">${dict['diff'] || 'العجز/الزيادة'}</th>`;
+        contentHTML +=
+            `<th style="border: 1px solid #ddd; padding: 2px; text-align: center; width: 21%; font-size: 9px; font-weight: bold;">${dict['grouped diff'] || 'الفروقات المجمعة'}</th>`;
+        contentHTML += `</tr></thead><tbody>`;
+        let rowIndex = 0;
+        let similarGroupsPDF = findSimilarItems(items);
+        for (const item of items) {
+            if (processedItems.has(item.code)) continue;
+            let similarItems = [];
+            for (const groupName in similarGroupsPDF) {
+                const grp = similarGroupsPDF[groupName];
+                if (grp.find(i => i.code === item.code)) { similarItems = grp; break; }
+            }
+            if (similarItems.length > 1) {
+                for (let si = 0; si < similarItems.length; si++) {
+                    const sim = similarItems[si];
+                    if (processedItems.has(sim.code)) continue;
+                    const diff = sim.difference || 0;
+                    const diffText = diff < 0 ? (dict['shortage'] || 'عجز') : diff > 0 ? (dict['surplus'] || 'زيادة') : '';
+                    const lightBg = diff < 0 ? '#FFE5E5' : diff > 0 ? '#E5FFE5' : 'transparent';
+                    contentHTML += `<tr style="height:18px;">`;
+                    contentHTML +=
+                        `<td style="border:1px solid #ddd; padding:1px; text-align:center; font-size:9px; vertical-align:middle; background-color:${lightBg};">${rowIndex+1}</td>`;
+                    contentHTML +=
+                        `<td style="border:1px solid #ddd; padding:1px; text-align:right; font-size:9px; vertical-align:middle; background-color:${lightBg};">${sim.name}</td>`;
+                    contentHTML +=
+                        `<td style="border:1px solid #ddd; padding:1px; text-align:center; font-size:9px; vertical-align:middle; background-color:${lightBg};">${sim.vendorUOM}</td>`;
+                    contentHTML +=
+                        `<td style="border:1px solid #ddd; padding:1px; text-align:center; font-size:9px; vertical-align:middle; background-color:${lightBg};">${sim.stockQty}</td>`;
+                    contentHTML +=
+                        `<td style="border:1px solid #ddd; padding:1px; text-align:center; font-size:9px; font-weight:bold; vertical-align:middle; background-color:${lightBg};">${formatNumberSmart(sim.smallestUnitQty)}</td>`;
+                    contentHTML +=
+                        `<td style="border:1px solid #ddd; padding:1px; text-align:center; font-size:9.9px; font-weight:bold; vertical-align:middle; background-color:${lightBg};">${sim.actualCount || 0}</td>`;
+                    contentHTML +=
+                        `<td style="border:1px solid #ddd; padding:1px; text-align:center; font-size:9px; font-weight:bold; color:${diff<0?'red':diff>0?'green':'#333'}; vertical-align:middle; background-color:${lightBg};"><span style="display:block; margin-bottom:1px;">${formatNumberSmart(diff)}</span><span style="display:block; font-size:8px; opacity:0.9;">${diffText||''}</span></td>`;
+                    if (si === 0) {
+                        const combinedDiff = similarItems.reduce((s, i) => s + (i.difference || 0), 0);
+                        const hasActual = similarItems.some(i => i.actualCount && i.actualCount !== 0);
                         let cText = '';
                         if (!hasActual) cText = dict['not inventoried'] || 'لم يتم جرد الصنف';
-                        else if (diff === 0) cText = dict['matched'] || 'الجرد مطابق';
-                        else cText = diff < 0 ? (dict['shortage'] || 'عجز') : (dict['surplus'] || 'زيادة');
-                        const darkBg = (!hasActual) ? '#cbd5e1' : (diff < 0 ? '#FF0000' : (diff > 0 ?
-                            '#4CC552' : '#1E3A8A'));
-                        const textColor = (diff !== 0 && hasActual) ? 'white' : (diff === 0 && hasActual) ?
-                            'white' : '#1e293b';
+                        else if (combinedDiff === 0) cText = dict['matched'] || 'الجرد مطابق';
+                        else cText = combinedDiff < 0 ? (dict['shortage'] || 'عجز') : (dict['surplus'] || 'زيادة');
+                        const darkBg = (!hasActual) ? '#cbd5e1' : (combinedDiff < 0 ? '#FF0000' : (combinedDiff > 0 ? '#4CC552' : '#1E3A8A'));
+                        const textColor = (combinedDiff !== 0 && hasActual) ? 'white' : (combinedDiff === 0 && hasActual) ? 'white' : '#1e293b';
                         contentHTML +=
-                            `<td style="border:1px solid #ddd; padding:1px; text-align:center; font-size:10px; font-weight:900; background-color:${darkBg}; color:${textColor}; vertical-align:middle;">`;
+                            `<td style="border:1px solid #ddd; padding:1px; text-align:center; font-size:12px; font-weight:900; vertical-align:middle; background-color:${darkBg}; color:${textColor};" rowspan="${similarItems.length}">`;
+                        // ⭐ التعديل هنا: حجم الرقم 22px
                         contentHTML +=
-                            `<span style="display:block; margin-bottom:1px;">${formatNumberSmart(diff)}</span>`;
+                            `<span style="display:block; margin-bottom:1px; font-size: 22px;">${formatNumberSmart(combinedDiff)}</span>`;
                         contentHTML +=
                             `<span style="display:block; font-size:10px; opacity:0.9;">${cText}</span></td>`;
-                        contentHTML += `</tr>`;
-                        processedItems.add(item.code);
-                        totalDifference += diff;
-                        rowIndex++;
                     }
+                    contentHTML += `</tr>`;
+                    processedItems.add(sim.code);
+                    totalDifference += diff;
+                    rowIndex++;
                 }
-                contentHTML += `</tbody></table>`;
+            } else {
+                const diff = item.difference || 0;
+                const diffText = diff < 0 ? (dict['shortage'] || 'عجز') : diff > 0 ? (dict['surplus'] || 'زيادة') : '';
+                const lightBg = diff < 0 ? '#FFE5E5' : diff > 0 ? '#E5FFE5' : 'transparent';
+                contentHTML += `<tr style="height:18px;">`;
                 contentHTML +=
-                    `<div style="margin-top:10px; padding:8px; background:#EFF6FF; border-radius:4px; text-align:center; font-weight:bold; border:1px solid var(--primary);">`;
+                    `<td style="border:1px solid #ddd; padding:1px; text-align:center; font-size:9px; vertical-align:middle; background-color:${lightBg};">${rowIndex+1}</td>`;
                 contentHTML +=
-                    `<div style="font-size:10px;">${dict['total diff'] || 'الإجمالي الكلي'}: <span style="color:${totalDifference<0?'red':totalDifference>0?'green':'var(--primary)'}; font-size:12px; font-weight:bold;">${formatNumberSmart(totalDifference)} ${totalDifference<0?'('+(dict['shortage'] || 'عجز')+')':totalDifference>0?'('+(dict['surplus'] || 'زيادة')+')':''}</span></div>`;
+                    `<td style="border:1px solid #ddd; padding:1px; text-align:right; font-size:9px; vertical-align:middle; background-color:${lightBg};">${item.name}</td>`;
                 contentHTML +=
-                    `<div style="font-size:9px; margin-top:3px; color:#666;">(${dict['items count'] || 'عدد الأصناف'}: ${items.length} صنف)</div></div>`;
-                pdfContent.innerHTML = contentHTML;
-                const now = new Date();
-                clone.querySelector('#pdf-print-date').textContent =
-                    `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
-                await new Promise(resolve => setTimeout(resolve, 300));
-                const canvas = await html2canvas(clone, { scale: 2, useCORS: true, logging: false,
-                    backgroundColor: '#FFFFFF', windowWidth: clone.scrollWidth, windowHeight: clone
-                    .scrollHeight });
-                const imgData = canvas.toDataURL('image/jpeg', 0.95);
-                const { jsPDF } = window.jspdf;
-                const pdf = new jsPDF({ orientation: 'portrait', unit: 'px', format: 'a4' });
-                const pdfWidth = pdf.internal.pageSize.getWidth();
-                const pdfHeight = pdf.internal.pageSize.getHeight();
-                const imgWidth = canvas.width;
-                const imgHeight = canvas.height;
-                const ratio = Math.min(pdfWidth / imgWidth, pdfHeight / imgHeight);
-                const width = imgWidth * ratio;
-                const height = imgHeight * ratio;
-                pdf.addImage(imgData, 'JPEG', (pdfWidth - width) / 2, 0, width, height);
-                const fileName =
-                    `جرد_${sectionType === 'meat' ? 'اللحوم' : sectionType === 'store' ? 'المخازن' : sectionType === 'appetizers' ? 'المقبلات' : 'أخرى'}_${restaurantName.replace(/[^\w\u0600-\u06FF\s]/g, '')}.pdf`;
-                pdf.save(fileName);
-                showNotification(dict['pdf created'] || 'تم إنشاء PDF بنجاح');
-                if (clone && clone.parentNode) clone.parentNode.removeChild(clone);
-            } catch (error) { console.error(error);
-                showNotification(translations[currentLang]['error'] || 'خطأ في PDF'); }
+                    `<td style="border:1px solid #ddd; padding:1px; text-align:center; font-size:9px; vertical-align:middle; background-color:${lightBg};">${item.vendorUOM}</td>`;
+                contentHTML +=
+                    `<td style="border:1px solid #ddd; padding:1px; text-align:center; font-size:9px; vertical-align:middle; background-color:${lightBg};">${item.stockQty}</td>`;
+                contentHTML +=
+                    `<td style="border:1px solid #ddd; padding:1px; text-align:center; font-size:9px; font-weight:bold; vertical-align:middle; background-color:${lightBg};">${formatNumberSmart(item.smallestUnitQty)}</td>`;
+                contentHTML +=
+                    `<td style="border:1px solid #ddd; padding:1px; text-align:center; font-size:9.9px; font-weight:bold; vertical-align:middle; background-color:${lightBg};">${item.actualCount || 0}</td>`;
+                contentHTML +=
+                    `<td style="border:1px solid #ddd; padding:1px; text-align:center; font-size:9px; font-weight:bold; color:${diff<0?'red':diff>0?'green':'#333'}; vertical-align:middle; background-color:${lightBg};"><span style="display:block; margin-bottom:1px;">${formatNumberSmart(diff)}</span><span style="display:block; font-size:8px; opacity:0.9;">${diffText||''}</span></td>`;
+                const hasActual = (item.actualCount && item.actualCount !== 0);
+                let cText = '';
+                if (!hasActual) cText = dict['not inventoried'] || 'لم يتم جرد الصنف';
+                else if (diff === 0) cText = dict['matched'] || 'الجرد مطابق';
+                else cText = diff < 0 ? (dict['shortage'] || 'عجز') : (dict['surplus'] || 'زيادة');
+                const darkBg = (!hasActual) ? '#cbd5e1' : (diff < 0 ? '#FF0000' : (diff > 0 ? '#4CC552' : '#1E3A8A'));
+                const textColor = (diff !== 0 && hasActual) ? 'white' : (diff === 0 && hasActual) ? 'white' : '#1e293b';
+                contentHTML +=
+                    `<td style="border:1px solid #ddd; padding:1px; text-align:center; font-size:10px; font-weight:900; background-color:${darkBg}; color:${textColor}; vertical-align:middle;">`;
+                // ⭐ التعديل هنا: حجم الرقم 22px
+                contentHTML +=
+                    `<span style="display:block; margin-bottom:1px; font-size: 22px;">${formatNumberSmart(diff)}</span>`;
+                contentHTML +=
+                    `<span style="display:block; font-size:10px; opacity:0.9;">${cText}</span></td>`;
+                contentHTML += `</tr>`;
+                processedItems.add(item.code);
+                totalDifference += diff;
+                rowIndex++;
+            }
         }
+        contentHTML += `</tbody></table>`;
+        contentHTML +=
+            `<div style="margin-top:10px; padding:8px; background:#EFF6FF; border-radius:4px; text-align:center; font-weight:bold; border:1px solid var(--primary);">`;
+        contentHTML +=
+            `<div style="font-size:10px;">${dict['total diff'] || 'الإجمالي الكلي'}: <span style="color:${totalDifference<0?'red':totalDifference>0?'green':'var(--primary)'}; font-size:12px; font-weight:bold;">${formatNumberSmart(totalDifference)} ${totalDifference<0?'('+(dict['shortage'] || 'عجز')+')':totalDifference>0?'('+(dict['surplus'] || 'زيادة')+')':''}</span></div>`;
+        contentHTML +=
+            `<div style="font-size:9px; margin-top:3px; color:#666;">(${dict['items count'] || 'عدد الأصناف'}: ${items.length} صنف)</div></div>`;
+        pdfContent.innerHTML = contentHTML;
+        const now = new Date();
+        clone.querySelector('#pdf-print-date').textContent =
+            `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
+        await new Promise(resolve => setTimeout(resolve, 300));
+        const canvas = await html2canvas(clone, { scale: 2, useCORS: true, logging: false, backgroundColor: '#FFFFFF', windowWidth: clone.scrollWidth, windowHeight: clone.scrollHeight });
+        const imgData = canvas.toDataURL('image/jpeg', 0.95);
+        const { jsPDF } = window.jspdf;
+        const pdf = new jsPDF({ orientation: 'portrait', unit: 'px', format: 'a4' });
+        const pdfWidth = pdf.internal.pageSize.getWidth();
+        const pdfHeight = pdf.internal.pageSize.getHeight();
+        const imgWidth = canvas.width;
+        const imgHeight = canvas.height;
+        const ratio = Math.min(pdfWidth / imgWidth, pdfHeight / imgHeight);
+        const width = imgWidth * ratio;
+        const height = imgHeight * ratio;
+        pdf.addImage(imgData, 'JPEG', (pdfWidth - width) / 2, 0, width, height);
+        const fileName =
+            `جرد_${sectionType === 'meat' ? 'اللحوم' : sectionType === 'store' ? 'المخازن' : sectionType === 'appetizers' ? 'المقبلات' : 'أخرى'}_${restaurantName.replace(/[^\w\u0600-\u06FF\s]/g, '')}.pdf`;
+        pdf.save(fileName);
+        showNotification(dict['pdf created'] || 'تم إنشاء PDF بنجاح');
+        if (clone && clone.parentNode) clone.parentNode.removeChild(clone);
+    } catch (error) { console.error(error);
+        showNotification(translations[currentLang]['error'] || 'خطأ في PDF'); }
+}
 
         function generateExcel(sectionType) {
             let restaurantName = '',
