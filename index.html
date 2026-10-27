@@ -826,7 +826,10 @@
         </section>
 
         <section id="meat-section" class="section">
-            <h2 style="color: var(--primary); margin-bottom: 20px;" data-translate="meatTitle">جرد أصناف اللحوم</h2>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 10px;">
+                <h2 style="color: var(--primary); margin: 0;" data-translate="meatTitle">جرد أصناف اللحوم</h2>
+                <button class="btn btn-primary" id="toggle-extra-meat-items" style="font-size: 14px;">➕ إضافة أصناف إضافية</button>
+            </div>
             <div class="restaurant-info">
                 <div class="info-row-compact">
                     <div class="info-item">
@@ -1301,6 +1304,93 @@
         let whatsappAttachmentFile = null;
         let currentLang = 'ar';
 
+        // ------------------- الأصناف الإضافية لجرد اللحوم -------------------
+        const extraMeatItems = [
+            { code: "K1039", name: "Drumstic whole Fried  ( وصلة دجاج عادي)", group: "meat", vendorUOM: "KG", stockQty: 0, uuom: "جرام", smallestUnitQty: 0, _originalGroup: "meat" },
+            { code: "K1040", name: "Drumstick whole Fried spicy  ( وصلة دجاج فلفل)", group: "meat", vendorUOM: "KG", stockQty: 0, uuom: "جرام", smallestUnitQty: 0, _originalGroup: "meat" },
+            { code: "K1002", name: "Chicken Kabab ( كباب دجاج)", group: "meat", vendorUOM: "KG", stockQty: 0, uuom: "كيلو", smallestUnitQty: 0, _originalGroup: "meat" },
+            { code: "K1070", name: "Fresh Burger Chickens برجر دجاج طازج", group: "meat", vendorUOM: "KG", stockQty: 0, uuom: "كيلو", smallestUnitQty: 0, _originalGroup: "meat" },
+            { code: "K1055", name: "Grilled charcoal chicken pcs (قطع دجاج على الفحم)", group: "meat", vendorUOM: "KG", stockQty: 0, uuom: "جرام", smallestUnitQty: 0, _originalGroup: "meat" },
+            { code: "K1042", name: "Happy Chicken Pc ( قطع دجاج فرايد صغير عادي)", group: "meat", vendorUOM: "KG", stockQty: 0, uuom: "كيلو", smallestUnitQty: 0, _originalGroup: "meat" },
+            { code: "K1043", name: "Happy Chicken Pc-Spicy ( قطع دجاج فرايد صغير فلفل)", group: "meat", vendorUOM: "KG", stockQty: 0, uuom: "كيلو", smallestUnitQty: 0, _originalGroup: "meat" },
+            { code: "K120199", name: "Half Boneless Chicken - نصف دجاجة مسحب", group: "meat", vendorUOM: "KG", stockQty: 0, uuom: "جرام", smallestUnitQty: 0, _originalGroup: "meat" },
+            { code: "L1041", name: "Cheese Cake Snickers (تشيز كيك سنيكرز)", group: "meat", vendorUOM: "قطعة", stockQty: 0, uuom: "قطعة", smallestUnitQty: 0, _originalGroup: "store" },
+            { code: "L1016", name: "Item L1016 (غير محدد)", group: "meat", vendorUOM: "قطعة", stockQty: 0, uuom: "قطعة", smallestUnitQty: 0, _originalGroup: "store" },
+            { code: "L1040", name: "Cheese Cake Lotus (تشيز كيك لوتس)", group: "meat", vendorUOM: "قطعة", stockQty: 0, uuom: "قطعة", smallestUnitQty: 0, _originalGroup: "store" },
+            { code: "L1042", name: "Cheese Cake Red Velvet (تشيز كيك ريد فالفيت)", group: "meat", vendorUOM: "قطعة", stockQty: 0, uuom: "قطعة", smallestUnitQty: 0, _originalGroup: "store" },
+            { code: "K2036", name: "Vegitable Salad Big  ( سلطة خضراء كبيرة)", group: "meat", vendorUOM: "علبة", stockQty: 0, uuom: "علبة", smallestUnitQty: 0, _originalGroup: "appetizers" },
+            { code: "K2009", name: "Laban Naif Small (لبن نايف صغير )", group: "meat", vendorUOM: "علبة", stockQty: 0, uuom: "علبة", smallestUnitQty: 0, _originalGroup: "appetizers" }
+        ];
+
+        let extraMeatItemsVisible = false;
+        let extraMeatItemsOriginalGroups = {};
+        let extraMeatItemsNewlyAdded = [];
+
+        function toggleExtraMeatItems() {
+            extraMeatItemsVisible = !extraMeatItemsVisible;
+            const btn = document.getElementById('toggle-extra-meat-items');
+
+            if (extraMeatItemsVisible) {
+                extraMeatItemsNewlyAdded = [];
+                extraMeatItemsOriginalGroups = {};
+                extraMeatItems.forEach(extraItem => {
+                    const idx = inventoryData.findIndex(item => item.code === extraItem.code);
+                    if (idx === -1) {
+                        // Add new item
+                        let smallest = convertToSmallestUnitGeneral(extraItem, extraItem.stockQty);
+                        const newItem = {
+                            code: extraItem.code,
+                            name: extraItem.name,
+                            group: 'meat',
+                            vendorUOM: extraItem.vendorUOM,
+                            stockQty: extraItem.stockQty,
+                            uuom: extraItem.uuom,
+                            smallestUnitQty: parseFloat(smallest.toFixed(3)),
+                            startQty: 0, receivedQty: 0, transferInQty: 0, transferOutQty: 0,
+                            wastageQty: 0, usageQty: 0, notConOrders: 0,
+                            selected: true, actualCount: 0, difference: 0
+                        };
+                        inventoryData.push(newItem);
+                        extraMeatItemsNewlyAdded.push(extraItem.code);
+                        extraMeatItemsOriginalGroups[extraItem.code] = extraItem._originalGroup;
+                    } else {
+                        extraMeatItemsOriginalGroups[extraItem.code] = inventoryData[idx].group;
+                        inventoryData[idx].group = 'meat';
+                        inventoryData[idx].selected = true;
+                    }
+                });
+                btn.innerHTML = '➖ إخفاء الأصناف الإضافية';
+                btn.style.backgroundColor = 'var(--accent-red)';
+            } else {
+                // Remove newly added items
+                extraMeatItemsNewlyAdded.forEach(code => {
+                    const idx = inventoryData.findIndex(item => item.code === code);
+                    if (idx !== -1) inventoryData.splice(idx, 1);
+                });
+                // Restore existing items to original group and deselect
+                extraMeatItems.forEach(extraItem => {
+                    const idx = inventoryData.findIndex(item => item.code === extraItem.code);
+                    if (idx !== -1) {
+                        const origGroup = extraMeatItemsOriginalGroups[extraItem.code];
+                        if (origGroup && origGroup !== 'meat') {
+                            inventoryData[idx].group = origGroup;
+                        }
+                        inventoryData[idx].selected = false;
+                    }
+                });
+                extraMeatItemsNewlyAdded = [];
+                extraMeatItemsOriginalGroups = {};
+                btn.innerHTML = '➕ إضافة أصناف إضافية';
+                btn.style.backgroundColor = '';
+            }
+
+            selectedItems = inventoryData.filter(item => item.selected);
+            updateInventoryTable();
+            updateStats();
+            updateMeatInventory();
+            showNotification(extraMeatItemsVisible ? 'تمت إضافة الأصناف الإضافية' : 'تم إخفاء الأصناف الإضافية');
+        }
+
         // ------------------- كائن الترجمة -------------------
         const translations = {
             'ar': {
@@ -1604,7 +1694,9 @@
             { name: "مول 360", nameEn: "The 360 Mall", areaManager: "وليد", operationsManager: "طارق بيومي" },
             { name: "نادي الصليبخات", nameEn: "Al-Sulaibikhat Club", areaManager: "ثروت",
             operationsManager: "طارق بيومي" },
-            { name: "هدية", nameEn: "Hadiya", areaManager: "حجازي", operationsManager: "هاني عبدالله" }
+            { name: "هدية", nameEn: "Hadiya", areaManager: "حجازي", operationsManager: "هاني عبدالله" },
+            // ===== مطعم أفنتورا الجديد =====
+            { name: "أفنتورا", nameEn: "Aventura", areaManager: "وليد صبري", operationsManager: "طارق بيومي" }
         ];
 
         function getRestaurantDisplayName(rest, lang) {
@@ -1700,7 +1792,7 @@
 
         // ------------------- الأصناف الأساسية -------------------
         const defaultItems = [
-            // ===== اللحوم (تم إزالة K1039, K1040, K1002, K1070, K1055, K1042, K1043, K120199) =====
+            // ===== اللحوم =====
             { code: "K1035", name: "Chicken Big Fillet  ( بيج فيلية)", group: "meat", vendorUOM: "KG", stockQty: 0,
                 uuom: "جرام", smallestUnitQty: 0 },
             { code: "K1036", name: "Chicken Big Fillet Spicy  ( بيج فيلية فلفل)", group: "meat", vendorUOM: "KG",
@@ -1755,7 +1847,7 @@
                 stockQty: 0, uuom: "كيلو", smallestUnitQty: 0 },
             { code: "K1076", name: "Grilled Chicken Pc / قطع دجاج مشويه", group: "meat", vendorUOM: "KG", stockQty: 0,
                 uuom: "جرام", smallestUnitQty: 0 },
-            // المقبلات (تم إزالة K2036, K2009)
+            // المقبلات
             { code: "K2035", name: "Fattoush Salad Big  ( سلطة فتوش كبيرة)", group: "appetizers", vendorUOM: "علبة",
                 stockQty: 0, uuom: "علبة", smallestUnitQty: 0 },
             { code: "K2005", name: "Cole Slaw Big  (كول سلو كبير)", group: "appetizers", vendorUOM: "علبة", stockQty: 0,
@@ -1776,7 +1868,7 @@
                 stockQty: 0, uuom: "جرام", smallestUnitQty: 0 },
             { code: "K2039", name: "Fresh Orange Juice ( عصير برتقال طازج-خالي من السكر والمواد الحاف)", group: "appetizers",
                 vendorUOM: "علبة", stockQty: 0, uuom: "علبة", smallestUnitQty: 0 },
-            // المخازن (تم إزالة L1041, L1040, L1042)
+            // المخازن
             { code: "A1009", name: "Butter Finger (زبدة اصابع)", group: "store", vendorUOM: "كيس", stockQty: 0,
                 uuom: "قطعة", smallestUnitQty: 0 },
             { code: "A1010", name: "Butter Portion ( زبدة بورشن)", group: "store", vendorUOM: "كرتون", stockQty: 0,
@@ -1823,7 +1915,7 @@
                 uuom: "علبة", smallestUnitQty: 0 },
             { code: "C1006", name: "Shireen Juice (عصيرشيرين)", group: "store", vendorUOM: "زجاجة", stockQty: 0,
                 uuom: "زجاجة", smallestUnitQty: 0 },
-            // ===== الخبز (Bread) =====
+            // ===== الخبز =====
             { code: "E1001", name: "Arabic Bread (خبز عربى شد3)", group: "bread", vendorUOM: "Packet (3 Pcs)", stockQty: 0, uuom: "قطعة", smallestUnitQty: 0 },
             { code: "E1012", name: "Arabic Bread (خبز عربى للشاورما)", group: "bread", vendorUOM: "Packet (5 Pcs)", stockQty: 0, uuom: "قطعة", smallestUnitQty: 0 },
             { code: "E1526", name: "Bread Samon with Sesame خبز صمون بالسمسم", group: "bread", vendorUOM: "Packet (5 Pcs)", stockQty: 0, uuom: "قطعة", smallestUnitQty: 0 },
@@ -1836,7 +1928,7 @@
             { code: "E1013", name: "Slider Bun (خبز سلايدر )", group: "bread", vendorUOM: "Packet (6 Pcs)", stockQty: 0, uuom: "قطعة", smallestUnitQty: 0 },
             { code: "E1014", name: "Tannur Bread(خبز تنور)", group: "bread", vendorUOM: "Packet (5 Pcs)", stockQty: 0, uuom: "قطعة", smallestUnitQty: 0 },
             { code: "E1008", name: "Tortella Bread white 20cm (خبز تورتيلا راب)", group: "bread", vendorUOM: "Packet (5 Pcs)", stockQty: 0, uuom: "قطعة", smallestUnitQty: 0 },
-            // ===== الخضار (Vegetables) - الأصناف الجديدة =====
+            // ===== الخضار =====
             { code: "K3002", name: "Lemon (ليمون)", group: "vegetables", vendorUOM: "كيلو", stockQty: 0, uuom: "جرام", smallestUnitQty: 0 },
             { code: "K3003", name: "Potatoes (بطاطس)", group: "vegetables", vendorUOM: "كيلو", stockQty: 0, uuom: "جرام", smallestUnitQty: 0 },
             { code: "K3005", name: "Tomatoes (طماطم)", group: "vegetables", vendorUOM: "كيلو", stockQty: 0, uuom: "جرام", smallestUnitQty: 0 },
@@ -2528,7 +2620,7 @@
             renderGroupedItems(container, orderedGroups, similarGroups);
         }
 
-        // دالة تحديث قسم الخضار الجديد
+        // دالة تحديث قسم الخضار
         function updateVegetablesInventory() {
             const container = document.getElementById('vegetables-inventory-container');
             container.innerHTML = '';
@@ -3028,6 +3120,9 @@
                 .scrollHeight, behavior: 'smooth' }));
         document.getElementById('scroll-top-btn').addEventListener('click', () => window.scrollTo({ top: 0,
                 behavior: 'smooth' }));
+
+        // زر تبديل الأصناف الإضافية للحوم
+        document.getElementById('toggle-extra-meat-items').addEventListener('click', toggleExtraMeatItems);
 
         document.getElementById('add-restaurant').addEventListener('click', () => { const name = prompt(
                 translations[currentLang]['addRestaurant'] || 'أدخل اسم المطعم الجديد:'); if (name) { const am =
